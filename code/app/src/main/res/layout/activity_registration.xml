@@ -22,12 +22,14 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:id="@+id/cl_registration_main_container"
         style="@style/RoundedContainerStyle"
-        android:layout_height="500dp"
+        android:layout_width="365dp"
+        android:layout_height="404dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.516"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.315
+">
 
         <EditText
             android:id="@+id/et_registration_name"
@@ -43,9 +45,9 @@
         <TextView
             android:id="@+id/tv_registration_name_header"
             style="@style/HeaderRoundedEditTextStyle"
-            android:text="Name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Name"
             app:layout_constraintBottom_toTopOf="@+id/et_registration_name"
             app:layout_constraintEnd_toEndOf="@+id/et_registration_name"
             app:layout_constraintHorizontal_bias="0.08"
@@ -65,10 +67,10 @@
 
         <TextView
             android:id="@+id/tv_registration_email_header"
-            android:text="Email"
             style="@style/HeaderRoundedEditTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Email"
             app:layout_constraintBottom_toTopOf="@+id/et_registration_email"
             app:layout_constraintEnd_toEndOf="@+id/et_registration_email"
             app:layout_constraintHorizontal_bias="0.08"
@@ -90,14 +92,36 @@
 
         <TextView
             android:id="@+id/tv_registration_phone_header"
-            android:text="Phone Number"
             style="@style/HeaderRoundedEditTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:text="Phone Number"
             app:layout_constraintBottom_toTopOf="@+id/et_registration_phone"
             app:layout_constraintEnd_toEndOf="@+id/et_registration_phone"
             app:layout_constraintHorizontal_bias="0.08"
             app:layout_constraintStart_toStartOf="@+id/et_registration_phone" />
 
+
     </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <Button
+        android:id="@+id/button"
+        style="@style/RoundedButton"
+        android:layout_width="150dp"
+        android:layout_marginTop="16dp"
+        android:layout_marginEnd="20dp"
+        android:text="Log In "
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cl_registration_main_container" />
+
+    <Button
+        android:id="@+id/button"
+        style="@style/RoundedButton"
+        android:layout_width="150dp"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="16dp"
+        android:text="Sign Up"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cl_registration_main_container" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
