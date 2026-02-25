@@ -7,4 +7,5 @@
     <color name="secondaryBackground">#0A3848</color>
     <color name="primaryAccent">#30BCED</color>
     <color name="secondaryAccent">#C9EA41</color>
+    <color name="transparent">#00000000</color>
 </resources>
