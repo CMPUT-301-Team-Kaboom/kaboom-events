@@ -36,7 +36,7 @@
             android:layout_marginStart="16dp"
             android:text="Event Name"
             android:textAlignment="textStart"
-            android:textSize="36dp"
+            android:textSize="36sp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
 
@@ -49,7 +49,7 @@
             android:layout_marginBottom="-10dp"
             android:text="Organizer"
             android:textAlignment="textStart"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:textStyle="normal"
             app:layout_constraintBottom_toTopOf="@+id/tv_organizer_details_event_name_header"
             app:layout_constraintStart_toStartOf="parent" />
@@ -57,12 +57,13 @@
         <Button
             android:id="@+id/btn_organizer_event_edit"
             style="@style/RoundedButton"
-            android:layout_width="96dp"
-            android:layout_height="42dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_marginTop="5dp"
             android:layout_marginEnd="5dp"
             android:background="@drawable/rounded_button_transparent"
             android:text="Edit"
+            android:textSize="18sp"
             app:backgroundTint="@color/white"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintTop_toTopOf="parent" />

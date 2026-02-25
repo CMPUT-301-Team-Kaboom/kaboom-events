@@ -10,6 +10,6 @@
         android:width="4dp"/>
 
     <!-- Optional rounded corners -->
-    <corners android:radius="20dp"/>
+    <corners android:radius="24dp"/>
 
 </shape>
