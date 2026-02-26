@@ -56,15 +56,11 @@ public class CreateEventDialogFragment extends DialogFragment {
         EditText editEntrantLimit = view.findViewById(R.id.et_event_creation_entrant_limit);
         Button confirmButton = view.findViewById(R.id.btn_event_creation_confirm);
 
-        Event event;
-
         AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setView(view)
                 .create();
 
         confirmButton.setOnClickListener(v -> {
-            String name = editName.getText().toString().trim();
-
             // Validation
             boolean isValid = true;
             isValid &= fieldNotEmpty(editName);
@@ -79,6 +75,7 @@ public class CreateEventDialogFragment extends DialogFragment {
                 return;
             }
 
+            String name = editName.getText().toString().trim();
             LocalDate regStart = LocalDate.parse(editRegStart.getText().toString().trim());
             LocalDate regEnd = LocalDate.parse(editRegEnd.getText().toString().trim());
             LocalDate drawDate = LocalDate.parse(editDrawDate.getText().toString().trim());
@@ -105,7 +102,12 @@ public class CreateEventDialogFragment extends DialogFragment {
                 return;
             }
 
+            Event event = new Event(name, regStart, regEnd, drawDateTime, entrantLimit);
+            listener.addEvent(event);
+            dialog.dismiss();
         });
+
+        return dialog;
     }
 
     private boolean fieldNotEmpty(EditText field) {
