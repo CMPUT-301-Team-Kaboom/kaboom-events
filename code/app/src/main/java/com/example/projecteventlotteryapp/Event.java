@@ -22,6 +22,26 @@ public class Event {
     // private map
     // private image
 
+    /**
+     * Constructor for Event class
+     *
+     * TODO: Remove waitlistLimit from UI Diagram
+     * @param name
+     * @param registrationStartDate
+     * @param registrationEndDate
+     * @param drawDate
+     */
+    public Event(
+            String name,
+            LocalDateTime registrationStartDate,
+            LocalDateTime registrationEndDate,
+            LocalDateTime drawDate
+    ) {
+        this.name = name;
+        this.registrationStartDate = registrationStartDate;
+        this.registrationEndDate = registrationEndDate;
+        this.drawDate = drawDate;
+    }
 
     public String getName() {
         return name;
