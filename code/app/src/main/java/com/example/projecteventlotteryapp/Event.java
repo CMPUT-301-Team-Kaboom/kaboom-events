@@ -1,5 +1,7 @@
 package com.example.projecteventlotteryapp;
 
+import com.google.firebase.Timestamp;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -8,9 +10,9 @@ public class Event {
     private int attendeesLimit;
     private int waitlistLimit;
     private boolean geolocationEnabled;
-    private LocalDateTime drawDate;
-    private LocalDateTime registrationStartDate;
-    private LocalDateTime registrationEndDate;
+    private Timestamp drawDate;
+    private Timestamp registrationStartDate;
+    private Timestamp registrationEndDate;
     private ArrayList<String> tagsList;
     private EntrantList waitlist;
     private EntrantList invited;
@@ -33,9 +35,9 @@ public class Event {
      */
     public Event(
             String name,
-            LocalDateTime registrationStartDate,
-            LocalDateTime registrationEndDate,
-            LocalDateTime drawDate
+            Timestamp registrationStartDate,
+            Timestamp registrationEndDate,
+            Timestamp drawDate
     ) {
         this.name = name;
         this.registrationStartDate = registrationStartDate;
@@ -75,27 +77,27 @@ public class Event {
         this.geolocationEnabled = geolocationEnabled;
     }
 
-    public LocalDateTime getDrawDate() {
+    public Timestamp getDrawDate() {
         return drawDate;
     }
 
-    public void setDrawDate(LocalDateTime drawDate) {
+    public void setDrawDate(Timestamp drawDate) {
         this.drawDate = drawDate;
     }
 
-    public LocalDateTime getRegistrationStartDate() {
+    public Timestamp getRegistrationStartDate() {
         return registrationStartDate;
     }
 
-    public void setRegistrationStartDate(LocalDateTime registrationStartDate) {
+    public void setRegistrationStartDate(Timestamp registrationStartDate) {
         this.registrationStartDate = registrationStartDate;
     }
 
-    public LocalDateTime getRegistrationEndDate() {
+    public Timestamp getRegistrationEndDate() {
         return registrationEndDate;
     }
 
-    public void setRegistrationEndDate(LocalDateTime registrationEndDate) {
+    public void setRegistrationEndDate(Timestamp registrationEndDate) {
         this.registrationEndDate = registrationEndDate;
     }
 
