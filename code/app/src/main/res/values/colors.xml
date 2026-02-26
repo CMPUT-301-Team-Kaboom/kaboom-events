@@ -5,6 +5,7 @@
     <color name="grey">#808080</color>
     <color name="primaryBackground">#072C3C</color>
     <color name="secondaryBackground">#0A3848</color>
+    <color name="tertiaryBackground">#2C566C</color>
     <color name="primaryAccent">#30BCED</color>
     <color name="secondaryAccent">#C9EA41</color>
 </resources>

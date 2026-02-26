@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/tertiaryBackground"
+    tools:context=".CreateEventFragment">
+
+
+    <TextView
+        android:id="@+id/textView"
+        style="@style/MainHeaderTextviewStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Create Event"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_creation_name_header"
+        style="@style/HeaderRoundedEditTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        app:layout_constraintBottom_toTopOf="@+id/et_creation_enter_name"
+        app:layout_constraintEnd_toEndOf="@+id/et_creation_enter_name"
+        app:layout_constraintHorizontal_bias="0.044"
+        app:layout_constraintStart_toStartOf="@+id/et_creation_enter_name" />
+
+    <EditText
+        android:id="@+id/et_creation_enter_name"
+        style="@style/BodyRoundedEditTextStyle"
+        android:layout_width="325dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="45dp"
+        android:background="@drawable/rounded_edittext"
+        android:hint="Enter a name"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/textView" />
+
+    <TextView
+        android:id="@+id/tv_registration_period"
+        style="@style/HeaderRoundedEditTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Registration Period"
+        app:layout_constraintBottom_toTopOf="@+id/et_registration_start"
+        app:layout_constraintEnd_toEndOf="@+id/et_registration_start"
+        app:layout_constraintHorizontal_bias="0.044"
+        app:layout_constraintStart_toStartOf="@+id/et_registration_start" />
+
+    <EditText
+        android:id="@+id/et_registration_start"
+        style="@style/BodyRoundedEditTextStyle"
+        android:textSize="14sp"
+        android:textAlignment="center"
+        android:layout_width="125dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="36dp"
+        android:background="@drawable/rounded_edittext"
+        android:inputType="date"
+        android:hint="Someday, Jan 23"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.164"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_creation_enter_name" />
+
+    <EditText
+        android:id="@+id/et_registration_end"
+        style="@style/BodyRoundedEditTextStyle"
+        android:textSize="14sp"
+        android:textAlignment="center"
+        android:layout_width="125dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="36dp"
+        android:background="@drawable/rounded_edittext"
+        android:inputType="date"
+        android:hint="Someday, Jan 30"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.835"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_creation_enter_name" />
+
+    <TextView
+        android:id="@+id/tv_to"
+        style="@style/DefaultTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="To"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/et_registration_end"
+        app:layout_constraintEnd_toStartOf="@+id/et_registration_end"
+        app:layout_constraintStart_toEndOf="@+id/et_registration_start"
+        app:layout_constraintTop_toTopOf="@+id/et_registration_end" />
+
+    <TextView
+        android:id="@+id/tv_draw_date"
+        style="@style/HeaderRoundedEditTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Draw Date"
+        app:layout_constraintBottom_toTopOf="@+id/et_draw_date"
+        app:layout_constraintEnd_toEndOf="@+id/et_draw_date"
+        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintStart_toStartOf="@+id/et_draw_date" />
+
+    <EditText
+        android:id="@+id/et_draw_date"
+        style="@style/BodyRoundedEditTextStyle"
+        android:layout_width="125dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="36dp"
+        android:background="@drawable/rounded_edittext"
+        android:hint="Someday, Jan 31"
+        android:inputType="date"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.16"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_registration_start" />
+
+    <EditText
+        android:id="@+id/et_draw_time"
+        style="@style/BodyRoundedEditTextStyle"
+        android:layout_width="125dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="36dp"
+        android:background="@drawable/rounded_edittext"
+        android:hint="9:00"
+        android:inputType="time"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.835"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_registration_end" />
+
+    <TextView
+        android:id="@+id/tv_at"
+        style="@style/DefaultTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="At"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toBottomOf="@+id/et_draw_time"
+        app:layout_constraintEnd_toStartOf="@+id/et_draw_time"
+        app:layout_constraintStart_toEndOf="@+id/et_draw_date"
+        app:layout_constraintTop_toTopOf="@+id/et_draw_time" />
+
+    <TextView
+        android:id="@+id/tv_entrant_limit"
+        style="@style/HeaderRoundedEditTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Entrant Limit"
+        app:layout_constraintBottom_toTopOf="@+id/et_entrant_limit"
+        app:layout_constraintEnd_toEndOf="@+id/et_entrant_limit"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/et_entrant_limit" />
+
+    <EditText
+        android:id="@+id/et_entrant_limit"
+        style="@style/BodyRoundedEditTextStyle"
+        android:layout_width="125dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="36dp"
+        android:background="@drawable/rounded_edittext"
+        android:inputType="number"
+        android:text="30"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.164"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_draw_date" />
+
+    <Button
+        android:id="@+id/btn_confirm"
+        style="@style/RoundedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="36dp"
+        android:backgroundTint="@color/secondaryAccent"
+        android:text="Confirm"
+        android:textColor="@color/primaryBackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_entrant_limit" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
