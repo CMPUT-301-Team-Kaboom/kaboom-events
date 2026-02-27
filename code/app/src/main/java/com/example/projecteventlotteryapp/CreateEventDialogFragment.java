@@ -36,7 +36,7 @@ public class CreateEventDialogFragment extends DialogFragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         if (context instanceof  CreateEventDialogListener) {
-            listener = (CreateEventDialogListener) listener;
+            listener = (CreateEventDialogListener) context;
         } else {
             throw new RuntimeException("Implement Listener");
         }
@@ -44,7 +44,7 @@ public class CreateEventDialogFragment extends DialogFragment {
 
     @NonNull
     @Override
-    public Dialog onCreateDialog(@Nullable Bundle savedINstanceState) {
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         View view = getLayoutInflater().inflate(R.layout.fragment_create_event, null);
 
         // grab references to editTexts and confirm button
@@ -88,7 +88,8 @@ public class CreateEventDialogFragment extends DialogFragment {
                 isValid = false;
             }
 
-            if (!drawDateTime.isAfter(regEnd)) {
+            LocalDateTime regEndTemp = regEnd.atStartOfDay();
+            if (!drawDateTime.isAfter(regEndTemp)) {
                 editDrawDate.setError("Must be after registration end date");
                 isValid = false;
             }
