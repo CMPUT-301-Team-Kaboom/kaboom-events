@@ -96,8 +96,7 @@ public class CreateEventDialogFragment extends DialogFragment {
                 isValid = false;
             }
 
-            LocalDateTime regEndTemp = regEnd.atStartOfDay();
-            if (!drawDateTime.isAfter(regEndTemp)) {
+            if (!drawDateTime.isAfter(regEnd.atStartOfDay())) {
                 editDrawDate.setError("Must be after registration end date");
                 isValid = false;
             }
