@@ -55,33 +55,29 @@
     <EditText
         android:id="@+id/et_event_creation_registration_start"
         style="@style/BodyRoundedEditTextStyle"
-        android:textSize="14sp"
-        android:textAlignment="center"
         android:layout_width="125dp"
         android:layout_height="35dp"
         android:layout_marginTop="36dp"
         android:background="@drawable/rounded_edittext"
-        android:inputType="date"
         android:hint="Someday, Jan 23"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.164"
-        app:layout_constraintStart_toStartOf="parent"
+        android:inputType="date"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/et_event_creation_name"
         app:layout_constraintTop_toBottomOf="@+id/et_event_creation_name" />
 
     <EditText
         android:id="@+id/et_event_creation_registration_end"
         style="@style/BodyRoundedEditTextStyle"
-        android:textSize="14sp"
-        android:textAlignment="center"
         android:layout_width="125dp"
         android:layout_height="35dp"
         android:layout_marginTop="36dp"
         android:background="@drawable/rounded_edittext"
-        android:inputType="date"
         android:hint="Someday, Jan 30"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.835"
-        app:layout_constraintStart_toStartOf="parent"
+        android:inputType="date"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@+id/et_event_creation_name"
         app:layout_constraintTop_toBottomOf="@+id/et_event_creation_name" />
 
     <TextView
@@ -118,9 +114,7 @@
         android:inputType="date"
         android:textAlignment="center"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.16"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/et_event_creation_registration_start"
         app:layout_constraintTop_toBottomOf="@+id/et_event_creation_registration_start" />
 
     <EditText
@@ -134,9 +128,7 @@
         android:inputType="time"
         android:textAlignment="center"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.835"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/et_event_creation_registration_end"
         app:layout_constraintTop_toBottomOf="@+id/et_event_creation_registration_end" />
 
     <TextView
@@ -173,9 +165,7 @@
         android:text="30"
         android:textAlignment="center"
         android:textSize="14sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.164"
-        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/et_event_creation_draw_date"
         app:layout_constraintTop_toBottomOf="@+id/et_event_creation_draw_date" />
 
     <Button

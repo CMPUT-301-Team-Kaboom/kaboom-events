@@ -1,7 +1,9 @@
 package com.example.projecteventlotteryapp;
 
 import android.app.AlertDialog;
+import android.app.DatePickerDialog;
 import android.app.Dialog;
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.os.Bundle;
 
@@ -55,6 +57,12 @@ public class CreateEventDialogFragment extends DialogFragment {
         EditText editDrawTime = view.findViewById(R.id.et_event_creation_draw_time);
         EditText editEntrantLimit = view.findViewById(R.id.et_event_creation_entrant_limit);
         Button confirmButton = view.findViewById(R.id.btn_event_creation_confirm);
+
+        // convert editTexts for dates and times to be pickers instead of text
+        attachDatePicker(editRegStart);
+        attachDatePicker(editRegEnd);
+        attachDatePicker(editDrawDate);
+        attachTimePicker(editDrawTime);
 
         AlertDialog dialog = new AlertDialog.Builder(getContext())
                 .setView(view)
@@ -118,5 +126,45 @@ public class CreateEventDialogFragment extends DialogFragment {
             return false;
         }
         return true;
+    }
+
+    private void attachDatePicker(EditText editText) {
+        editText.setFocusable(false);
+
+        editText.setOnClickListener(v -> {
+            LocalDate today = LocalDate.now();
+            DatePickerDialog picker = new DatePickerDialog(
+                    requireContext(),
+                    (view, year, month, dayOfMonth) -> {
+                        LocalDate selectedDate = LocalDate.of(year, month + 1, dayOfMonth);
+                        editText.setText(selectedDate.toString());
+                    },
+                    today.getYear(),
+                    today.getMonthValue() - 1,
+                    today.getDayOfMonth()
+            );
+
+            picker.show();
+        });
+    }
+
+    private void attachTimePicker(EditText editText) {
+        editText.setFocusable(false);
+
+        editText.setOnClickListener(v-> {
+            TimePickerDialog picker = new TimePickerDialog(
+                    requireContext(),
+                    (view1, hour, minute) -> {
+                        LocalTime time = LocalTime.of(hour, minute);
+                        editText.setText(time.toString());
+                    },
+                    12,
+                    0,
+                    true
+            );
+
+            picker.show();
+        });
+
     }
 }

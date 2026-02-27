@@ -34,6 +34,12 @@ public class MockMainScreen extends AppCompatActivity implements CreateEventDial
 
     @Override
     public void addEvent(Event event) {
-        Log.d("Mock Activity", event.getName());
+        Log.d("Mock Activity", "Event Details: " +
+                "\nName: " + event.getName() +
+                "\nDraw date: " + event.getDrawDate().toString() +
+                "\nReg Start: " + event.getRegistrationStartDate().toString() +
+                "\nReg End: " + event.getRegistrationEndDate().toString() +
+                "\nEntrants Limit: " + event.getAttendeesLimit()
+        );
     }
 }
