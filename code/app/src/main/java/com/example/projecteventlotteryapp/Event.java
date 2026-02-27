@@ -1,5 +1,8 @@
 package com.example.projecteventlotteryapp;
 
+import com.google.firebase.Timestamp;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 
@@ -9,8 +12,8 @@ public class Event {
     private int waitlistLimit;
     private boolean geolocationEnabled;
     private LocalDateTime drawDate;
-    private LocalDateTime registrationStartDate;
-    private LocalDateTime registrationEndDate;
+    private LocalDate registrationStartDate;
+    private LocalDate registrationEndDate;
     private ArrayList<String> tagsList;
     private EntrantList waitlist;
     private EntrantList invited;
@@ -22,6 +25,28 @@ public class Event {
     // private map
     // private image
 
+    /**
+     * Constructor for Event class
+     *
+     * TODO: Remove waitlistLimit from UI Diagram
+     * @param name
+     * @param registrationStartDate
+     * @param registrationEndDate
+     * @param drawDate
+     */
+    public Event(
+            String name,
+            LocalDate registrationStartDate,
+            LocalDate registrationEndDate,
+            LocalDateTime drawDate,
+            int attendeesLimit
+    ) {
+        this.name = name;
+        this.registrationStartDate = registrationStartDate;
+        this.registrationEndDate = registrationEndDate;
+        this.drawDate = drawDate;
+        this.attendeesLimit = attendeesLimit;
+    }
 
     public String getName() {
         return name;
@@ -63,19 +88,19 @@ public class Event {
         this.drawDate = drawDate;
     }
 
-    public LocalDateTime getRegistrationStartDate() {
+    public LocalDate getRegistrationStartDate() {
         return registrationStartDate;
     }
 
-    public void setRegistrationStartDate(LocalDateTime registrationStartDate) {
+    public void setRegistrationStartDate(LocalDate registrationStartDate) {
         this.registrationStartDate = registrationStartDate;
     }
 
-    public LocalDateTime getRegistrationEndDate() {
+    public LocalDate getRegistrationEndDate() {
         return registrationEndDate;
     }
 
-    public void setRegistrationEndDate(LocalDateTime registrationEndDate) {
+    public void setRegistrationEndDate(LocalDate registrationEndDate) {
         this.registrationEndDate = registrationEndDate;
     }
 
