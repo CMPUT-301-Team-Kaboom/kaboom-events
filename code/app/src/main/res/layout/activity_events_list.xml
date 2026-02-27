@@ -67,14 +67,55 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- later need to change ListView to some Fragment container and put ListView in XML for that container -->
     <ListView
         android:id="@+id/lv_events_list"
         android:layout_width="0dp"
-        android:layout_height="wrap_content"
+        android:layout_height="0dp"
         android:layout_marginTop="10dp"
         android:divider="@null"
         app:layout_constraintTop_toBottomOf="@id/tl_events_list"
+        app:layout_constraintBottom_toTopOf="@id/horizontal_line"
         app:layout_constraintStart_toStartOf="@id/tl_events_list"
         app:layout_constraintEnd_toEndOf="@id/tl_events_list" />
+
+    <!--
+    The following code is adapted from...
+    Author: Keshav https://www.geeksforgeeks.org/profile/agarwalkeshav8399
+    Title: "How to draw Horizontal and Vertical lines in an Android App using XML - GeeksforGeeks"
+    Source: https://www.geeksforgeeks.org/android/how-to-draw-horizontal-and-vertical-lines-in-an-android-app-using-xml/
+    Date: 2025-07-12
+    Retrieved: 2026-02-26
+    -->
+    <View
+        android:id="@+id/horizontal_line"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/primaryAccent"
+        app:layout_constraintTop_toBottomOf="@id/lv_events_list"
+        app:layout_constraintBottom_toTopOf="@id/bn_events_list_menu" />
+
+    <!--
+    The following code (and related Java code in EventsListActivity) is adapted from...
+    Author: Madhav Maheshwari https://www.geeksforgeeks.org/profile/madhavmaheshwarimm20
+    Title: "BottomNavigationView in Android - GeeksforGeeks"
+    Source: https://www.geeksforgeeks.org/android/bottomnavigationview-inandroid/
+    Date: 2025-07-15
+    Retrieved: 2026-02-26
+    -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bn_events_list_menu"
+        android:layout_width="match_parent"
+        android:layout_height="86dp"
+        android:background="@color/secondaryBackground"
+        app:itemIconTint="@color/white"
+        app:itemIconSize="42dp"
+        app:itemTextColor="@color/white"
+        app:itemActiveIndicatorStyle="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/events_list_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
