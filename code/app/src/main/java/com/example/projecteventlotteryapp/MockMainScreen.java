@@ -10,6 +10,11 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+/**
+ * Mock screen just to test Event Creation Fragment functionality
+ *
+ * TODO: remove
+ */
 public class MockMainScreen extends AppCompatActivity implements CreateEventDialogFragment.CreateEventDialogListener {
     private Button addEventButton;
 
