@@ -12,13 +12,21 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ProjectEventLotteryApp">
         <activity
-            android:name=".MockMainScreen"
-            android:exported="true">
-        <intent-filter>
-            <action android:name="android.intent.action.MAIN" />
-
-            <category android:name="android.intent.category.LAUNCHER" />
-        </intent-filter>
+            android:name=".EventsListActivity"
+            android:exported="true" >
+            <!--
+            for testing the look of the EventListActivity i set android:exported="true" above
+            and below i moved the <intent-filter> to inside this activity
+            normally i believe it goes in the MainActivity <activity>
+            -->
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name=".MockMainScreen" >
+            <!-- android:exported="true"> -->
         </activity>
         <activity
             android:name=".MainActivity"

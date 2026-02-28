@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/events_list_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primaryBackground"
+    tools:context=".EventsListActivity">
+
+    <TextView
+        style="@style/MainHeaderTextviewStyle"
+        android:id="@+id/tv_events_list_header"
+        android:layout_marginTop="17dp"
+        android:text="Events"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+    
+    <ImageButton
+        android:id="@+id/btn_info"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:layout_constraintTop_toTopOf="@id/tv_events_list_header"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/tv_events_list_header"
+        android:background="@drawable/info_icon"
+        android:scaleType="fitCenter"/>
+
+    <ImageButton
+        android:id="@+id/btn_filter"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        app:layout_constraintTop_toTopOf="@id/tv_events_list_header"
+        app:layout_constraintStart_toEndOf="@id/tv_events_list_header"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:background="@drawable/filter_icon"
+        android:scaleType="fitCenter"/>
+
+    <!--
+    The following code (and related Java code in EventsListActivity) is adapted from...
+    Author: Jignesh Mayani https://stackoverflow.com/users/1679754/jignesh-mayani
+    Title: "How do I get a round tab indicator to fill a round tab indicator background in TabLayout?"
+    Answer: https://stackoverflow.com/a/58342297
+    Date: 2019-10-11
+    Retrieved: 2026-02-26
+    License: CC-BY-SA 4.0
+    -->
+    <com.google.android.material.tabs.TabLayout
+        android:id="@+id/tl_events_list"
+        android:layout_width="match_parent"
+        android:layout_height="36dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/tab_container"
+        app:tabGravity="fill"
+        app:tabInlineLabel="true"
+        app:tabIndicator="@drawable/tab"
+        app:tabIndicatorColor="@color/primaryAccent"
+        app:tabIndicatorFullWidth="true"
+        app:tabIndicatorGravity="stretch"
+        app:tabIndicatorHeight="54dp"
+        app:tabMode="fixed"
+        app:tabTextColor="@color/white"
+        app:layout_constraintTop_toBottomOf="@id/btn_info"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <!-- later need to change ListView to some Fragment container and put ListView in XML for that container -->
+    <ListView
+        android:id="@+id/lv_events_list"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="10dp"
+        android:divider="@null"
+        app:layout_constraintTop_toBottomOf="@id/tl_events_list"
+        app:layout_constraintBottom_toTopOf="@id/horizontal_line"
+        app:layout_constraintStart_toStartOf="@id/tl_events_list"
+        app:layout_constraintEnd_toEndOf="@id/tl_events_list" />
+
+    <!--
+    The following code is adapted from...
+    Author: Keshav https://www.geeksforgeeks.org/profile/agarwalkeshav8399
+    Title: "How to draw Horizontal and Vertical lines in an Android App using XML - GeeksforGeeks"
+    Source: https://www.geeksforgeeks.org/android/how-to-draw-horizontal-and-vertical-lines-in-an-android-app-using-xml/
+    Date: 2025-07-12
+    Retrieved: 2026-02-26
+    -->
+    <View
+        android:id="@+id/horizontal_line"
+        android:layout_width="match_parent"
+        android:layout_height="2dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/primaryAccent"
+        app:layout_constraintTop_toBottomOf="@id/lv_events_list"
+        app:layout_constraintBottom_toTopOf="@id/bn_events_list_menu" />
+
+    <!--
+    The following code (and related Java code in EventsListActivity) is adapted from...
+    Author: Madhav Maheshwari https://www.geeksforgeeks.org/profile/madhavmaheshwarimm20
+    Title: "BottomNavigationView in Android - GeeksforGeeks"
+    Source: https://www.geeksforgeeks.org/android/bottomnavigationview-inandroid/
+    Date: 2025-07-15
+    Retrieved: 2026-02-26
+    -->
+    <!-- i honestly can't figure out how to get rid of the extra bottom spacing -->
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bn_events_list_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/secondaryBackground"
+        app:itemIconTint="@color/white"
+        app:itemIconSize="42dp"
+        app:itemTextColor="@color/white"
+        app:itemActiveIndicatorStyle="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/events_list_menu" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
