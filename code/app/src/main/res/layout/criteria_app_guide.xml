@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#072C3C" >
+    android:background="@color/primaryBackground" >
 
     <!-- Back Button -->
     <ImageButton
@@ -20,15 +20,14 @@
 
     <!-- Page Header -->
     <TextView
-        style="@style/MainHeaderTextviewStyle"
         android:id="@+id/CriteriaHeader"
-        android:layout_width="90dp"
-        android:layout_height="82dp"
+        style="@style/MainHeaderTextviewStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:gravity="center"
         android:text="App Guide"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/white"
         android:textSize="32dp"
-        android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -54,14 +53,13 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.491"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:srcCompat="@drawable/rounded_container" />
 
             <TextView
                 android:id="@+id/firstCardHeader"
-                style="@style/SecondHeaderTextviewStyle"
+                style="@style/DefaultTextStyle"
                 android:layout_marginStart="16dp"
                 android:layout_marginTop="8dp"
                 android:text="I fucking"
@@ -77,6 +75,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
+                android:textStyle="normal"
                 android:text="Today when I walked into my economics class I saw something I dread every time I close my eyes. Someone had brought their new gaming laptop to class."
                 android:textAlignment="textStart"
                 app:layout_constraintBottom_toBottomOf="@+id/FirstCard"
@@ -93,13 +92,12 @@
                 android:layout_marginTop="32dp"
                 android:background="@drawable/rounded_container"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.491"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/FirstCard">
 
             <TextView
                 android:id="@+id/secondCardHeader"
-                style="@style/SecondHeaderTextviewStyle"
+                style="@style/DefaultTextStyle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
@@ -117,6 +115,7 @@
                 android:layout_marginTop="16dp"
                 android:layout_marginEnd="16dp"
                 android:layout_marginBottom="16dp"
+                android:textStyle="normal"
                 android:text="The Forklift he used to bring it was still running idle at the back. I started sweating as I sat down and gazed over at the 700lb beast that was his laptop."
                 android:textAlignment="textStart"
                 app:layout_constraintBottom_toBottomOf="@+id/secondCard"
@@ -134,13 +133,12 @@
                 android:layout_marginTop="32dp"
                 android:background="@drawable/rounded_container"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHorizontal_bias="0.491"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/secondCard">
 
                 <TextView
                     android:id="@+id/thirdCardHeader"
-                    style="@style/SecondHeaderTextviewStyle"
+                    style="@style/DefaultTextStyle"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
@@ -158,6 +156,7 @@
                     android:layout_marginTop="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginBottom="16dp"
+                    android:textStyle="normal"
                     android:text="I keep telling myself I'm going to be alright and that there's nothing to worry about. He somehow finds a fucking outlet. Tears are running down my cheeks as I send my last texts to my family saying I love them. The teacher starts the lecture, and the student turns his laptop on. The colored lights on his RGB Backlit keyboard flare to life like a nuclear flash, and a deep humming fills my ears and shakes my very soul."
                     android:textAlignment="textStart"
                     app:layout_constraintBottom_toBottomOf="parent"
