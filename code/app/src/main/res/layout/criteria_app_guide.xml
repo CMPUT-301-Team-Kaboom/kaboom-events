@@ -6,8 +6,22 @@
     android:layout_height="match_parent"
     android:background="#072C3C" >
 
+    <!-- Back Button -->
+    <ImageButton
+        android:id="@+id/BackButton"
+        android:layout_width="51dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@null"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/left_arrow" />
+
+    <!-- Page Header -->
     <TextView
-        android:id="@+id/textView2"
+        style="@style/MainHeaderTextviewStyle"
+        android:id="@+id/CriteriaHeader"
         android:layout_width="90dp"
         android:layout_height="82dp"
         android:gravity="center"
@@ -19,13 +33,140 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <ImageButton
-        android:id="@+id/imageButton3"
-        android:layout_width="51dp"
-        android:layout_height="43dp"
-        android:background="@null"
-        app:srcCompat="@drawable/left_arrow"
-        tools:layout_editor_absoluteX="9dp"
-        tools:layout_editor_absoluteY="13dp" />
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:fillViewport="true"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/CriteriaHeader">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="32dp">
+
+            <!-- First Card -->
+            <ImageView
+                android:id="@+id/FirstCard"
+                android:layout_width="320dp"
+                android:layout_height="240dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.491"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/rounded_container" />
+
+            <TextView
+                android:id="@+id/firstCardHeader"
+                style="@style/SecondHeaderTextviewStyle"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="I fucking"
+                app:layout_constraintStart_toStartOf="@+id/FirstCard"
+                app:layout_constraintTop_toTopOf="@+id/FirstCard" />
+
+            <TextView
+                android:id="@+id/firstCardText"
+                style="@style/DefaultTextStyle"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="Today when I walked into my economics class I saw something I dread every time I close my eyes. Someone had brought their new gaming laptop to class."
+                android:textAlignment="textStart"
+                app:layout_constraintBottom_toBottomOf="@+id/FirstCard"
+                app:layout_constraintEnd_toEndOf="@+id/FirstCard"
+                app:layout_constraintStart_toStartOf="@+id/FirstCard"
+                app:layout_constraintTop_toBottomOf="@+id/firstCardHeader" />
+
+
+            <!-- Second Card -->
+            <ImageView
+                android:id="@+id/secondCard"
+                android:layout_width="320dp"
+                android:layout_height="240dp"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="32dp"
+                android:layout_marginEnd="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.491"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/FirstCard"
+                app:srcCompat="@drawable/rounded_container" />
+
+            <TextView
+                android:id="@+id/secondCardHeader"
+                style="@style/SecondHeaderTextviewStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="8dp"
+                android:text="hate gaming"
+                app:layout_constraintStart_toStartOf="@+id/secondCard"
+                app:layout_constraintTop_toTopOf="@+id/secondCard" />
+
+            <TextView
+                android:id="@+id/secondCardText"
+                style="@style/DefaultTextStyle"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginEnd="16dp"
+                android:layout_marginBottom="16dp"
+                android:text="The Forklift he used to bring it was still running idle at the back. I started sweating as I sat down and gazed over at the 700lb beast that was his laptop."
+                android:textAlignment="textStart"
+                app:layout_constraintBottom_toBottomOf="@+id/secondCard"
+                app:layout_constraintEnd_toEndOf="@+id/secondCard"
+                app:layout_constraintStart_toStartOf="@+id/secondCard"
+                app:layout_constraintTop_toBottomOf="@+id/secondCardHeader" />
+
+            <!-- Third Card (Dynamic Height) -->
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/thirdCard"
+                android:layout_width="320dp"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:background="@drawable/rounded_container"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.491"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/secondCard">
+
+                <TextView
+                    android:id="@+id/thirdCardHeader"
+                    style="@style/SecondHeaderTextviewStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="8dp"
+                    android:text="laptops"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/thirdCardText"
+                    style="@style/DefaultTextStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginBottom="16dp"
+                    android:text="I keep telling myself I'm going to be alright and that there's nothing to worry about. He somehow finds a fucking outlet. Tears are running down my cheeks as I send my last texts to my family saying I love them. The teacher starts the lecture, and the student turns his laptop on. The colored lights on his RGB Backlit keyboard flare to life like a nuclear flash, and a deep humming fills my ears and shakes my very soul."
+                    android:textAlignment="textStart"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/thirdCardHeader" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </ScrollView>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
