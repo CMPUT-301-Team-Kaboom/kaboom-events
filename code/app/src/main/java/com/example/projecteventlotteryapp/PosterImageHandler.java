@@ -4,6 +4,8 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
+import android.util.Log;
+import android.widget.Toast;
 
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -36,14 +38,17 @@ public class PosterImageHandler {
 
             // adding poster filepath to the poster document
             CollectionReference posterRef = db.collection("posters");
-            posterRef.document(eventFile + "_poster").set(filepath);
+            Log.d("Poster", "../" + filepath);
+            //posterRef.document(eventFile + "_poster").set("../" + filepath);
 
             // updating the database filepath in the event page
             CollectionReference eventRef = db.collection("events");
-            eventRef.document(eventFile).update("poster", "/posters/" + eventFile + "_poster");
+            Log.d("Poster", "/posters/" + eventFile + "_poster");
+            //eventRef.document(eventFile).update("poster", "/posters/" + eventFile + "_poster");
 
         } catch (Exception e){
             e.printStackTrace();
+            Log.e("Error", "Error in uploading image.");
         }
     }
 }
