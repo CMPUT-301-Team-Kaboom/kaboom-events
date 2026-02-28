@@ -18,4 +18,14 @@
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/imageButton3"
+        android:layout_width="51dp"
+        android:layout_height="43dp"
+        android:background="@null"
+        app:srcCompat="@drawable/left_arrow"
+        tools:layout_editor_absoluteX="9dp"
+        tools:layout_editor_absoluteY="13dp" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
