@@ -104,10 +104,11 @@
     Date: 2025-07-15
     Retrieved: 2026-02-26
     -->
+    <!-- i honestly can't figure out how to get rid of the extra bottom spacing -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bn_events_list_menu"
         android:layout_width="match_parent"
-        android:layout_height="86dp"
+        android:layout_height="wrap_content"
         android:background="@color/secondaryBackground"
         app:itemIconTint="@color/white"
         app:itemIconSize="42dp"
