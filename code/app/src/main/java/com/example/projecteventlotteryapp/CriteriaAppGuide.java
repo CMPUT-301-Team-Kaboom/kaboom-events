@@ -8,6 +8,6 @@ public class CriteriaAppGuide extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.criteria_app_guide);
+        setContentView(R.layout.activity_criteria_app_guide);
     }
 }
