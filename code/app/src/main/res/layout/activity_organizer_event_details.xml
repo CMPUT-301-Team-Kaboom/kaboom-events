@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/primaryBackground"
+    tools:context=".OrganizerEventDetailsActivity">
+
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/constraintLayout"
+        android:layout_width="match_parent"
+        android:layout_height="250dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <ImageView
+            android:id="@+id/img_organizer_details_poster"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerCrop"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:src="@drawable/default_poster" />
+
+        <TextView
+            android:id="@+id/tv_organizer_details_event_name_header"
+            style="@style/DefaultTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:text="Event Name"
+            android:textAlignment="textStart"
+            android:textSize="36sp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <TextView
+            android:id="@+id/tv_organizer_details_org_header"
+            style="@style/DefaultTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginBottom="-10dp"
+            android:text="Organizer"
+            android:textAlignment="textStart"
+            android:textSize="20sp"
+            android:textStyle="normal"
+            app:layout_constraintBottom_toTopOf="@+id/tv_organizer_details_event_name_header"
+            app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/btn_organizer_event_edit"
+            style="@style/RoundedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_marginEnd="5dp"
+            android:background="@drawable/rounded_button_transparent"
+            android:text="Edit"
+            android:textSize="18sp"
+            app:backgroundTint="@color/white"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+        <!-- scaleType="fitCenter" lets button scale with size-->
+
+        <Button
+            android:id="@+id/btn_organizer_event_map"
+            style="@style/RoundedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/rounded_button_transparent"
+            android:text="Map"
+            android:textSize="18sp"
+            app:backgroundTint="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <ImageButton
+            android:id="@+id/btn_organizer_event_back"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_marginTop="2dp"
+            android:background="@color/transparent"
+            android:scaleType="fitCenter"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/outline_arrow_back_ios_new_24" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <TextView
+        android:id="@+id/tv_organizer_draw_date_header"
+        style="@style/DefaultTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="10dp"
+        android:text="Draw Date"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+    <TextView
+        android:id="@+id/tv_organizer_draw_date"
+        style="@style/DefaultTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="JAN 1    09:00"
+        app:layout_constraintStart_toStartOf="@+id/tv_organizer_draw_date_header"
+        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_draw_date_header" />
+
+    <TextView
+        android:id="@+id/tv_organizer_registration_period_header"
+        style="@style/DefaultTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Registration Period"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/tv_organizer_draw_date"
+        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_draw_date" />
+
+    <TextView
+        android:id="@+id/tv_organizer_registration_period"
+        style="@style/DefaultTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="JAN 1 - JAN 5"
+        app:layout_constraintStart_toStartOf="@+id/tv_organizer_registration_period_header"
+        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_registration_period_header" />
+
+    <TextView
+        android:id="@+id/tv_organizer_attendees_header"
+        style="@style/DefaultTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="10dp"
+        android:text="Attendees"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+    <TextView
+        android:id="@+id/tv_organizer_attendees"
+        style="@style/DefaultTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="30"
+        android:textAlignment="viewEnd"
+        app:layout_constraintEnd_toEndOf="@+id/tv_organizer_attendees_header"
+        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_attendees_header" />
+
+    <TextView
+        android:id="@+id/tv_organizer_waitlist_count_header"
+        style="@style/DefaultTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="10dp"
+        android:text="Attendees"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_attendees" />
+
+    <TextView
+        android:id="@+id/tv_organizer_waitlist_count"
+        style="@style/DefaultTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="30"
+        android:textAlignment="viewEnd"
+        app:layout_constraintEnd_toEndOf="@+id/tv_organizer_waitlist_count_header"
+        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_waitlist_count_header" />
+
+    <Button
+        android:id="@+id/btn_organizer_waitlist"
+        style="@style/RoundedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/rounded_button_transparent"
+        android:text="Waitlist"
+        android:textSize="12sp"
+        app:backgroundTint="@color/white"
+        app:layout_constraintEnd_toStartOf="@+id/btn_organizer_invited"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_registration_period" />
+
+    <Button
+        android:id="@+id/btn_organizer_invited"
+        style="@style/RoundedButton"
+        android:layout_width="90dp"
+        android:layout_height="35dp"
+        android:background="@drawable/rounded_button_transparent"
+        android:text="Invited"
+        android:textSize="12sp"
+        app:backgroundTint="@color/white"
+        app:layout_constraintEnd_toStartOf="@+id/btn_organizer_declined"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btn_organizer_waitlist"
+        app:layout_constraintTop_toTopOf="@+id/btn_organizer_waitlist" />
+
+    <Button
+        android:id="@+id/btn_organizer_declined"
+        style="@style/RoundedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:background="@drawable/rounded_button_transparent"
+        android:text="Declined"
+        android:textSize="12sp"
+        app:backgroundTint="@color/white"
+        app:layout_constraintEnd_toStartOf="@+id/btn_organizer_enrolled"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btn_organizer_invited"
+        app:layout_constraintTop_toTopOf="@+id/btn_organizer_waitlist" />
+
+    <Button
+        android:id="@+id/btn_organizer_enrolled"
+        style="@style/RoundedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="35dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/rounded_button_transparent"
+        android:text="Enrolled"
+        android:textSize="12sp"
+        app:backgroundTint="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/btn_organizer_declined"
+        app:layout_constraintTop_toTopOf="@+id/btn_organizer_waitlist" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        app:layout_constraintTop_toBottomOf="@+id/btn_organizer_waitlist">
+
+        <TextView
+            android:id="@+id/tv_organizer_tag1"
+            style="@style/DefaultTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Tag 1" />
+
+        <TextView
+            android:id="@+id/tv_organizer_tag2"
+            style="@style/DefaultTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Tag 2" />
+
+        <TextView
+            android:id="@+id/tv_organizer_tag3"
+            style="@style/DefaultTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Tag 3" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+
+        <TextView
+            android:id="@+id/tv_organizer_description"
+            style="@style/DefaultTextStyle"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="textStart"
+            android:text="@string/long_placeholder_text" />
+    </ScrollView>
+</androidx.constraintlayout.widget.ConstraintLayout>
