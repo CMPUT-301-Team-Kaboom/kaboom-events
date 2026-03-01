@@ -22,19 +22,14 @@ public class PosterImageHandler {
     }
 
     public void uploadPoster(String eventFile, Context context, Uri uri){
-        /*
-        TODO:
-        open an image picker, save locally and upload filepath to db, and update
-        the document filepath on the event document
-         */
         try {
             Bitmap bm = MediaStore.Images.Media.getBitmap(context.getContentResolver(), uri);
             String filepath = "poster_" + UUID.randomUUID().toString();
-            File file = new File(context.getFilesDir(), filepath);
-
-            FileOutputStream fos = new FileOutputStream(file);
-            bm.compress(Bitmap.CompressFormat.JPEG, 80, fos);
-            fos.close();
+//            File file = new File(context.getFilesDir(), filepath);
+//
+//            FileOutputStream fos = new FileOutputStream(file);
+//            bm.compress(Bitmap.CompressFormat.JPEG, 80, fos);
+//            fos.close();
 
             // adding poster filepath to the poster document
             CollectionReference posterRef = db.collection("posters");
