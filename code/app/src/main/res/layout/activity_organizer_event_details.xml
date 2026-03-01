@@ -69,6 +69,21 @@
             app:layout_constraintTop_toTopOf="parent" />
 
         <!-- scaleType="fitCenter" lets button scale with size-->
+
+        <Button
+            android:id="@+id/btn_organizer_event_map"
+            style="@style/RoundedButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="5dp"
+            android:layout_marginBottom="5dp"
+            android:background="@drawable/rounded_button_transparent"
+            android:text="Map"
+            android:textSize="18sp"
+            app:backgroundTint="@color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
         <ImageButton
             android:id="@+id/btn_organizer_event_back"
             android:layout_width="48dp"
@@ -90,7 +105,80 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="10dp"
         android:text="Draw Date"
-        android:textSize="16dp"
+        android:textSize="16sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+    <TextView
+        android:id="@+id/tv_organizer_draw_date"
+        style="@style/DefaultTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="JAN 1    09:00"
+        app:layout_constraintStart_toStartOf="@+id/tv_organizer_draw_date_header"
+        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_draw_date_header" />
+
+    <TextView
+        android:id="@+id/tv_organizer_registration_period_header"
+        style="@style/DefaultTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Registration Period"
+        android:textSize="16sp"
+        app:layout_constraintStart_toStartOf="@+id/tv_organizer_draw_date"
+        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_draw_date" />
+
+    <TextView
+        android:id="@+id/tv_organizer_registration_period"
+        style="@style/DefaultTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="JAN 1 - JAN 5"
+        app:layout_constraintStart_toStartOf="@+id/tv_organizer_registration_period_header"
+        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_registration_period_header" />
+
+    <TextView
+        android:id="@+id/tv_organizer_attendees_header"
+        style="@style/DefaultTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="10dp"
+        android:text="Attendees"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/constraintLayout" />
+
+    <TextView
+        android:id="@+id/tv_organizer_attendees"
+        style="@style/DefaultTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="30"
+        android:textAlignment="viewEnd"
+        app:layout_constraintEnd_toEndOf="@+id/tv_organizer_attendees_header"
+        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_attendees_header" />
+
+    <TextView
+        android:id="@+id/tv_organizer_waitlist_count_header"
+        style="@style/DefaultTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="10dp"
+        android:text="Attendees"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_attendees" />
+
+    <TextView
+        android:id="@+id/tv_organizer_waitlist_count"
+        style="@style/DefaultTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="30"
+        android:textAlignment="viewEnd"
+        app:layout_constraintEnd_toEndOf="@+id/tv_organizer_waitlist_count_header"
+        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_waitlist_count_header" />
 </androidx.constraintlayout.widget.ConstraintLayout>
