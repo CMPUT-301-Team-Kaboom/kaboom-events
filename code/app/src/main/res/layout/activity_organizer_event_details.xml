@@ -242,8 +242,54 @@
         app:layout_constraintTop_toTopOf="@+id/btn_organizer_waitlist" />
 
     <LinearLayout
+        android:id="@+id/linearLayout2"
         android:layout_width="match_parent"
         android:layout_height="50dp"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/btn_organizer_waitlist"></LinearLayout>
+        app:layout_constraintTop_toBottomOf="@+id/btn_organizer_waitlist">
+
+        <TextView
+            android:id="@+id/tv_organizer_tag1"
+            style="@style/DefaultTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Tag 1" />
+
+        <TextView
+            android:id="@+id/tv_organizer_tag2"
+            style="@style/DefaultTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Tag 2" />
+
+        <TextView
+            android:id="@+id/tv_organizer_tag3"
+            style="@style/DefaultTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:text="Tag 3" />
+    </LinearLayout>
+
+    <ScrollView
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout2">
+
+
+        <TextView
+            android:id="@+id/tv_organizer_description"
+            style="@style/DefaultTextStyle"
+            android:textSize="14sp"
+            android:textStyle="normal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="textStart"
+            android:text="@string/long_placeholder_text" />
+    </ScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>
