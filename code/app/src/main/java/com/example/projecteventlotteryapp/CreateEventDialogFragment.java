@@ -11,8 +11,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import android.os.Trace;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -20,8 +18,6 @@ import android.widget.EditText;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.time.format.DateTimeParseException;
 
 /**
  * A simple {@link DialogFragment} subclass.
@@ -50,13 +46,13 @@ public class CreateEventDialogFragment extends DialogFragment {
         View view = getLayoutInflater().inflate(R.layout.fragment_create_event, null);
 
         // grab references to editTexts and confirm button
-        EditText editName = view.findViewById(R.id.et_event_creation_name);
-        EditText editRegStart = view.findViewById(R.id.et_event_creation_registration_start);
-        EditText editRegEnd = view.findViewById(R.id.et_event_creation_registration_end);
-        EditText editDrawDate = view.findViewById(R.id.et_event_creation_draw_date);
-        EditText editDrawTime = view.findViewById(R.id.et_event_creation_draw_time);
-        EditText editEntrantLimit = view.findViewById(R.id.et_event_creation_entrant_limit);
-        Button confirmButton = view.findViewById(R.id.btn_event_creation_confirm);
+        EditText editName = view.findViewById(R.id.et_event_edit_name);
+        EditText editRegStart = view.findViewById(R.id.et_event_edit_registration_start);
+        EditText editRegEnd = view.findViewById(R.id.et_event_edit_registration_end);
+        EditText editDrawDate = view.findViewById(R.id.et_event_edit_draw_date);
+        EditText editDrawTime = view.findViewById(R.id.et_event_edit_draw_time);
+        EditText editEntrantLimit = view.findViewById(R.id.et_event_edit_entrant_limit);
+        Button confirmButton = view.findViewById(R.id.btn_event_edit_confirm);
 
         // convert editTexts for dates and times to be pickers instead of text
         attachDatePicker(editRegStart);
