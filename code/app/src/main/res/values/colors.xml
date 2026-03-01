@@ -3,9 +3,12 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="grey">#808080</color>
+    <color name="lightGrey">#D9D9D9FF</color>
     <color name="primaryBackground">#072C3C</color>
     <color name="secondaryBackground">#0A3848</color>
+    <color name="tertiaryBackground">#2C566C</color>
     <color name="primaryAccent">#30BCED</color>
     <color name="secondaryAccent">#C9EA41</color>
+    <color name="tertiaryAccent">#082836</color>
     <color name="transparent">#00000000</color>
 </resources>

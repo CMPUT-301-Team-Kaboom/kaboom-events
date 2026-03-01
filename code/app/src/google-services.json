@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "317939516221",
+    "project_id": "kaboom-events",
+    "storage_bucket": "kaboom-events.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317939516221:android:f898bc5761d971ae507b54",
+        "android_client_info": {
+          "package_name": "com.example.projecteventlotteryapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCziz7yUIHh9T1x_lTgiVK_g6u2eum5k8Y"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
