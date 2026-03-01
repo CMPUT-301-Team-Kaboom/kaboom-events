@@ -107,7 +107,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Role"
-            app:layout_constraintBottom_toTopOf="@+id/btn_registration_organizer"
+            app:layout_constraintBottom_toTopOf="@+id/btn_registration_entrant"
             app:layout_constraintEnd_toEndOf="@+id/btn_registration_admin"
             app:layout_constraintHorizontal_bias="0.08"
             app:layout_constraintStart_toStartOf="@+id/btn_registration_entrant" />
@@ -116,18 +116,24 @@
             android:id="@+id/btn_registration_entrant"
             style="@style/RoundedButton"
             android:layout_width="100dp"
+            android:layout_marginStart="20dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/button_background_selector"
             android:text="Entrant"
+            app:backgroundTint="@null"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_registration_phone"
-            android:layout_marginStart="20dp"/>
+            app:layout_constraintTop_toBottomOf="@+id/et_registration_phone" />
 
         <Button
             android:id="@+id/btn_registration_organizer"
             style="@style/RoundedButton"
             android:layout_width="100dp"
+            android:layout_marginTop="6dp"
+            android:background="@drawable/button_background_selector"
             android:text="Organizer"
             android:textSize="11dp"
+            app:backgroundTint="@null"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_registration_admin"
             app:layout_constraintStart_toEndOf="@+id/btn_registration_entrant"
@@ -136,13 +142,16 @@
         <Button
             android:id="@+id/btn_registration_admin"
             style="@style/RoundedButton"
-            android:textSize="12dp"
             android:layout_width="100dp"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="20dp"
+            android:background="@drawable/button_background_selector"
             android:text="Admin"
+            android:textSize="12dp"
+            app:backgroundTint="@null"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/et_registration_phone"
-            android:layout_marginEnd="20dp"/>
+            app:layout_constraintTop_toBottomOf="@+id/et_registration_phone" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
