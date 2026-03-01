@@ -13,7 +13,7 @@
         style="@style/MainHeaderTextviewStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Create Event"
+        android:text="Event Settings"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -168,17 +168,124 @@
         app:layout_constraintStart_toStartOf="@+id/et_event_edit_draw_date"
         app:layout_constraintTop_toBottomOf="@+id/et_event_edit_draw_date" />
 
+    <EditText
+        android:id="@+id/et_event_edit_waitlist_limit"
+        style="@style/BodyRoundedEditTextStyle"
+        android:layout_width="125dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="36dp"
+        android:background="@drawable/rounded_edittext"
+        android:inputType="number"
+        android:text="30"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintStart_toStartOf="@+id/et_event_edit_draw_time"
+        app:layout_constraintTop_toBottomOf="@+id/et_event_edit_draw_time" />
+
+    <TextView
+        android:id="@+id/tv_edit_waitlist_limit"
+        style="@style/HeaderRoundedEditTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Waitlist Limit"
+        app:layout_constraintBottom_toTopOf="@+id/et_event_edit_waitlist_limit"
+        app:layout_constraintEnd_toEndOf="@+id/et_event_edit_waitlist_limit"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="@+id/et_event_edit_waitlist_limit" />
+
+    <TextView
+        android:id="@+id/tv_edit_tag1"
+        style="@style/HeaderRoundedEditTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Tag 1"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toStartOf="@+id/tv_edit_tag2"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/et_event_edit_entrant_limit" />
+
+    <TextView
+        android:id="@+id/tv_edit_tag2"
+        style="@style/HeaderRoundedEditTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tag 2"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toStartOf="@+id/tv_edit_tag3"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tv_edit_tag1"
+        app:layout_constraintTop_toTopOf="@+id/tv_edit_tag1" />
+
+    <TextView
+        android:id="@+id/tv_edit_tag3"
+        style="@style/HeaderRoundedEditTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tag 3"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toEndOf="@+id/tv_edit_tag2"
+        app:layout_constraintTop_toTopOf="@+id/tv_edit_tag1" />
+
+    <TextView
+        android:id="@+id/tv_edit_banner"
+        style="@style/HeaderRoundedEditTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="Banner"
+        app:layout_constraintStart_toStartOf="@+id/et_event_edit_entrant_limit"
+        app:layout_constraintTop_toBottomOf="@+id/tv_edit_tag1" />
+
+    <ImageView
+        android:id="@+id/imageView"
+        android:layout_width="125dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="4dp"
+        android:background="@drawable/rounded_edittext"
+        android:scaleType="centerCrop"
+        app:layout_constraintStart_toStartOf="@+id/tv_edit_banner"
+        app:layout_constraintTop_toBottomOf="@+id/tv_edit_banner"
+        tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+    <TextView
+        android:id="@+id/tv_edit_qr_code"
+        style="@style/HeaderRoundedEditTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:text="QR Code"
+        app:layout_constraintStart_toStartOf="@+id/et_event_edit_waitlist_limit"
+        app:layout_constraintTop_toBottomOf="@+id/tv_edit_tag1" />
+
+    <ImageView
+        android:id="@+id/imageView2"
+        android:layout_width="125dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="4dp"
+        android:padding="8dp"
+        app:layout_constraintStart_toStartOf="@+id/tv_edit_qr_code"
+        app:layout_constraintTop_toBottomOf="@+id/tv_edit_qr_code"
+        app:srcCompat="@drawable/qrcode_icon" />
+
     <Button
         android:id="@+id/btn_event_edit_confirm"
         style="@style/RoundedButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="36dp"
+        android:layout_marginTop="24dp"
+        android:layout_marginBottom="24dp"
         android:backgroundTint="@color/secondaryAccent"
         android:text="Confirm"
         android:textColor="@color/primaryBackground"
+        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/et_event_edit_entrant_limit" />
+        app:layout_constraintTop_toBottomOf="@+id/imageView" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
