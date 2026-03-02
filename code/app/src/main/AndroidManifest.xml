@@ -2,6 +2,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
 
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
@@ -12,17 +15,20 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ProjectEventLotteryApp">
         <activity
-            android:name=".EventsListActivity"
-            android:exported="true" >
-            <!--
-            for testing the look of the EventListActivity i set android:exported="true" above
-            and below i moved the <intent-filter> to inside this activity
-            normally i believe it goes in the MainActivity <activity>
-            -->
+            android:name=".RegistrationActivity"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
+        <activity
+            android:name=".EventsListActivity"
+            android:exported="true" >
+            <!--
+            for testing the look of the EventListActivity i set android:exported="true" above
+            normally i believe it goes in the MainActivity <activity>
+            -->
         </activity>
         <activity
             android:name=".MockMainScreen" >

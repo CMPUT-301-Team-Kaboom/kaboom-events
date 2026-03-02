@@ -1,6 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
-    <!-- State when the button is pressed -->
+    <!-- State when the button is checked (active role) -->
+    <item android:state_checked="true">
+        <shape android:shape="rectangle">
+            <solid android:color="@color/primaryAccent" />
+            <stroke android:width="2dp" android:color="@color/white" />
+            <corners android:radius="100dp" />
+        </shape>
+    </item>
+
+    <!-- State when the button is being pressed -->
     <item android:state_pressed="true">
         <shape android:shape="rectangle">
             <solid android:color="@color/primaryAccent" />
@@ -8,10 +17,11 @@
         </shape>
     </item>
 
-    <!-- Default state (when NOT pressed) -->
+    <!-- Default state (inactive role) -->
     <item>
         <shape android:shape="rectangle">
             <solid android:color="@color/primaryBackground" />
+            <stroke android:width="2dp" android:color="@color/primaryAccent" />
             <corners android:radius="100dp" />
         </shape>
     </item>

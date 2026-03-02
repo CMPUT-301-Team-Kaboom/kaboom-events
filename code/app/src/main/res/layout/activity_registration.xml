@@ -36,11 +36,13 @@
             style="@style/BodyRoundedEditTextStyle"
             android:layout_width="325dp"
             android:layout_height="50dp"
+            android:layout_marginTop="40dp"
             android:background="@drawable/rounded_edittext"
             android:hint="Enter Name"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.4"
             app:layout_constraintStart_toStartOf="parent"
-            tools:layout_editor_absoluteY="45dp" />
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/tv_registration_name_header"
@@ -112,41 +114,45 @@
             app:layout_constraintHorizontal_bias="0.08"
             app:layout_constraintStart_toStartOf="@+id/btn_registration_entrant" />
 
-        <Button
+        <ToggleButton
             android:id="@+id/btn_registration_entrant"
-            style="@style/RoundedButton"
+            style="@style/ToggleRoundedButton"
             android:layout_width="100dp"
             android:layout_marginStart="20dp"
             android:layout_marginTop="6dp"
             android:background="@drawable/button_background_selector"
-            android:text="Entrant"
+            android:textOn="Entrant"
+            android:textOff="Entrant"
+            android:textSize="12dp"
             app:backgroundTint="@null"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/et_registration_phone" />
 
-        <Button
+        <ToggleButton
             android:id="@+id/btn_registration_organizer"
-            style="@style/RoundedButton"
+            style="@style/ToggleRoundedButton"
             android:layout_width="100dp"
             android:layout_marginTop="6dp"
             android:background="@drawable/button_background_selector"
-            android:text="Organizer"
-            android:textSize="11dp"
+            android:textOn="Organizer"
+            android:textOff="Organizer"
+            android:textSize="12dp"
             app:backgroundTint="@null"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toStartOf="@+id/btn_registration_admin"
             app:layout_constraintStart_toEndOf="@+id/btn_registration_entrant"
             app:layout_constraintTop_toBottomOf="@+id/et_registration_phone" />
 
-        <Button
+        <ToggleButton
             android:id="@+id/btn_registration_admin"
-            style="@style/RoundedButton"
+            style="@style/ToggleRoundedButton"
             android:layout_width="100dp"
             android:layout_marginTop="6dp"
             android:layout_marginEnd="20dp"
             android:background="@drawable/button_background_selector"
-            android:text="Admin"
+            android:textOn="Admin"
+            android:textOff="Admin"
             android:textSize="12dp"
             app:backgroundTint="@null"
             app:layout_constraintBottom_toBottomOf="parent"
@@ -174,5 +180,6 @@
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cl_registration_main_container" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
