@@ -52,7 +52,7 @@ public class CreateEventDialogFragment extends DialogFragment {
         EditText editDrawDate = view.findViewById(R.id.et_event_edit_draw_date);
         EditText editDrawTime = view.findViewById(R.id.et_event_edit_draw_time);
         EditText editEntrantLimit = view.findViewById(R.id.et_event_edit_entrant_limit);
-        Button confirmButton = view.findViewById(R.id.btn_event_edit_confirm);
+        Button confirmButton = view.findViewById(R.id.btn_event_edit_save);
 
         // convert editTexts for dates and times to be pickers instead of text
         attachDatePicker(editRegStart);
