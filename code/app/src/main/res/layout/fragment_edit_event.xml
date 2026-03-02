@@ -245,16 +245,35 @@
                 app:layout_constraintStart_toStartOf="@+id/et_event_edit_entrant_limit"
                 app:layout_constraintTop_toBottomOf="@+id/tv_edit_tag1" />
 
-            <ImageView
-                android:id="@+id/iv_edit_banner"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_banner_container"
                 android:layout_width="125dp"
                 android:layout_height="100dp"
                 android:layout_marginTop="4dp"
-                android:background="@drawable/rounded_edittext"
-                android:scaleType="centerCrop"
                 app:layout_constraintStart_toStartOf="@+id/tv_edit_banner_header"
-                app:layout_constraintTop_toBottomOf="@+id/tv_edit_banner_header"
-                tools:srcCompat="@tools:sample/backgrounds/scenic" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_edit_banner_header">
+
+                <ImageView
+                    android:id="@+id/iv_edit_banner"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@drawable/rounded_edittext"
+                    android:scaleType="centerCrop"
+                    tools:srcCompat="@tools:sample/backgrounds/scenic" />
+
+                <ImageView
+                    android:id="@+id/iv_banner_edit_icon"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginTop="-10dp"
+                    android:layout_marginEnd="-10dp"
+                    android:background="@drawable/rounded_edittext"
+                    android:padding="6dp"
+                    android:src="@drawable/outline_edit_24"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:tint="@color/white" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
                 android:id="@+id/tv_edit_qr_code_header"
@@ -272,6 +291,7 @@
                 android:layout_height="100dp"
                 android:layout_marginTop="4dp"
                 android:padding="8dp"
+                android:background="@drawable/rounded_edittext"
                 app:layout_constraintStart_toStartOf="@+id/tv_edit_qr_code_header"
                 app:layout_constraintTop_toBottomOf="@+id/tv_edit_qr_code_header"
                 app:srcCompat="@drawable/qrcode_icon" />
@@ -284,7 +304,7 @@
                 android:layout_marginTop="16dp"
                 android:text="Location"
                 app:layout_constraintStart_toStartOf="@+id/et_event_edit_name"
-                app:layout_constraintTop_toBottomOf="@+id/iv_edit_banner" />
+                app:layout_constraintTop_toBottomOf="@+id/cl_banner_container" />
 
             <EditText
                 android:id="@+id/et_edit_location"
@@ -298,31 +318,54 @@
                 app:layout_constraintStart_toStartOf="@+id/tv_edit_location_header"
                 app:layout_constraintTop_toBottomOf="@+id/tv_edit_location_header" />
 
+            <TextView
+                android:id="@+id/tv_edit_location_optional"
+                style="@style/DefaultTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Optional"
+                android:textSize="10sp"
+                android:textStyle="normal"
+                android:textColor="@color/grey"
+                app:layout_constraintEnd_toEndOf="@+id/et_edit_location"
+                app:layout_constraintTop_toBottomOf="@+id/et_edit_location" />
+
             <LinearLayout
                 android:id="@+id/ll_geolocation_container"
                 android:layout_width="325dp"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
                 android:background="@drawable/rounded_edittext"
-                android:orientation="horizontal"
+                android:orientation="vertical"
                 android:paddingHorizontal="12dp"
                 android:paddingVertical="4dp"
                 app:layout_constraintEnd_toEndOf="@+id/et_edit_location"
                 app:layout_constraintStart_toStartOf="@+id/et_edit_location"
-                app:layout_constraintTop_toBottomOf="@+id/et_edit_location">
+                app:layout_constraintTop_toBottomOf="@+id/tv_edit_location_optional">
 
-                <Switch
+                <androidx.appcompat.widget.SwitchCompat
                     android:id="@+id/switch_geolocation"
                     style="@style/BodyRoundedEditTextStyle"
                     android:layout_width="match_parent"
-                    android:layout_height="35dp"
+                    android:layout_height="wrap_content"
                     android:background="@color/transparent"
                     android:paddingStart="0dp"
                     android:text="Enable Geolocation"
                     android:textColor="@color/white"
                     android:textSize="16sp"
-                    android:textStyle="bold"
-                    tools:ignore="UseSwitchCompatOrMaterialXml" />
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tv_geolocation_hint"
+                    style="@style/DefaultTextStyle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Entrants must be located near your event"
+                    android:textSize="10sp"
+                    android:textStyle="normal"
+                    android:textColor="@color/grey"
+                    android:layout_marginTop="-4dp"
+                    android:layout_marginBottom="4dp"/>
             </LinearLayout>
 
             <TextView
