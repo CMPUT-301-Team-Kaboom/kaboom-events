@@ -66,7 +66,9 @@ public class RegistrationActivity extends AppCompatActivity {
         btnSignUp.setOnClickListener(v -> createNewUser());
 
         // Log In Logic
-        btnLogIn.setOnClickListener(v -> checkExistingUser());
+        btnLogIn.setOnClickListener(v -> {
+            startActivity(new Intent(RegistrationActivity.this, LogInActivity.class));
+        });
     }
 
     private void setupToggleLogic() {
@@ -115,6 +117,23 @@ public class RegistrationActivity extends AppCompatActivity {
             return;
         }
 
+        // Check if user already exists before allowing Sign Up
+        db.collection(collectionName).document(deviceID).get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                if (task.getResult().exists()) {
+                    Toast.makeText(RegistrationActivity.this, "Account already exists. Please Log In instead.", Toast.LENGTH_LONG).show();
+                } else {
+                    // User doesn't exist in this role, proceed with creation
+                    processUserCreation(collectionName);
+                }
+            } else {
+                Log.e("AUTH", "Error checking existing user", task.getException());
+                Toast.makeText(RegistrationActivity.this, "Connection failed. Check internet.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void processUserCreation(String collectionName) {
         DocumentReference userRef = db.collection(collectionName).document(deviceID);
 
         // Get text from EditTexts
@@ -145,26 +164,6 @@ public class RegistrationActivity extends AppCompatActivity {
                 .addOnFailureListener(e -> {
                     Log.e("AUTH", "Error creating user", e);
                     Toast.makeText(this, "Failed to create profile", Toast.LENGTH_SHORT).show();
-                });
-    }
-
-    private void checkExistingUser() {
-        String collectionName = getSelectedCollection();
-        if (collectionName == null) {
-            Toast.makeText(this, "Please select your role to Log In", Toast.LENGTH_SHORT).show();
-            return;
-        }
-
-        db.collection(collectionName).document(deviceID).get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
-                        Log.d("AUTH", "User already exists in " + collectionName + deviceID);
-                        startActivity(new Intent(RegistrationActivity.this, EventsListActivity.class));
-                        finish();
-                    } else {
-                        Log.d("AUTH", "User does not exist in " + collectionName + deviceID);
-                        Toast.makeText(this, "User does not exist. Please sign up.", Toast.LENGTH_SHORT).show();
-                    }
                 });
     }
 }

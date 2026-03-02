@@ -23,6 +23,9 @@
             </intent-filter>
         </activity>
         <activity
+            android:name=".LogInActivity"
+            android:exported="false" />
+        <activity
             android:name=".EventsListActivity"
             android:exported="true" >
             <!--
