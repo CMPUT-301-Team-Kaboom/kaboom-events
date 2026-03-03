@@ -1,9 +1,14 @@
 package com.example.projecteventlotteryapp;
 
+import android.util.Log;
+
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 
 public class Event {
@@ -36,6 +41,20 @@ public class Event {
      * @param drawDate
      */
     public Event(
+            String name,
+            LocalDate registrationStartDate,
+            LocalDate registrationEndDate,
+            LocalDateTime drawDate,
+            int attendeesLimit
+    ) {
+        this.name = name;
+        this.registrationStartDate = registrationStartDate;
+        this.registrationEndDate = registrationEndDate;
+        this.drawDate = drawDate;
+        this.attendeesLimit = attendeesLimit;
+    }
+
+    public Event(
             String eventId,
             String name,
             LocalDate registrationStartDate,
@@ -43,7 +62,7 @@ public class Event {
             LocalDateTime drawDate,
             int attendeesLimit
     ) {
-
+        this.eventId = eventId;
         this.name = name;
         this.registrationStartDate = registrationStartDate;
         this.registrationEndDate = registrationEndDate;
@@ -174,6 +193,75 @@ public class Event {
         event.setTagsList(tagsList);
         event.setWaitlistLimit(waitlistLimit);
 
+        Log.d("Event", "Fetched event.\nEventId: " + eventId + "\nname: " + name);
         return event;
+    }
+
+    private static int fetchInt(DocumentSnapshot snapshot, String field) {
+        Long value = snapshot.getLong(field);
+
+        if (value != null) {
+            return value.intValue();
+        } else {
+            return -1;
+        }
+    }
+
+    private static LocalDate fetchLocalDate(DocumentSnapshot snapshot, String field) {
+        /*
+        The following code is adapted from...
+        Author: Ruslan https://stackoverflow.com/users/2032701/ruslan
+        Title: "How to convert java.sql.timestamp to LocalDate (java8) java.time?"
+        Answer: https://stackoverflow.com/a/57101544
+        Date: 2019-07-18
+        Retrieved: 2026-02-28
+        License: CC-BY-SA 4.0
+        */
+        Timestamp value = snapshot.getTimestamp(field);
+
+        if (value != null) {
+            return value.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        } else {
+            return null;
+        }
+    }
+
+    private static LocalDateTime fetchLocalDateTime(DocumentSnapshot snapshot, String field) {
+        Timestamp value = snapshot.getTimestamp(field);
+
+        if (value != null) {
+            return value.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        } else {
+            return null;
+        }
+    }
+
+    private static boolean fetchBoolean(DocumentSnapshot snapshot, String field) {
+        Boolean value = snapshot.getBoolean(field);
+
+        if (value != null) {
+            return value.booleanValue();
+        } else {
+            return false;
+        }
+    }
+
+    private static ArrayList<String> fetchStringArrayList(DocumentSnapshot snapshot, String field) {
+        /*
+        The following code is adapted from...
+        Author: Doug Stevenson https://stackoverflow.com/users/807126/doug-stevenson
+        Title: "How to get an array from Firestore?"
+        Answer: https://stackoverflow.com/a/50236950
+        Date: 2018-05-08
+        Retrieved: 2026-02-28
+        License: CC-BY-SA 4.0
+        */
+        Object value = snapshot.get(field);
+
+        if (value instanceof ArrayList) {
+            return (ArrayList<String>) value;
+        } else {
+            return new ArrayList<String>();
+        }
     }
 }

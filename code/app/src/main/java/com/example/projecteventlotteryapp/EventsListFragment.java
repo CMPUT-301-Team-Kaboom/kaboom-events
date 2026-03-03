@@ -77,7 +77,7 @@ public class EventsListFragment extends Fragment {
         eventsListView = view.findViewById(R.id.lv_events_list);
 
         // set up arrays
-        eventsArrayList = new ArrayList<>();
+        eventsArrayList = new ArrayList<Event>();
         /*
         The following code is adapted from...
         Author: user658042
@@ -151,73 +151,4 @@ public class EventsListFragment extends Fragment {
         });
         return view;
     }
-
-    private int fetchInt(QueryDocumentSnapshot snapshot, String field) {
-        Long value = snapshot.getLong(field);
-
-        if (value != null) {
-            return value.intValue();
-        } else {
-            return -1;
-        }
-    }
-
-    private LocalDate fetchLocalDate(QueryDocumentSnapshot snapshot, String field) {
-        /*
-        The following code is adapted from...
-        Author: Ruslan https://stackoverflow.com/users/2032701/ruslan
-        Title: "How to convert java.sql.timestamp to LocalDate (java8) java.time?"
-        Answer: https://stackoverflow.com/a/57101544
-        Date: 2019-07-18
-        Retrieved: 2026-02-28
-        License: CC-BY-SA 4.0
-        */
-        Timestamp value = snapshot.getTimestamp(field);
-
-        if (value != null) {
-            return value.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        } else {
-            return null;
-        }
-    }
-
-    private LocalDateTime fetchLocalDateTime(QueryDocumentSnapshot snapshot, String field) {
-        Timestamp value = snapshot.getTimestamp(field);
-
-        if (value != null) {
-            return value.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        } else {
-            return null;
-        }
-    }
-
-    private boolean fetchBoolean(QueryDocumentSnapshot snapshot, String field) {
-        Boolean value = snapshot.getBoolean(field);
-
-        if (value != null) {
-            return value.booleanValue();
-        } else {
-            return false;
-        }
-    }
-
-    private ArrayList<String> fetchStringArrayList(QueryDocumentSnapshot snapshot, String field) {
-        /*
-        The following code is adapted from...
-        Author: Doug Stevenson https://stackoverflow.com/users/807126/doug-stevenson
-        Title: "How to get an array from Firestore?"
-        Answer: https://stackoverflow.com/a/50236950
-        Date: 2018-05-08
-        Retrieved: 2026-02-28
-        License: CC-BY-SA 4.0
-        */
-        Object value = snapshot.get(field);
-
-        if (value instanceof ArrayList) {
-            return (ArrayList<String>) value;
-        } else {
-            return new ArrayList<String>();
-        }
-    }
-
 }
