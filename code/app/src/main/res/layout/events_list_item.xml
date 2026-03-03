@@ -61,7 +61,7 @@
     <TextView
         style="@style/BodyRoundedEditTextStyle"
         android:id="@+id/tv_event_item_size"
-        android:text="XXX/XXX"
+        android:text=""
         android:textStyle="bold"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintEnd_toEndOf="parent" />

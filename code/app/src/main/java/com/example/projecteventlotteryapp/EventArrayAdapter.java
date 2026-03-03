@@ -42,7 +42,7 @@ public class EventArrayAdapter extends ArrayAdapter<Event>  {
         ImageView posterImageView = view.findViewById(R.id.iv_event_item_poster);
 
         nameTextView.setText(event.getName());
-        /* i don't know how to get organizer yet: organizerTextView.setText(event.getOrganizer()); */
+        /* i don't know how to get organizer yet, maybe Event should also store its Organizer? */
         DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("MMMM d, yyyy 'at' h:mm a");
         String formattedDate = event.getDrawDate().format(datePattern);
         drawDateTextView.setText("Drawn on " + formattedDate);

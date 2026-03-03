@@ -2,6 +2,7 @@ package com.example.projecteventlotteryapp;
 
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -12,9 +13,12 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
@@ -31,6 +35,8 @@ import java.util.ArrayList;
 public class EventsListFragment extends Fragment {
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
+    private CollectionReference organizerRef;
+    private CollectionReference posterRef;
 
     private ListView eventsListView;
 
@@ -86,80 +92,160 @@ public class EventsListFragment extends Fragment {
         // set listener
         eventsRef.addSnapshotListener((value, error) -> {
             if (error != null) {
-                Log.e("Firestore", error.toString());
+                Log.e(EventsListFragment.class.getSimpleName() + " Firestore", error.toString());
             }
             if (value != null && !value.isEmpty()) {
                 eventsArrayList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
-                    // get string fields
-                    String description = snapshot.getString("description");
-                    String location = snapshot.getString("location");
-                    String name = snapshot.getString("name");
-                    String qrcodePath = snapshot.getString("qrCodePath");
-
-                    // get number fields
-                    Long attendeesLimitLong = snapshot.getLong("entrantsLimit");
-                    int attendeesLimit = attendeesLimitLong.intValue();
-                    Long waitlistLimitLong = snapshot.getLong("waitlistLimit");
-                    int waitlistLimit = waitlistLimitLong.intValue();
-
-                    // get boolean field
-                    boolean geolocationEnabled = snapshot.getBoolean("geoLocationEnabled");
-
-                    // get timestamp fields
-                    /*
-                    The following code is adapted from...
-                    Author: Ruslan https://stackoverflow.com/users/2032701/ruslan
-                    Title: "How to convert java.sql.timestamp to LocalDate (java8) java.time?"
-                    Answer: https://stackoverflow.com/a/57101544
-                    Date: 2019-07-18
-                    Retrieved: 2026-02-28
-                    License: CC-BY-SA 4.0
-                    */
-                    Timestamp drawDateTimestamp = snapshot.getTimestamp("drawDate");
-                    LocalDateTime drawDate = drawDateTimestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-                    Timestamp registrationEndDateTimestamp = snapshot.getTimestamp("drawDate");
-                    LocalDate registrationEndDate = registrationEndDateTimestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-                    Timestamp registrationStartDateTimestamp = snapshot.getTimestamp("drawDate");
-                    LocalDate registrationStartDate = registrationStartDateTimestamp.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-
-                    // get array field
-                    /*
-                    The following code is adapted from...
-                    Author: Doug Stevenson https://stackoverflow.com/users/807126/doug-stevenson
-                    Title: "How to get an array from Firestore?"
-                    Answer: https://stackoverflow.com/a/50236950
-                    Date: 2018-05-08
-                    Retrieved: 2026-02-28
-                    License: CC-BY-SA 4.0
-                    */
-                    ArrayList<String> tagsList = (ArrayList<String>) snapshot.get("tags");
-
-                    // get reference fields
-                    DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
-                    DocumentReference posterRef = snapshot.getDocumentReference("poster");
-
-                    // todo: retrieve references
-
-                    Event event = new Event (
-                            name,
-                            registrationStartDate,
-                            registrationEndDate,
-                            drawDate,
-                            attendeesLimit
-                    );
-
-                    event.setDescription(description);
-                    // event.setLocation(location);
-                    event.setGeolocationEnabled(geolocationEnabled);
-                    event.setTagsList(tagsList);
-                    event.setWaitlistLimit(waitlistLimit);
-
+                    Event event = fetchEvent(snapshot);
                     eventsArrayList.add(event);
+
+                    // fetch organizer and poster from DocumentReferences
+                    /*
+                    The following code is adapted from...
+                    Source: https://firebase.google.com/docs/firestore/query-data/get-data
+                    Title: "Get data with Cloud Firestore"
+                    Retrieved: 2026-03-03
+                    */
+                    DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
+                    if (organizerRef != null) {
+                        organizerRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                if (documentSnapshot.exists()) {
+                                    String organizerName = documentSnapshot.getString("name");
+                                    // event.setOrganizerName(organizerName); if we add organizer to Event
+                                }
+                            }
+                        });
+                    }
+
+                    DocumentReference posterRef = snapshot.getDocumentReference("poster");
+                    if (posterRef != null) {
+                        posterRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                if (documentSnapshot.exists()) {
+                                    String posterPath = documentSnapshot.getString("path");
+                                    // something to do with PosterImageHandler
+                                }
+                            }
+                        });
+                    }
+
                 }
                 eventsArrayAdapter.notifyDataSetChanged();
             }
         });
         return view;
     }
+
+    private Event fetchEvent(QueryDocumentSnapshot snapshot) {
+        // get string fields
+        String description = snapshot.getString("description");
+        String location = snapshot.getString("location");
+        String name = snapshot.getString("name");
+        String qrcodePath = snapshot.getString("qrCodePath");
+
+        // get number fields
+        int attendeesLimit = fetchInt(snapshot, "entrantsLimit");
+        int waitlistLimit = fetchInt(snapshot, "waitlistLimit");
+
+        // get boolean field
+        boolean geolocationEnabled = fetchBoolean(snapshot, "geoLocationEnabled");
+
+        // get timestamp fields
+        LocalDateTime drawDate = fetchLocalDateTime(snapshot, "drawDate");
+        LocalDate registrationEndDate = fetchLocalDate(snapshot, "registrationEndDate");
+        LocalDate registrationStartDate = fetchLocalDate(snapshot, "registrationStartDate");
+
+        // get array field
+        ArrayList<String> tagsList = fetchStringArrayList(snapshot, "tags");
+
+
+        Event event = new Event (
+                name,
+                registrationStartDate,
+                registrationEndDate,
+                drawDate,
+                attendeesLimit
+        );
+
+        event.setDescription(description);
+        // event.setLocation(location);
+        event.setGeolocationEnabled(geolocationEnabled);
+        event.setTagsList(tagsList);
+        event.setWaitlistLimit(waitlistLimit);
+
+        return event;
+    }
+
+    private int fetchInt(QueryDocumentSnapshot snapshot, String field) {
+        Long value = snapshot.getLong(field);
+
+        if (value != null) {
+            return value.intValue();
+        } else {
+            return -1;
+        }
+    }
+
+    private LocalDate fetchLocalDate(QueryDocumentSnapshot snapshot, String field) {
+        /*
+        The following code is adapted from...
+        Author: Ruslan https://stackoverflow.com/users/2032701/ruslan
+        Title: "How to convert java.sql.timestamp to LocalDate (java8) java.time?"
+        Answer: https://stackoverflow.com/a/57101544
+        Date: 2019-07-18
+        Retrieved: 2026-02-28
+        License: CC-BY-SA 4.0
+        */
+        Timestamp value = snapshot.getTimestamp(field);
+
+        if (value != null) {
+            return value.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+        } else {
+            return null;
+        }
+    }
+
+    private LocalDateTime fetchLocalDateTime(QueryDocumentSnapshot snapshot, String field) {
+        Timestamp value = snapshot.getTimestamp(field);
+
+        if (value != null) {
+            return value.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+        } else {
+            return null;
+        }
+    }
+
+    private boolean fetchBoolean(QueryDocumentSnapshot snapshot, String field) {
+        Boolean value = snapshot.getBoolean(field);
+
+        if (value != null) {
+            return value.booleanValue();
+        } else {
+            return false;
+        }
+    }
+
+    private ArrayList<String> fetchStringArrayList(QueryDocumentSnapshot snapshot, String field) {
+        /*
+        The following code is adapted from...
+        Author: Doug Stevenson https://stackoverflow.com/users/807126/doug-stevenson
+        Title: "How to get an array from Firestore?"
+        Answer: https://stackoverflow.com/a/50236950
+        Date: 2018-05-08
+        Retrieved: 2026-02-28
+        License: CC-BY-SA 4.0
+        */
+        Object value = snapshot.get(field);
+
+        if (value instanceof ArrayList) {
+            return (ArrayList<String>) value;
+        } else {
+            return new ArrayList<String>();
+        }
+    }
+
 }
