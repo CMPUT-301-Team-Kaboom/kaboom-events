@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,6 +36,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         eventId = getIntent().getStringExtra("eventId");
 
+        /*  Code adapted from https://firebase.google.com/docs/firestore/query-data/get-data#java */
         DocumentReference docRef = db.collection("events").document(eventId);
         docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -42,13 +44,14 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
                 if (task.isSuccessful()) {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
-                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        Log.d("EventActivity", "DocumentSnapshot data: " + document.getData());
                         event = Event.fetchEventFromSnapshot(document);
+                        updateUi();
                     } else {
-                        Log.d(TAG, "No such document");
+                        Log.d("EventActivity", "No such document");
                     }
                 } else {
-                    Log.d(TAG, "get failed with ", task.getException());
+                    Log.d("EventActivity", "get failed with ", task.getException());
                 }
             }
         });
@@ -101,6 +104,17 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 //            }
 //        }
 //    }
+
+    private void updateUi() {
+        TextView nameHeaderTextView = findViewById(R.id.tv_organizer_details_event_name_header);
+        TextView organizerHeaderTextview = findViewById(R.id.tv_organizer_details_org_header);
+        TextView drawDateTV = findViewById(R.id.tv_organizer_draw_date);
+        TextView registrationPeriodTV = findViewById(R.id.tv_organizer_registration_period);
+        TextView attendeesTV = findViewById(R.id.tv_organizer_attendees);
+        TextView waitListTV = findViewById(R.id.tv_organizer_waitlist_count);
+
+        nameHeaderTextView.setText(event.getName());
+    }
 //
 //    private void openUserList(String tempVar) {
 //        // todo

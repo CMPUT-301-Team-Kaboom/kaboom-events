@@ -135,7 +135,7 @@ public class Event {
         return waitlist.contains(entrant);
     }
 
-    public static Event fetchEventFromSnapshot(QueryDocumentSnapshot snapshot) {
+    public static Event fetchEventFromSnapshot(DocumentSnapshot snapshot) {
         // get string fields
         String eventId = snapshot.getId();
         String description = snapshot.getString("description");
