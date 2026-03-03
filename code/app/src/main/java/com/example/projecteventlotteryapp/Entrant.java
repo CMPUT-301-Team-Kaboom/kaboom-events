@@ -1,9 +1,16 @@
 package com.example.projecteventlotteryapp;
 
-public class Entrant {
+public class Entrant extends User {
     private String name;
     private String email;
     private String phoneNumber;
+
+    public Entrant(String name, String email, String phoneNumber, Role role) {
+        super(role);
+        this.name = name;
+        this.email = email;
+        this.phoneNumber = phoneNumber;
+    }
 
     public String getName() {
         return name;
