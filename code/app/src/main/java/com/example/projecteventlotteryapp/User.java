@@ -1,12 +1,12 @@
 package com.example.projecteventlotteryapp;
 
 public abstract class User {
-    String role;
+    Role role;
 
-    public User(String role) {
+    public User(Role role) {
         this.role = role;
     }
-    public String getRole() {
+    public Role getRole() {
         return role;
     }
 }

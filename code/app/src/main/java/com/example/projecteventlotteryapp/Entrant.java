@@ -5,7 +5,7 @@ public class Entrant extends User {
     private String email;
     private String phoneNumber;
 
-    public Entrant(String name, String email, String phoneNumber, String role) {
+    public Entrant(String name, String email, String phoneNumber, Role role) {
         super(role);
         this.name = name;
         this.email = email;

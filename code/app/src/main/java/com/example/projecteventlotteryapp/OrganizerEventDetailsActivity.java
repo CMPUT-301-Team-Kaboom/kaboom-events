@@ -29,12 +29,11 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
             return insets;
         });
 
-        User user = new Entrant("1", "1", "1", "ORGANIZER"); // need to initialize
         organizerController = findViewById(R.id.ll_organizer_button_controls);
         entrantController = findViewById(R.id.cl_entrant_button_controls);
 
         // show only specific buttons for role
-        if ("ORGANIZER".equals(user.getRole())) {
+        if (user.getRole() == Role.ORGANIZER) {
             organizerController.setVisibility(View.VISIBLE);
             entrantController.setVisibility(View.GONE);
         } else {
@@ -44,7 +43,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
     }
 
     private void configureUIForRole(User user) {
-        if ("ORGANIZER".equals(user.getRole())) {
+        if (user.getRole() == Role.ORGANIZER) {
             organizerController.setVisibility(View.VISIBLE);
             entrantController.setVisibility(View.GONE);
 
@@ -59,7 +58,7 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
 
             Button declinedButton = findViewById(R.id.btn_organizer_declined);
             declinedButton.setOnClickListener(v -> openUserList("declined"));
-        } else if ("ENTRANT".equals(user.getRole())) {
+        } else if (user.getRole() == Role.ENTRANT) {
             Button entrantPrimaryButton = findViewById(R.id.btn_entrant_primary);
             Button entrantSecondaryButton = findViewById(R.id.btn_entrant_secondary);
 
