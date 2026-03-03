@@ -1,5 +1,12 @@
 package com.example.projecteventlotteryapp;
 
-public interface User {
-    String getRole();
+public abstract class User {
+    String role;
+
+    public User(String role) {
+        this.role = role;
+    }
+    public String getRole() {
+        return role;
+    }
 }
