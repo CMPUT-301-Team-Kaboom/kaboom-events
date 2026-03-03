@@ -21,7 +21,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class OrganizerEventDetailsActivity extends AppCompatActivity {
+public class EventDetailsActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
     private LinearLayout organizerController;

@@ -3,7 +3,6 @@ package com.example.projecteventlotteryapp;
 import android.content.Intent;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 
 import android.util.Log;
@@ -14,18 +13,13 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 
 /**
@@ -94,7 +88,7 @@ public class EventsListFragment extends Fragment {
         eventsListView.setOnItemClickListener((parent, view1, position, id) -> {
             Event selectedEvent = eventsArrayList.get(position);
 
-            Intent intent = new Intent(getActivity(), OrganizerEventDetailsActivity.class);
+            Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
             intent.putExtra("eventId", selectedEvent.getEventId());
             // need a way to track who the current user is
 
