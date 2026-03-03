@@ -29,12 +29,15 @@
             android:name=".OrganizerEventDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".MockMainScreen" >
+            android:name=".MockMainScreen"
             android:exported="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">
         </activity>
+        <activity
+            android:name=".CriteriaActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
