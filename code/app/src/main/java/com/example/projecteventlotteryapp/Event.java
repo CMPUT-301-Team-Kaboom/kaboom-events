@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class Event {
+    private String eventId;
     private String name;
     private int attendeesLimit;
     private int waitlistLimit;
@@ -35,17 +36,27 @@ public class Event {
      * @param drawDate
      */
     public Event(
+            String eventId,
             String name,
             LocalDate registrationStartDate,
             LocalDate registrationEndDate,
             LocalDateTime drawDate,
             int attendeesLimit
     ) {
+
         this.name = name;
         this.registrationStartDate = registrationStartDate;
         this.registrationEndDate = registrationEndDate;
         this.drawDate = drawDate;
         this.attendeesLimit = attendeesLimit;
+    }
+
+    public String getEventId() {
+        return eventId;
+    }
+
+    public void setEventId(String eventId) {
+        this.eventId = eventId;
     }
 
     public String getName() {
@@ -122,5 +133,47 @@ public class Event {
 
     public boolean waitlistContains(Entrant entrant) {
         return waitlist.contains(entrant);
+    }
+
+    public static Event fetchEventFromSnapshot(QueryDocumentSnapshot snapshot) {
+        // get string fields
+        String eventId = snapshot.getId();
+        String description = snapshot.getString("description");
+        String location = snapshot.getString("location");
+        String name = snapshot.getString("name");
+        String qrcodePath = snapshot.getString("qrCodePath");
+
+        // get number fields
+        int attendeesLimit = fetchInt(snapshot, "entrantsLimit");
+        int waitlistLimit = fetchInt(snapshot, "waitlistLimit");
+
+        // get boolean field
+        boolean geolocationEnabled = fetchBoolean(snapshot, "geoLocationEnabled");
+
+        // get timestamp fields
+        LocalDateTime drawDate = fetchLocalDateTime(snapshot, "drawDate");
+        LocalDate registrationEndDate = fetchLocalDate(snapshot, "registrationEndDate");
+        LocalDate registrationStartDate = fetchLocalDate(snapshot, "registrationStartDate");
+
+        // get array field
+        ArrayList<String> tagsList = fetchStringArrayList(snapshot, "tags");
+
+
+        Event event = new Event (
+                eventId,
+                name,
+                registrationStartDate,
+                registrationEndDate,
+                drawDate,
+                attendeesLimit
+        );
+
+        event.setDescription(description);
+        // event.setLocation(location);
+        event.setGeolocationEnabled(geolocationEnabled);
+        event.setTagsList(tagsList);
+        event.setWaitlistLimit(waitlistLimit);
+
+        return event;
     }
 }

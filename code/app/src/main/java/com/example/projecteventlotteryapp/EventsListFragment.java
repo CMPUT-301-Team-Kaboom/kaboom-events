@@ -1,5 +1,6 @@
 package com.example.projecteventlotteryapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -89,6 +90,17 @@ public class EventsListFragment extends Fragment {
         eventsArrayAdapter = new EventArrayAdapter(getActivity(), eventsArrayList);
         eventsListView.setAdapter(eventsArrayAdapter);
 
+        // clickListener for a ListView item
+        eventsListView.setOnItemClickListener((parent, view1, position, id) -> {
+            Event selectedEvent = eventsArrayList.get(position);
+
+            Intent intent = new Intent(getActivity(), OrganizerEventDetailsActivity.class);
+            intent.putExtra("eventId", selectedEvent.getEventId());
+            // need a way to track who the current user is
+
+            startActivity(intent);
+        });
+
         // set listener
         eventsRef.addSnapshotListener((value, error) -> {
             if (error != null) {
@@ -97,7 +109,7 @@ public class EventsListFragment extends Fragment {
             if (value != null && !value.isEmpty()) {
                 eventsArrayList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
-                    Event event = fetchEvent(snapshot);
+                    Event event = Event.fetchEventFromSnapshot(snapshot);
                     eventsArrayList.add(event);
 
                     // fetch organizer and poster from DocumentReferences
@@ -138,46 +150,6 @@ public class EventsListFragment extends Fragment {
             }
         });
         return view;
-    }
-
-    private Event fetchEvent(QueryDocumentSnapshot snapshot) {
-        // get string fields
-        String description = snapshot.getString("description");
-        String location = snapshot.getString("location");
-        String name = snapshot.getString("name");
-        String qrcodePath = snapshot.getString("qrCodePath");
-
-        // get number fields
-        int attendeesLimit = fetchInt(snapshot, "entrantsLimit");
-        int waitlistLimit = fetchInt(snapshot, "waitlistLimit");
-
-        // get boolean field
-        boolean geolocationEnabled = fetchBoolean(snapshot, "geoLocationEnabled");
-
-        // get timestamp fields
-        LocalDateTime drawDate = fetchLocalDateTime(snapshot, "drawDate");
-        LocalDate registrationEndDate = fetchLocalDate(snapshot, "registrationEndDate");
-        LocalDate registrationStartDate = fetchLocalDate(snapshot, "registrationStartDate");
-
-        // get array field
-        ArrayList<String> tagsList = fetchStringArrayList(snapshot, "tags");
-
-
-        Event event = new Event (
-                name,
-                registrationStartDate,
-                registrationEndDate,
-                drawDate,
-                attendeesLimit
-        );
-
-        event.setDescription(description);
-        // event.setLocation(location);
-        event.setGeolocationEnabled(geolocationEnabled);
-        event.setTagsList(tagsList);
-        event.setWaitlistLimit(waitlistLimit);
-
-        return event;
     }
 
     private int fetchInt(QueryDocumentSnapshot snapshot, String field) {
