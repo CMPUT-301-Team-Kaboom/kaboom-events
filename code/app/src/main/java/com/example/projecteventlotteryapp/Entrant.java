@@ -1,9 +1,13 @@
 package com.example.projecteventlotteryapp;
 
-public class Entrant {
+public class Entrant implements User {
     private String name;
     private String email;
     private String phoneNumber;
+
+    public String getRole() {
+        return "Entrant";
+    }
 
     public String getName() {
         return name;
