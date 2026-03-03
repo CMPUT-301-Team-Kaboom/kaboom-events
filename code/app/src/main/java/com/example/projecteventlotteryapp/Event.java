@@ -21,10 +21,10 @@ public class Event {
     private LocalDate registrationStartDate;
     private LocalDate registrationEndDate;
     private ArrayList<String> tagsList;
-    private EntrantList waitlist;
-    private EntrantList invited;
-    private EntrantList declined;
-    private EntrantList enrolled;
+    private EntrantList waitlist = new EntrantList();
+    private EntrantList invited = new EntrantList();
+    private EntrantList declined = new EntrantList();
+    private EntrantList enrolled = new EntrantList();
     private String description;
     // private QRCode
     // private location

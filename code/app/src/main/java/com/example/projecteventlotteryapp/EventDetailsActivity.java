@@ -65,12 +65,6 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         organizerController = findViewById(R.id.ll_organizer_button_controls);
         entrantController = findViewById(R.id.cl_entrant_button_controls);
-
-
-        // temp user
-        User user = new Entrant("Tester", "tester", "100", Role.ENTRANT);
-        // show only specific buttons for role
-        configureUIForRole(user);
     }
 
     private void configureUIForRole(User user) {
@@ -122,6 +116,12 @@ public class EventDetailsActivity extends AppCompatActivity {
         TextView waitListTV = findViewById(R.id.tv_organizer_waitlist_count);
 
         nameHeaderTextView.setText(event.getName());
+
+
+        // temp user
+        User user = new Entrant("Tester", "tester", "100", Role.ENTRANT);
+        // show only specific buttons for role
+        configureUIForRole(user);
     }
 //
 //    private void openUserList(String tempVar) {
