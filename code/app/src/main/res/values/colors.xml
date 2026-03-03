@@ -10,4 +10,5 @@
     <color name="primaryAccent">#30BCED</color>
     <color name="secondaryAccent">#C9EA41</color>
     <color name="tertiaryAccent">#082836</color>
+    <color name="transparent">#00000000</color>
 </resources>
