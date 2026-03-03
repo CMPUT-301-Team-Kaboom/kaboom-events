@@ -264,4 +264,8 @@ public class Event {
             return new ArrayList<String>();
         }
     }
+
+    public boolean invitedListContains(Entrant user) {
+        return waitlist.contains(user);
+    }
 }

@@ -66,51 +66,52 @@ public class OrganizerEventDetailsActivity extends AppCompatActivity {
         organizerController = findViewById(R.id.ll_organizer_button_controls);
         entrantController = findViewById(R.id.cl_entrant_button_controls);
 
-//        // show only specific buttons for role
-//        if (user.getRole() == Role.ORGANIZER) {
-//            organizerController.setVisibility(View.VISIBLE);
-//            entrantController.setVisibility(View.GONE);
-//        } else {
-//            organizerController.setVisibility(View.GONE);
-//            entrantController.setVisibility(View.VISIBLE);
-//        }
+
+        // temp user
+        User user = new Entrant("Tester", "tester", "100", Role.ENTRANT);
+        // show only specific buttons for role
+        configureUIForRole(user);
     }
-//
-//    private void configureUIForRole(User user) {
-//        if (user.getRole() == Role.ORGANIZER) {
-//            organizerController.setVisibility(View.VISIBLE);
-//            entrantController.setVisibility(View.GONE);
-//
-//            Button waitlistButton = findViewById(R.id.btn_organizer_waitlist);
+
+    private void configureUIForRole(User user) {
+        if (user.getRole() == Role.ORGANIZER) {
+            organizerController.setVisibility(View.VISIBLE);
+            entrantController.setVisibility(View.GONE);
+
+            Button waitlistButton = findViewById(R.id.btn_organizer_waitlist);
 //            waitlistButton.setOnClickListener(v -> openUserList("waitlist"));
-//
-//            Button invitedButton = findViewById(R.id.btn_organizer_invited);
+
+            Button invitedButton = findViewById(R.id.btn_organizer_invited);
 //            invitedButton.setOnClickListener(v -> openUserList("invited"));
-//
-//            Button enrolledButton = findViewById(R.id.btn_organizer_enrolled);
+
+            Button enrolledButton = findViewById(R.id.btn_organizer_enrolled);
 //            enrolledButton.setOnClickListener(v -> openUserList("enrolled"));
-//
-//            Button declinedButton = findViewById(R.id.btn_organizer_declined);
+
+            Button declinedButton = findViewById(R.id.btn_organizer_declined);
 //            declinedButton.setOnClickListener(v -> openUserList("declined"));
-//        } else if (user.getRole() == Role.ENTRANT) {
-//            Button entrantPrimaryButton = findViewById(R.id.btn_entrant_primary);
-//            Button entrantSecondaryButton = findViewById(R.id.btn_entrant_secondary);
-//
-//            if (event.invitedListContains((Entrant) user)) {
-//                entrantPrimaryButton.setText("Enroll");
+        } else if (user.getRole() == Role.ENTRANT) {
+            organizerController.setVisibility(View.GONE);
+            entrantController.setVisibility(View.VISIBLE);
+            Button entrantPrimaryButton = findViewById(R.id.btn_entrant_primary);
+            Button entrantSecondaryButton = findViewById(R.id.btn_entrant_secondary);
+            entrantSecondaryButton.setVisibility(View.GONE);
+
+            if (event.invitedListContains((Entrant) user)) {
+                entrantPrimaryButton.setText("Enroll");
 //                entrantPrimaryButton.setOnClickListener(v -> event.addToEnrolledList(user));
-//
-//                entrantSecondaryButton.setText("Decline");
+
+                entrantSecondaryButton.setVisibility(View.VISIBLE);
+                entrantSecondaryButton.setText("Decline");
 //                entrantSecondaryButton.setOnClickListener(v -> event.addToDeclineList(user));
-//            } else if (event.waitlistContains((Entrant) user)) {
-//                entrantPrimaryButton.setText("Remove Waitlist");
-//                entrantPrimaryButton.setOnClickListener(v -> event.removeFromWaitlist(user));
-//            } else {
-//                entrantPrimaryButton.setText("Join Waitlist");
+            } else if (event.waitlistContains((Entrant) user)) {
+                entrantPrimaryButton.setText("Remove Waitlist");
+                //                entrantPrimaryButton.setOnClickListener(v -> event.removeFromWaitlist(user));
+            } else {
+                entrantPrimaryButton.setText("Join Waitlist");
 //                entrantPrimaryButton.setOnClickListener(v -> event.addToWaitlist(user));
-//            }
-//        }
-//    }
+            }
+        }
+    }
 
     private void updateUi() {
         TextView nameHeaderTextView = findViewById(R.id.tv_organizer_details_event_name_header);
