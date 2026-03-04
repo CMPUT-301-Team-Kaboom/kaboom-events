@@ -33,14 +33,20 @@
             normally i believe it goes in the MainActivity <activity>
             -->
         </activity>
+      
         <activity
-            android:name=".MockMainScreen" >
-            <!-- android:exported="true"> -->
-        </activity>
+            android:name=".EventDetailsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MockMainScreen"
+            android:exported="false"/>
         <activity
             android:name=".MainActivity"
             android:exported="true">
         </activity>
+        <activity
+            android:name=".CriteriaActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
