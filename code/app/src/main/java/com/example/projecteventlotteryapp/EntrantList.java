@@ -26,6 +26,10 @@ public class EntrantList {
 
 //    public popEntrant(Entrant entrant)
 
+    public boolean contains(Entrant user) {
+        return entrants.contains(user);
+    }
+
     public int getListLength() {
         return listLength;
     }
