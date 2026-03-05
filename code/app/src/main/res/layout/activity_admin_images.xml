@@ -8,20 +8,20 @@
 
     <!--the following code is adapted from https://www.geeksforgeeks.org/android/how-to-build-an-image-gallery-android-app-with-recyclerview-and-glide/-->
     <ImageButton
-        android:id="@+id/admin_images_back"
+        android:id="@+id/btn_admin_images_back"
         android:layout_width="48dp"
         android:layout_height="48dp"
         android:layout_marginTop="8dp"
         android:background="@color/transparent"
         android:scaleType="fitCenter"
-        app:layout_constraintEnd_toStartOf="@+id/admin_images_header"
+        app:layout_constraintEnd_toStartOf="@+id/tv_admin_images_header"
         app:layout_constraintHorizontal_bias="0.07"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:srcCompat="@drawable/outline_arrow_back_ios_new_24" />
 
     <TextView
-        android:id="@+id/admin_images_header"
+        android:id="@+id/tv_admin_images_header"
         style="@style/MainHeaderTextviewStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,7 +32,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/admin_recycler"
+        android:id="@+id/rv_admin_images_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="16dp"
@@ -41,5 +41,5 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/admin_images_header" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_admin_images_header" />
 </androidx.constraintlayout.widget.ConstraintLayout>

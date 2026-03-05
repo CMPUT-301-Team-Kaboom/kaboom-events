@@ -13,7 +13,7 @@
         app:layout_constraintDimensionRatio="1:1">
 
         <ImageView
-            android:id="@+id/admin_images_item"
+            android:id="@+id/iv_admin_images_item"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_margin="1dp"
@@ -21,7 +21,7 @@
             app:srcCompat="@drawable/default_poster" />
 
         <ImageButton
-            android:id="@+id/admin_images_delete_button"
+            android:id="@+id/btn_admin_images_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="top|end"

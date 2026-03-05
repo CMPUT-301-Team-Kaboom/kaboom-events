@@ -60,8 +60,8 @@ public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.
         ImageButton deleteBtn;
         public ViewHolder(@NonNull View itemView){
             super(itemView);
-            image = itemView.findViewById(R.id.admin_images_item);
-            deleteBtn = itemView.findViewById(R.id.admin_images_delete_button);
+            image = itemView.findViewById(R.id.iv_admin_images_item);
+            deleteBtn = itemView.findViewById(R.id.btn_admin_images_delete);
         }
     }
 }

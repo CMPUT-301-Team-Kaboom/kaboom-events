@@ -45,7 +45,7 @@
             android:exported="true">
         </activity>
         <activity
-            android:name=".CriteriaAppGuide"
+            android:name=".CriteriaAppGuideActivity"
             android:exported="false" />
         <activity
             android:name=".AdminImagesActivity"

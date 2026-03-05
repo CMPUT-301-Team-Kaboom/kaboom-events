@@ -26,7 +26,7 @@ public class AdminImagesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admin_images);
 
         imageList = new ArrayList<>();
-        recyclerView = findViewById(R.id.admin_recycler);
+        recyclerView = findViewById(R.id.rv_admin_images_list);
         adapter = new AdminImagesAdapter(this,imageList);
         manager = new GridLayoutManager(this, 2);
 
