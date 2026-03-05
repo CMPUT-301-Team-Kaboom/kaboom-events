@@ -1,6 +1,8 @@
 package com.example.projecteventlotteryapp;
 
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,11 +22,19 @@ public class AdminImagesActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_images);
 
+        imageList = new ArrayList<>();
         recyclerView = findViewById(R.id.admin_recycler);
         adapter = new AdminImagesAdapter(this,imageList);
         manager = new GridLayoutManager(this, 2);
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
+
+        //testing
+        Uri testUri = Uri.parse("android.resource://" + this.getPackageName() + "/drawable/default_poster");
+        Log.d("Uri", testUri.toString());
+        imageList.add(new Image(testUri));
+        imageList.add(new Image(testUri));
+        imageList.add(new Image(testUri));
     }
 }

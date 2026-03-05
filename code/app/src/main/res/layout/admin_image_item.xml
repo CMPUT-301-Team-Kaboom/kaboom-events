@@ -1,14 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:layout_width="wrap_content"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:strokeColor="@color/primaryAccent"
-    app:strokeWidth="2.5dp">
+    app:strokeWidth="2.5dp"
+    app:cardUseCompatPadding="true">
 
-    <RelativeLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="180dp"
+        app:layout_constraintDimensionRatio="1:1">
 
         <ImageView
             android:id="@+id/admin_images_item"
@@ -22,10 +24,9 @@
             android:id="@+id/admin_images_delete_button"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentEnd="true"
+            android:layout_gravity="top|end"
+            android:layout_margin="3dp"
             android:background="#00FFFFFF"
-            app:srcCompat="@drawable/delete_image"
-            android:layout_margin="3dp"/>
-    </RelativeLayout>
+            app:srcCompat="@drawable/delete_image" />
+    </FrameLayout>
 </com.google.android.material.card.MaterialCardView>

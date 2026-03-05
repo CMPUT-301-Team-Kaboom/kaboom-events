@@ -14,7 +14,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.ViewHolder>{
-
+    /*
+    the following code is adapted from https://www.geeksforgeeks.org/android/how-to-build-an-image-gallery-android-app-with-recyclerview-and-glide/
+     */
     private Context context;
     ArrayList<Image> imageList;
     public AdminImagesAdapter(Context context, ArrayList<Image> imageList){
@@ -32,6 +34,7 @@ public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Image model = imageList.get(position);
+        holder.image.setImageResource(R.drawable.default_poster);
     }
 
     @Override
