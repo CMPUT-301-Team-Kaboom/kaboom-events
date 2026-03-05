@@ -35,11 +35,24 @@ public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Image model = imageList.get(position);
         holder.image.setImageResource(R.drawable.default_poster);
+        holder.deleteBtn.setOnClickListener(v -> {
+            int pos = holder.getBindingAdapterPosition();
+
+            if (pos != RecyclerView.NO_POSITION) {
+                Image image = imageList.get(pos);
+                deleteImage(image, pos);
+            }
+        });
     }
 
     @Override
     public int getItemCount() {
         return imageList.size();
+    }
+
+    private void deleteImage(Image image, int position){
+        imageList.remove(position);
+        notifyItemRemoved(position);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

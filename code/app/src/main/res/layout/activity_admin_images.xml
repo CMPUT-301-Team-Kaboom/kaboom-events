@@ -6,6 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/primaryBackground">
 
+    <!--the following code is adapted from https://www.geeksforgeeks.org/android/how-to-build-an-image-gallery-android-app-with-recyclerview-and-glide/-->
     <ImageButton
         android:id="@+id/admin_images_back"
         android:layout_width="48dp"

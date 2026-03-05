@@ -6,7 +6,7 @@
     app:strokeColor="@color/primaryAccent"
     app:strokeWidth="2.5dp"
     app:cardUseCompatPadding="true">
-
+    <!--the following code is adapted from https://www.geeksforgeeks.org/android/how-to-build-an-image-gallery-android-app-with-recyclerview-and-glide/-->
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="180dp"

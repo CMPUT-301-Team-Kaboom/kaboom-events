@@ -12,6 +12,9 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.ArrayList;
 
 public class AdminImagesActivity extends AppCompatActivity {
+    /*
+    the following code is adapted from https://www.geeksforgeeks.org/android/how-to-build-an-image-gallery-android-app-with-recyclerview-and-glide/
+     */
     private RecyclerView recyclerView;
     private AdminImagesAdapter adapter;
     private GridLayoutManager manager;
