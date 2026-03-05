@@ -28,10 +28,6 @@
         <activity
             android:name=".EventsListActivity"
             android:exported="true" >
-            <!--
-            for testing the look of the EventListActivity i set android:exported="true" above
-            normally i believe it goes in the MainActivity <activity>
-            -->
         </activity>
       
         <activity
