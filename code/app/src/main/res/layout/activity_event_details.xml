@@ -114,7 +114,7 @@
         style="@style/DefaultTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="JAN 1    09:00"
+        android:text="MMM dd    xx:xx"
         app:layout_constraintStart_toStartOf="@+id/tv_eventDetails_date_header"
         app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_date_header" />
 
@@ -134,7 +134,7 @@
         style="@style/DefaultTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="JAN 1 - JAN 5"
+        android:text="MMM d - MMM d"
         app:layout_constraintStart_toStartOf="@+id/tv_eventDetails_registration_period_header"
         app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_registration_period_header" />
 
