@@ -142,14 +142,14 @@ public class EventDetailsActivity extends AppCompatActivity {
             editButton.setVisibility(View.GONE);
             mapButton.setVisibility(View.GONE);
 
-            if (event.invitedListContains((Entrant) user)) {
+            if (event.entrantListContains(EntrantListType.INVITED, (Entrant) user)) {
                 entrantPrimaryButton.setText("Enroll");
 //                entrantPrimaryButton.setOnClickListener(v -> event.addToEnrolledList(user));
 
                 entrantSecondaryButton.setVisibility(View.VISIBLE);
                 entrantSecondaryButton.setText("Decline");
 //                entrantSecondaryButton.setOnClickListener(v -> event.addToDeclineList(user));
-            } else if (event.waitlistContains((Entrant) user)) {
+            } else if (event.entrantListContains(EntrantListType.WAITLIST, (Entrant) user)) {
                 entrantPrimaryButton.setText("Remove Waitlist");
                 //                entrantPrimaryButton.setOnClickListener(v -> event.removeFromWaitlist(user));
             } else {
