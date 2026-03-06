@@ -23,6 +23,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class EventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
@@ -56,6 +59,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private TextView registrationPeriodTV;
     private TextView attendeesTV;
     private TextView waitListTV;
+    private TextView descriptionTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -105,13 +109,13 @@ public class EventDetailsActivity extends AppCompatActivity {
         entrantPrimaryButton    = findViewById(R.id.btn_eventDetails_entrant_primary);
         entrantSecondaryButton  = findViewById(R.id.btn_eventDetails_entrant_secondary);
 
-
         nameHeaderTextView      = findViewById(R.id.tv_eventDetails_event_name_header);
         organizerHeaderTextview = findViewById(R.id.tv_eventDetails_org_header);
         drawDateTV              = findViewById(R.id.tv_eventDetails_draw_date);
         registrationPeriodTV    = findViewById(R.id.tv_eventDetails_registration_period);
         attendeesTV             = findViewById(R.id.tv_eventDetails_attendees);
         waitListTV              = findViewById(R.id.tv_eventDetails_waitlist_count);
+        descriptionTV           = findViewById(R.id.tv_eventDetails_description);
 
         organizerController = findViewById(R.id.ll_eventDetails_organizer_button_controls);
         entrantController   = findViewById(R.id.cl_eventDetails_entrant_button_controls);
@@ -163,6 +167,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         nameHeaderTextView.setText(event.getName());
         attendeesTV.setText(String.valueOf(event.getAttendeesLimit()));
         waitListTV.setText(String.valueOf(event.getWaitlistLimit()));
+        descriptionTV.setText(event.getDescription());
+        setupTags();
 
         DateTimeFormatter drawDatePattern = DateTimeFormatter.ofPattern("MMM d      h:mm a");
         String formattedDate = event.getDrawDate().format(drawDatePattern).toUpperCase();
@@ -180,6 +186,31 @@ public class EventDetailsActivity extends AppCompatActivity {
         User user = new Entrant("Tester", "tester", "100", Role.ENTRANT);
         // show only specific buttons for role
         configureUIForRole(user);
+    }
+
+    private void setupTags() {
+        ArrayList<String> tags = event.getTagsList();
+        int numTags = tags.size();
+
+        TextView tag1 = findViewById(R.id.tv_eventDetails_tag1);
+        TextView tag2 = findViewById(R.id.tv_eventDetails_tag2);
+        TextView tag3 = findViewById(R.id.tv_eventDetails_tag3);
+        List<TextView> tagsTVs = Arrays.asList(tag1, tag2, tag3);
+
+        for (TextView tv:tagsTVs) {
+            tv.setVisibility(View.GONE);
+        }
+
+        if (numTags > 3) {
+            Log.d("EventDetailsActivity", "Number of tags exceeds limit (3). Truncating to first 3 tags.");
+            numTags = 3;
+        }
+
+        for (int i=0; i < numTags; i++) {
+            TextView tagTv = tagsTVs.get(i);
+            tagTv.setText(tags.get(i));
+            tagTv.setVisibility(View.VISIBLE);
+        }
     }
 }
 
