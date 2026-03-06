@@ -29,6 +29,18 @@ public class EventDetailsActivity extends AppCompatActivity {
     private String eventId;
     private Event event;
 
+    Button waitlistButton = findViewById(R.id.btn_eventDetails_organizer_waitlist);
+    Button invitedButton = findViewById(R.id.btn_eventDetails_organizer_invited);
+    Button enrolledButton = findViewById(R.id.btn_eventDetails_organizer_enrolled);
+    Button declinedButton = findViewById(R.id.btn_eventDetails_organizer_declined);
+
+    Button entrantPrimaryButton = findViewById(R.id.btn_eventDetails_entrant_primary);
+    Button entrantSecondaryButton = findViewById(R.id.btn_eventDetails_entrant_secondary);
+
+    Button backButton = findViewById(R.id.btn_eventDetails_back)
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,8 +75,8 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
-        organizerController = findViewById(R.id.ll_organizer_button_controls);
-        entrantController = findViewById(R.id.cl_entrant_button_controls);
+        organizerController = findViewById(R.id.ll_eventDetails_organizer_button_controls);
+        entrantController = findViewById(R.id.cl_eventDetails_entrant_button_controls);
     }
 
     private void configureUIForRole(User user) {
@@ -72,22 +84,16 @@ public class EventDetailsActivity extends AppCompatActivity {
             organizerController.setVisibility(View.VISIBLE);
             entrantController.setVisibility(View.GONE);
 
-            Button waitlistButton = findViewById(R.id.btn_organizer_waitlist);
 //            waitlistButton.setOnClickListener(v -> openUserList("waitlist"));
 
-            Button invitedButton = findViewById(R.id.btn_organizer_invited);
 //            invitedButton.setOnClickListener(v -> openUserList("invited"));
 
-            Button enrolledButton = findViewById(R.id.btn_organizer_enrolled);
 //            enrolledButton.setOnClickListener(v -> openUserList("enrolled"));
 
-            Button declinedButton = findViewById(R.id.btn_organizer_declined);
 //            declinedButton.setOnClickListener(v -> openUserList("declined"));
         } else if (user.getRole() == Role.ENTRANT) {
             organizerController.setVisibility(View.GONE);
             entrantController.setVisibility(View.VISIBLE);
-            Button entrantPrimaryButton = findViewById(R.id.btn_entrant_primary);
-            Button entrantSecondaryButton = findViewById(R.id.btn_entrant_secondary);
             entrantSecondaryButton.setVisibility(View.GONE);
 
             if (event.invitedListContains((Entrant) user)) {
@@ -108,12 +114,12 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     private void updateUi() {
-        TextView nameHeaderTextView = findViewById(R.id.tv_organizer_details_event_name_header);
-        TextView organizerHeaderTextview = findViewById(R.id.tv_organizer_details_org_header);
-        TextView drawDateTV = findViewById(R.id.tv_organizer_draw_date);
-        TextView registrationPeriodTV = findViewById(R.id.tv_organizer_registration_period);
-        TextView attendeesTV = findViewById(R.id.tv_organizer_attendees);
-        TextView waitListTV = findViewById(R.id.tv_organizer_waitlist_count);
+        TextView nameHeaderTextView = findViewById(R.id.tv_eventDetails_event_name_header);
+        TextView organizerHeaderTextview = findViewById(R.id.tv_eventDetails_org_header);
+        TextView drawDateTV = findViewById(R.id.tv_eventDetails_draw_date);
+        TextView registrationPeriodTV = findViewById(R.id.tv_eventDetails_registration_period);
+        TextView attendeesTV = findViewById(R.id.tv_eventDetails_attendees);
+        TextView waitListTV = findViewById(R.id.tv_eventDetails_waitlist_count);
 
         nameHeaderTextView.setText(event.getName());
 
