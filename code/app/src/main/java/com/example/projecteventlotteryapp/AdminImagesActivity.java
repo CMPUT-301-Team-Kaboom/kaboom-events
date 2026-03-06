@@ -1,0 +1,43 @@
+package com.example.projecteventlotteryapp;
+
+import android.net.Uri;
+import android.os.Bundle;
+import android.util.Log;
+
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import java.util.ArrayList;
+
+public class AdminImagesActivity extends AppCompatActivity {
+    /*
+    the following code is adapted from https://www.geeksforgeeks.org/android/how-to-build-an-image-gallery-android-app-with-recyclerview-and-glide/
+     */
+    private RecyclerView recyclerView;
+    private AdminImagesAdapter adapter;
+    private GridLayoutManager manager;
+    private ArrayList<Image> imageList;
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_admin_images);
+
+        imageList = new ArrayList<>();
+        recyclerView = findViewById(R.id.rv_admin_images_list);
+        adapter = new AdminImagesAdapter(this,imageList);
+        manager = new GridLayoutManager(this, 2);
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(manager);
+
+        //testing
+        Uri testUri = Uri.parse("android.resource://" + this.getPackageName() + "/drawable/default_poster");
+        Log.d("Uri", testUri.toString());
+        imageList.add(new Image(testUri));
+        imageList.add(new Image(testUri));
+        imageList.add(new Image(testUri));
+    }
+}
