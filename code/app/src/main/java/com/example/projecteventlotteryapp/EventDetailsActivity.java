@@ -123,8 +123,10 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     private void configureUIForRole(User user) {
         if (user.getRole() == Role.ORGANIZER) {
-            organizerController.setVisibility(View.VISIBLE);
             entrantController.setVisibility(View.GONE);
+            organizerController.setVisibility(View.VISIBLE);
+            editButton.setVisibility(View.VISIBLE);
+            mapButton.setVisibility(View.VISIBLE);
 
 //            waitlistButton.setOnClickListener(v -> openUserList("waitlist"));
 
@@ -134,9 +136,11 @@ public class EventDetailsActivity extends AppCompatActivity {
 
 //            declinedButton.setOnClickListener(v -> openUserList("declined"));
         } else if (user.getRole() == Role.ENTRANT) {
-            organizerController.setVisibility(View.GONE);
             entrantController.setVisibility(View.VISIBLE);
+            organizerController.setVisibility(View.GONE);
             entrantSecondaryButton.setVisibility(View.GONE);
+            editButton.setVisibility(View.GONE);
+            mapButton.setVisibility(View.GONE);
 
             if (event.invitedListContains((Entrant) user)) {
                 entrantPrimaryButton.setText("Enroll");
