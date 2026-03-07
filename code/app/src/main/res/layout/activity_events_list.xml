@@ -38,7 +38,7 @@
         android:scaleType="fitCenter"/>
 
     <!--
-    The following code (and related Java code in EventsListActivity) is adapted from...
+    The following code is adapted from...
     Author: Jignesh Mayani https://stackoverflow.com/users/1679754/jignesh-mayani
     Title: "How do I get a round tab indicator to fill a round tab indicator background in TabLayout?"
     Answer: https://stackoverflow.com/a/58342297
@@ -54,15 +54,15 @@
         android:layout_marginLeft="20dp"
         android:layout_marginRight="20dp"
         android:background="@drawable/tab_container"
-        app:tabGravity="fill"
-        app:tabInlineLabel="true"
         app:tabIndicator="@drawable/tab"
         app:tabIndicatorColor="@color/primaryAccent"
+        app:tabIndicatorHeight="26dp"
         app:tabIndicatorFullWidth="true"
-        app:tabIndicatorGravity="stretch"
-        app:tabIndicatorHeight="54dp"
+        app:tabIndicatorGravity="center"
         app:tabMode="fixed"
         app:tabTextColor="@color/white"
+        app:tabPaddingStart="8dp"
+        app:tabPaddingEnd="8dp"
         app:layout_constraintTop_toBottomOf="@id/btn_info"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent" />

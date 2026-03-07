@@ -8,8 +8,10 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class EventsListActivity extends AppCompatActivity {
+import com.google.android.material.tabs.TabLayout;
 
+public class EventsListActivity extends AppCompatActivity {
+    private TabLayout tabLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,6 +23,14 @@ public class EventsListActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        tabLayout = (TabLayout) findViewById(R.id.tl_events_list);
+
+        tabLayout.addTab(tabLayout.newTab().setText("Available"));
+        tabLayout.addTab(tabLayout.newTab().setText("WaitList"));
+        tabLayout.addTab(tabLayout.newTab().setText("Enrolled"));
+        tabLayout.addTab(tabLayout.newTab().setText("Declined"));
+        tabLayout.addTab(tabLayout.newTab().setText("History"));
 
         // create EventListFragment
         /*
@@ -36,6 +46,9 @@ public class EventsListActivity extends AppCompatActivity {
                     .add(R.id.fl_events_list, EventsListFragment.class, null)
                     .commit();
         }
+
+
+
 
     }
 }
