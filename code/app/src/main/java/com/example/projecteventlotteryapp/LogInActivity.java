@@ -12,6 +12,7 @@ import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LogInActivity extends AppCompatActivity {
@@ -68,24 +69,48 @@ public class LogInActivity extends AppCompatActivity {
         });
     }
 
-    private String getSelectedCollection() {
-        if (btnEntrant.isChecked()) return "entrants";
-        if (btnOrganizer.isChecked()) return "organizers";
-        if (btnAdmin.isChecked()) return "admins";
+    private Role getSelectedRole() {
+        if (btnEntrant.isChecked()) return Role.ENTRANT;
+        if (btnOrganizer.isChecked()) return Role.ORGANIZER;
+        if (btnAdmin.isChecked()) return Role.ADMIN;
         return null;
     }
 
+    private String getCollectionName(Role role) {
+        switch (role) {
+            case ENTRANT:
+                return "entrants";
+            case ORGANIZER:
+                return "organizers";
+            case ADMIN:
+                return "admins";
+            default:
+                throw new IllegalArgumentException("Unknown role: " + role);
+        }
+    }
+
     private void checkExistingUser() {
-        String collectionName = getSelectedCollection();
-        if (collectionName == null) {
+        Role role = getSelectedRole();
+
+        if (role == null) {
             Toast.makeText(this, "Please select your role to Log In", Toast.LENGTH_SHORT).show();
             return;
         }
 
+        String collectionName = getCollectionName(role);
         db.collection(collectionName).document(deviceID).get()
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful() && task.getResult() != null && task.getResult().exists()) {
                         Log.d("AUTH", "User found in " + collectionName + ": " + deviceID);
+
+                        // extract userId field from Firestore
+                        String userId = task.getResult().getId();
+                        User user = new User(role, userId);
+
+                        // set global MyApp user
+                        MyApp app = (MyApp) getApplication();
+                        app.setCurentUser(user);
+
                         startActivity(new Intent(LogInActivity.this, EventsListActivity.class));
                         finish();
                     } else if (task.isSuccessful()) {
