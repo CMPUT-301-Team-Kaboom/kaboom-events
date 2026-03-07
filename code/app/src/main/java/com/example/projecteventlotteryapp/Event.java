@@ -62,12 +62,8 @@ public class Event {
             LocalDateTime drawDate,
             int attendeesLimit
     ) {
+        this(name, registrationStartDate, registrationEndDate, drawDate, attendeesLimit);
         this.eventId = eventId;
-        this.name = name;
-        this.registrationStartDate = registrationStartDate;
-        this.registrationEndDate = registrationEndDate;
-        this.drawDate = drawDate;
-        this.attendeesLimit = attendeesLimit;
     }
 
     public String getEventId() {
@@ -150,10 +146,50 @@ public class Event {
         this.description = description;
     }
 
-    public boolean waitlistContains(Entrant entrant) {
-        return waitlist.contains(entrant);
+    public boolean entrantListContains(EntrantListType listType, User entrant) {
+        switch (listType) {
+            case WAITLIST:
+                return waitlist.contains(entrant);
+
+            case INVITED:
+                return invited.contains(entrant);
+
+            case ENROLLED:
+                return enrolled.contains(entrant);
+
+            case DECLINED:
+                return declined.contains(entrant);
+
+            default:
+                throw new IllegalArgumentException("Unknown list type: " + listType);
+        }
     }
 
+    public void addToEntrantList(EntrantListType listType, User entrant) {
+        Log.d("AddToEntrantList", String.format("Type: %s | userId: %s",
+                listType.toString(),
+                entrant.getUserId())
+        );
+
+        switch (listType) {
+            case WAITLIST:
+                waitlist.addEntrant(entrant);
+                break;
+            case INVITED:
+                invited.addEntrant(entrant);
+                break;
+            case ENROLLED:
+                enrolled.addEntrant(entrant);
+                break;
+            case DECLINED:
+                declined.addEntrant(entrant);
+                break;
+            default:
+                throw new IllegalArgumentException("Unknown list type: " + listType);
+        }
+    }
+
+    // Event database document conversion
     public static Event fetchEventFromSnapshot(DocumentSnapshot snapshot) {
         // get string fields
         String eventId = snapshot.getId();
@@ -263,9 +299,5 @@ public class Event {
         } else {
             return new ArrayList<String>();
         }
-    }
-
-    public boolean invitedListContains(Entrant user) {
-        return waitlist.contains(user);
     }
 }
