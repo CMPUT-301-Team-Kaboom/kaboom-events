@@ -12,7 +12,6 @@ import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 public class LogInActivity extends AppCompatActivity {
@@ -109,7 +108,7 @@ public class LogInActivity extends AppCompatActivity {
 
                         // set global MyApp user
                         MyApp app = (MyApp) getApplication();
-                        app.setCurentUser(user);
+                        app.setCurrentUser(user);
 
                         startActivity(new Intent(LogInActivity.this, EventsListActivity.class));
                         finish();

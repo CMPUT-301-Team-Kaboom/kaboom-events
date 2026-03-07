@@ -146,7 +146,7 @@ public class Event {
         this.description = description;
     }
 
-    public boolean entrantListContains(EntrantListType listType, Entrant entrant) {
+    public boolean entrantListContains(EntrantListType listType, User entrant) {
         switch (listType) {
             case WAITLIST:
                 return waitlist.contains(entrant);
@@ -165,20 +165,25 @@ public class Event {
         }
     }
 
-    public void addToEntrantList(EntrantListType listType, Entrant entrant) {
+    public void addToEntrantList(EntrantListType listType, User entrant) {
+        Log.d("AddToEntrantList", String.format("Type: %s | userId: %s",
+                listType.toString(),
+                entrant.getUserId())
+        );
+
         switch (listType) {
             case WAITLIST:
                 waitlist.addEntrant(entrant);
-
+                break;
             case INVITED:
                 invited.addEntrant(entrant);
-
+                break;
             case ENROLLED:
                 enrolled.addEntrant(entrant);
-
+                break;
             case DECLINED:
                 declined.addEntrant(entrant);
-
+                break;
             default:
                 throw new IllegalArgumentException("Unknown list type: " + listType);
         }
