@@ -152,17 +152,17 @@ public class EventDetailsActivity extends AppCompatActivity {
 
             if (event.entrantListContains(EntrantListType.INVITED, user)) {
                 entrantPrimaryButton.setText("Enroll");
-                entrantPrimaryButton.setOnClickListener(v -> event.addToEntrantList(EntrantListType.ENROLLED, user));
+                // TODO: Setup onclick listener for adding to Enrolled list
 
                 entrantSecondaryButton.setVisibility(View.VISIBLE);
                 entrantSecondaryButton.setText("Decline");
-                entrantPrimaryButton.setOnClickListener(v -> event.addToEntrantList(EntrantListType.DECLINED, user));
+                // TODO: Setup onclick listener for adding to Declined list
             } else if (event.entrantListContains(EntrantListType.WAITLIST, user)) {
                 entrantPrimaryButton.setText("Remove Waitlist");
-                entrantPrimaryButton.setOnClickListener(v -> event.addToEntrantList(EntrantListType.DECLINED, user));
+                // TODO: Setup onclick listener for removing from wait list
             } else {
                 entrantPrimaryButton.setText("Join Waitlist");
-                entrantPrimaryButton.setOnClickListener(v -> event.addToEntrantList(EntrantListType.WAITLIST, user));
+                // TODO: Setup onclick listener for adding to Waitlist list
             }
         }
     }
