@@ -1,6 +1,8 @@
 package com.example.projecteventlotteryapp;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -36,6 +38,22 @@ public class EventsListActivity extends AppCompatActivity {
                     .add(R.id.fl_events_list, EventsListFragment.class, null)
                     .commit();
         }
+
+        /*
+        Kevin Cao
+        finding and setting click listener to route info button to criteria activity
+        */
+        // find button
+        android.widget.ImageButton infoButton = findViewById(R.id.btn_info);
+
+        // Set click listener
+        infoButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                startActivity(new Intent(EventsListActivity.this, CriteriaAppGuideActivity.class));
+            }
+        });
+
 
     }
 }
