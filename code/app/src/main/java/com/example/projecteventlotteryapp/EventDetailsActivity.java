@@ -152,14 +152,14 @@ public class EventDetailsActivity extends AppCompatActivity {
 
             if (event.entrantListContains(EntrantListType.INVITED, user)) {
                 entrantPrimaryButton.setText("Enroll");
-//                entrantPrimaryButton.setOnClickListener(v -> event.addToEnrolledList(user));
+                entrantPrimaryButton.setOnClickListener(v -> event.addToEntrantList(EntrantListType.ENROLLED, user));
 
                 entrantSecondaryButton.setVisibility(View.VISIBLE);
                 entrantSecondaryButton.setText("Decline");
-//                entrantSecondaryButton.setOnClickListener(v -> event.addToDeclineList(user));
+                entrantPrimaryButton.setOnClickListener(v -> event.addToEntrantList(EntrantListType.DECLINED, user));
             } else if (event.entrantListContains(EntrantListType.WAITLIST, user)) {
                 entrantPrimaryButton.setText("Remove Waitlist");
-                //                entrantPrimaryButton.setOnClickListener(v -> event.removeFromWaitlist(user));
+                entrantPrimaryButton.setOnClickListener(v -> event.addToEntrantList(EntrantListType.DECLINED, user));
             } else {
                 entrantPrimaryButton.setText("Join Waitlist");
                 entrantPrimaryButton.setOnClickListener(v -> event.addToEntrantList(EntrantListType.WAITLIST, user));
@@ -184,7 +184,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 event.getRegistrationEndDate().format(registrationPeriodPattern).toUpperCase()
         );
         registrationPeriodTV.setText(registrationPeriodText);
-        
+
         configureUIForRole(globalUser);
     }
 
