@@ -75,12 +75,10 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         eventId = getIntent().getStringExtra("eventId");
-<<<<<<< HEAD
         setupUi();
-=======
+
         MyApp app = (MyApp) getApplication();
         globalUser = app.getCurrentUser();
->>>>>>> dev
 
         /*  Code adapted from https://firebase.google.com/docs/firestore/query-data/get-data#java */
         DocumentReference docRef = db.collection("events").document(eventId);
@@ -186,10 +184,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 event.getRegistrationEndDate().format(registrationPeriodPattern).toUpperCase()
         );
         registrationPeriodTV.setText(registrationPeriodText);
-
-
-
-        // show only specific buttons for role
+        
         configureUIForRole(globalUser);
     }
 
