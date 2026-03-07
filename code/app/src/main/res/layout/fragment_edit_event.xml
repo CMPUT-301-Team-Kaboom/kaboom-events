@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tertiaryBackground"
-    tools:context=".CreateEventDialogFragment">
+    tools:context=".EditEventFragment">
 
     <TextView
         android:id="@+id/textView"
@@ -261,18 +261,6 @@
                     android:scaleType="centerCrop"
                     tools:srcCompat="@tools:sample/backgrounds/scenic" />
 
-                <ImageView
-                    android:id="@+id/iv_banner_edit_icon"
-                    android:layout_width="32dp"
-                    android:layout_height="32dp"
-                    android:layout_marginTop="-10dp"
-                    android:layout_marginEnd="-10dp"
-                    android:background="@drawable/rounded_edittext"
-                    android:padding="6dp"
-                    android:src="@drawable/outline_edit_24"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/white" />
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
@@ -324,7 +312,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Optional"
-                android:textSize="10sp"
+                android:textSize="11sp"
                 android:textStyle="normal"
                 android:textColor="@color/grey"
                 app:layout_constraintEnd_toEndOf="@+id/et_edit_location"
@@ -361,7 +349,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Entrants must be located near your event"
-                    android:textSize="10sp"
+                    android:textSize="11sp"
                     android:textStyle="normal"
                     android:textColor="@color/grey"
                     android:layout_marginTop="-4dp"
