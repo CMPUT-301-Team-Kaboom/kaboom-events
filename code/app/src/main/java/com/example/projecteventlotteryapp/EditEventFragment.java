@@ -1,3 +1,5 @@
+// references: https://www.geeksforgeeks.org/android/how-to-generate-qr-code-in-android/
+
 package com.example.projecteventlotteryapp;
 
 import android.app.DatePickerDialog;
@@ -18,7 +20,7 @@ import java.time.LocalTime;
  * Activity for organizers to edit event details.
  * Provides fields for name, registration dates, draw date/time, entrant limits, location, and description.
  */
-public class OrganizerEditEventDetails extends AppCompatActivity {
+public class EditEventFragment extends AppCompatActivity {
 
     private EditText editName, editRegStart, editRegEnd, editDrawDate, editDrawTime;
     private EditText editEntrantLimit, editWaitlistLimit, editLocation, editDescription;
