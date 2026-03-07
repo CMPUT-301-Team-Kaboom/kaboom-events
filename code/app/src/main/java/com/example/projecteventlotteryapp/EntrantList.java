@@ -1,5 +1,7 @@
 package com.example.projecteventlotteryapp;
 
+import android.util.Log;
+
 import java.util.ArrayList;
 
 /**
@@ -7,26 +9,30 @@ import java.util.ArrayList;
  * ex Waitlist, Invited, Enrolled, Declined
  */
 public class EntrantList {
-    private ArrayList<Entrant> entrants;
+    private ArrayList<User> entrants;
     private int listLength;
 
     public EntrantList() {
-        entrants = new ArrayList<Entrant>();
+        entrants = new ArrayList<User>();
         listLength = 0;
     }
 
-    public ArrayList<Entrant> getEntrants() {
+    public ArrayList<User> getEntrants() {
         return entrants;
     }
 
-    public void addEntrant(Entrant entrant) {
+    public void addEntrant(User entrant) {
+        if (entrant.getRole() != Role.ENTRANT) {
+            throw new IllegalArgumentException("User must have role ENTRANT");
+        }
+
         entrants.add(entrant);
         listLength++;
     }
 
 //    public popEntrant(Entrant entrant)
 
-    public boolean contains(Entrant user) {
+    public boolean contains(User user) {
         return entrants.contains(user);
     }
 

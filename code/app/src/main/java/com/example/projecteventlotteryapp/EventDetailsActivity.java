@@ -31,6 +31,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String eventId;
     private Event event;
+    private User globalUser;
 
     //=============================
     // UI Elements
@@ -74,7 +75,12 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         eventId = getIntent().getStringExtra("eventId");
+<<<<<<< HEAD
         setupUi();
+=======
+        MyApp app = (MyApp) getApplication();
+        globalUser = app.getCurrentUser();
+>>>>>>> dev
 
         /*  Code adapted from https://firebase.google.com/docs/firestore/query-data/get-data#java */
         DocumentReference docRef = db.collection("events").document(eventId);
@@ -146,19 +152,19 @@ public class EventDetailsActivity extends AppCompatActivity {
             editButton.setVisibility(View.GONE);
             mapButton.setVisibility(View.GONE);
 
-            if (event.entrantListContains(EntrantListType.INVITED, (Entrant) user)) {
+            if (event.entrantListContains(EntrantListType.INVITED, user)) {
                 entrantPrimaryButton.setText("Enroll");
 //                entrantPrimaryButton.setOnClickListener(v -> event.addToEnrolledList(user));
 
                 entrantSecondaryButton.setVisibility(View.VISIBLE);
                 entrantSecondaryButton.setText("Decline");
 //                entrantSecondaryButton.setOnClickListener(v -> event.addToDeclineList(user));
-            } else if (event.entrantListContains(EntrantListType.WAITLIST, (Entrant) user)) {
+            } else if (event.entrantListContains(EntrantListType.WAITLIST, user)) {
                 entrantPrimaryButton.setText("Remove Waitlist");
                 //                entrantPrimaryButton.setOnClickListener(v -> event.removeFromWaitlist(user));
             } else {
                 entrantPrimaryButton.setText("Join Waitlist");
-//                entrantPrimaryButton.setOnClickListener(v -> event.addToWaitlist(user));
+                entrantPrimaryButton.setOnClickListener(v -> event.addToEntrantList(EntrantListType.WAITLIST, user));
             }
         }
     }
@@ -182,10 +188,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         registrationPeriodTV.setText(registrationPeriodText);
 
 
-        // temp user
-        User user = new Entrant("Tester", "tester", "100", Role.ENTRANT);
+
         // show only specific buttons for role
-        configureUIForRole(user);
+        configureUIForRole(globalUser);
     }
 
     private void setupTags() {
