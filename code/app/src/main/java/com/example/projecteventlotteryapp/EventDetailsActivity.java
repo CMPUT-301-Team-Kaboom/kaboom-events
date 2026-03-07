@@ -136,13 +136,14 @@ public class EventDetailsActivity extends AppCompatActivity {
             editButton.setVisibility(View.VISIBLE);
             mapButton.setVisibility(View.VISIBLE);
 
-//            waitlistButton.setOnClickListener(v -> openUserList("waitlist"));
+            // TODO: set onClickListeners for Organizer specific buttons
+            waitlistButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open waitlist"));
+            invitedButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open invited list"));
+            enrolledButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open enrolled List"));
+            declinedButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open declined list"));
 
-//            invitedButton.setOnClickListener(v -> openUserList("invited"));
-
-//            enrolledButton.setOnClickListener(v -> openUserList("enrolled"));
-
-//            declinedButton.setOnClickListener(v -> openUserList("declined"));
+            editButton.setOnClickListener(v -> Log.d("EventDetails", "Clicked Edit Button"));
+            editButton.setOnClickListener(v -> Log.d("EventDetails", "Clicked Map Button"));
         } else if (user.getRole() == Role.ENTRANT) {
             entrantController.setVisibility(View.VISIBLE);
             organizerController.setVisibility(View.GONE);
@@ -153,16 +154,21 @@ public class EventDetailsActivity extends AppCompatActivity {
             if (event.entrantListContains(EntrantListType.INVITED, user)) {
                 entrantPrimaryButton.setText("Enroll");
                 // TODO: Setup onclick listener for adding to Enrolled list
+                entrantPrimaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Enroll"));
+
 
                 entrantSecondaryButton.setVisibility(View.VISIBLE);
                 entrantSecondaryButton.setText("Decline");
                 // TODO: Setup onclick listener for adding to Declined list
+                entrantSecondaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Decline"));
             } else if (event.entrantListContains(EntrantListType.WAITLIST, user)) {
                 entrantPrimaryButton.setText("Remove Waitlist");
                 // TODO: Setup onclick listener for removing from wait list
+                entrantPrimaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Remove waitlist"));
             } else {
                 entrantPrimaryButton.setText("Join Waitlist");
                 // TODO: Setup onclick listener for adding to Waitlist list
+                entrantPrimaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Join waitlist"));
             }
         }
     }
