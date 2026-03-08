@@ -20,7 +20,7 @@ import java.time.LocalTime;
  * Activity for organizers to edit event details.
  * Provides fields for name, registration dates, draw date/time, entrant limits, location, and description.
  */
-public class EditEventFragment extends AppCompatActivity {
+public class EditEventActivity extends AppCompatActivity {
 
     private EditText editName, editRegStart, editRegEnd, editDrawDate, editDrawTime;
     private EditText editEntrantLimit, editWaitlistLimit, editLocation, editDescription;
@@ -30,7 +30,7 @@ public class EditEventFragment extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.fragment_edit_event);
+        setContentView(R.layout.activity_edit_event);
 
         // initialize ui components
         editName = findViewById(R.id.et_event_edit_name);
