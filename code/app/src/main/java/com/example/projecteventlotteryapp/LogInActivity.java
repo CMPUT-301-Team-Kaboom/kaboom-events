@@ -110,7 +110,13 @@ public class LogInActivity extends AppCompatActivity {
                         MyApp app = (MyApp) getApplication();
                         app.setCurrentUser(user);
 
-                        startActivity(new Intent(LogInActivity.this, EventsListActivity.class));
+                        Intent intent;
+                        if (role == Role.ADMIN) {
+                            intent = new Intent(LogInActivity.this, AdminHomeActivity.class);
+                        } else {
+                            intent = new Intent(LogInActivity.this, EventsListActivity.class);
+                        }
+                        startActivity(intent);
                         finish();
                     } else if (task.isSuccessful()) {
                         Log.d("AUTH", "User does not exist in " + collectionName + ": " + deviceID);
