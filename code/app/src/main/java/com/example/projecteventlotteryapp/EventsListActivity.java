@@ -3,6 +3,7 @@ package com.example.projecteventlotteryapp;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -44,7 +45,7 @@ public class EventsListActivity extends AppCompatActivity {
         finding and setting click listener to route info button to criteria activity
         */
         // find button
-        android.widget.ImageButton infoButton = findViewById(R.id.btn_info);
+        ImageButton infoButton = findViewById(R.id.btn_info);
 
         // Set click listener
         infoButton.setOnClickListener(new View.OnClickListener() {
