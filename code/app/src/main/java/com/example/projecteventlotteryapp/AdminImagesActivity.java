@@ -3,6 +3,8 @@ package com.example.projecteventlotteryapp;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
+import android.widget.ImageButton;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -39,5 +41,9 @@ public class AdminImagesActivity extends AppCompatActivity {
         imageList.add(new Image(testUri));
         imageList.add(new Image(testUri));
         imageList.add(new Image(testUri));
+
+        ImageButton backButton = findViewById(R.id.btn_admin_images_back);
+        backButton.setOnClickListener(v -> finish());
+
     }
 }
