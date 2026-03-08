@@ -97,6 +97,14 @@ public class RegistrationActivity extends AppCompatActivity {
         });
     }
 
+    private Role getSelectedRole() {
+        // Function to determine the selected role
+        if (btnEntrant.isChecked()) return Role.ENTRANT;
+        if (btnOrganizer.isChecked()) return Role.ORGANIZER;
+        if (btnAdmin.isChecked()) return Role.ADMIN;
+        return null;
+    }
+
     private String getSelectedCollection(){
         if (btnEntrant.isChecked()){
             return "entrants";
@@ -158,7 +166,23 @@ public class RegistrationActivity extends AppCompatActivity {
         userRef.set(userData)
                 .addOnSuccessListener(aVoid -> {
                     Log.d("AUTH", "New profile Created in " + collectionName + ": " + deviceID);
-                    startActivity(new Intent(RegistrationActivity.this, EventsListActivity.class));
+                    
+                    Role role = getSelectedRole();
+                    // extract userId field from Firestore
+                    User user = new User(role, deviceID);
+
+                    // set global MyApp user
+                    MyApp app = (MyApp) getApplication();
+                    app.setCurrentUser(user);
+
+                    // Temporary handling of page routing, will add more cases for organizer and entrant for now
+                    Intent intent;
+                    if (role == Role.ADMIN) {
+                        intent = new Intent(RegistrationActivity.this, AdminHomeActivity.class);
+                    } else {
+                        intent = new Intent(RegistrationActivity.this, EventsListActivity.class);
+                    }
+                    startActivity(intent);
                     finish();
                 })
                 .addOnFailureListener(e -> {
