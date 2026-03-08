@@ -2,6 +2,7 @@ package com.example.projecteventlotteryapp;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -13,14 +14,8 @@ public class CriteriaAppGuideActivity extends AppCompatActivity {
 
 
         // Find back button
-        android.widget.ImageButton backButton = findViewById(R.id.BackButton);
+        ImageButton backButton = findViewById(R.id.BackButton);
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-
-        });
+        backButton.setOnClickListener( v-> finish());
     }
 }
