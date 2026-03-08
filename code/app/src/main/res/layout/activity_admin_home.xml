@@ -61,5 +61,19 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_view_organizers" />
 
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bn_events_list_menu"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/secondaryBackground"
+        app:itemIconTint="@color/white"
+        app:itemIconSize="42dp"
+        app:itemTextColor="@color/white"
+        app:itemActiveIndicatorStyle="@null"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:menu="@menu/admin_list_menu" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>
