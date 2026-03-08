@@ -18,7 +18,7 @@
         app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
-            android:id="@+id/img_organizer_details_poster"
+            android:id="@+id/img_eventDetails_poster"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:scaleType="centerCrop"
@@ -29,7 +29,7 @@
             android:src="@drawable/default_poster" />
 
         <TextView
-            android:id="@+id/tv_organizer_details_event_name_header"
+            android:id="@+id/tv_eventDetails_event_name_header"
             style="@style/DefaultTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -41,7 +41,7 @@
             app:layout_constraintStart_toStartOf="parent" />
 
         <TextView
-            android:id="@+id/tv_organizer_details_org_header"
+            android:id="@+id/tv_eventDetails_org_header"
             style="@style/DefaultTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -51,11 +51,11 @@
             android:textAlignment="textStart"
             android:textSize="20sp"
             android:textStyle="normal"
-            app:layout_constraintBottom_toTopOf="@+id/tv_organizer_details_event_name_header"
+            app:layout_constraintBottom_toTopOf="@+id/tv_eventDetails_event_name_header"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
-            android:id="@+id/btn_organizer_event_edit"
+            android:id="@+id/btn_eventDetails_edit"
             style="@style/RoundedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -71,7 +71,7 @@
         <!-- scaleType="fitCenter" lets button scale with size-->
 
         <Button
-            android:id="@+id/btn_organizer_event_map"
+            android:id="@+id/btn_eventDetails_map"
             style="@style/RoundedButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -85,7 +85,7 @@
             app:layout_constraintEnd_toEndOf="parent" />
 
         <ImageButton
-            android:id="@+id/btn_organizer_event_back"
+            android:id="@+id/btn_eventDetails_back"
             android:layout_width="48dp"
             android:layout_height="48dp"
             android:layout_marginTop="2dp"
@@ -98,7 +98,7 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <TextView
-        android:id="@+id/tv_organizer_draw_date_header"
+        android:id="@+id/tv_eventDetails_date_header"
         style="@style/DefaultTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -110,36 +110,36 @@
         app:layout_constraintTop_toBottomOf="@+id/cl_poster_area" />
 
     <TextView
-        android:id="@+id/tv_organizer_draw_date"
+        android:id="@+id/tv_eventDetails_draw_date"
         style="@style/DefaultTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="JAN 1    09:00"
-        app:layout_constraintStart_toStartOf="@+id/tv_organizer_draw_date_header"
-        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_draw_date_header" />
+        android:text="MMM dd    xx:xx"
+        app:layout_constraintStart_toStartOf="@+id/tv_eventDetails_date_header"
+        app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_date_header" />
 
     <TextView
-        android:id="@+id/tv_organizer_registration_period_header"
+        android:id="@+id/tv_eventDetails_registration_period_header"
         style="@style/DefaultTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
         android:text="Registration Period"
         android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="@+id/tv_organizer_draw_date"
-        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_draw_date" />
+        app:layout_constraintStart_toStartOf="@+id/tv_eventDetails_draw_date"
+        app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_draw_date" />
 
     <TextView
-        android:id="@+id/tv_organizer_registration_period"
+        android:id="@+id/tv_eventDetails_registration_period"
         style="@style/DefaultTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="JAN 1 - JAN 5"
-        app:layout_constraintStart_toStartOf="@+id/tv_organizer_registration_period_header"
-        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_registration_period_header" />
+        android:text="MMM d - MMM d"
+        app:layout_constraintStart_toStartOf="@+id/tv_eventDetails_registration_period_header"
+        app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_registration_period_header" />
 
     <TextView
-        android:id="@+id/tv_organizer_attendees_header"
+        android:id="@+id/tv_eventDetails_attendees_header"
         style="@style/DefaultTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -151,17 +151,17 @@
         app:layout_constraintTop_toBottomOf="@+id/cl_poster_area" />
 
     <TextView
-        android:id="@+id/tv_organizer_attendees"
+        android:id="@+id/tv_eventDetails_attendees"
         style="@style/DefaultTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="30"
         android:textAlignment="viewEnd"
-        app:layout_constraintEnd_toEndOf="@+id/tv_organizer_attendees_header"
-        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_attendees_header" />
+        app:layout_constraintEnd_toEndOf="@+id/tv_eventDetails_attendees_header"
+        app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_attendees_header" />
 
     <TextView
-        android:id="@+id/tv_organizer_waitlist_count_header"
+        android:id="@+id/tv_eventDetails_waitlist_count_header"
         style="@style/DefaultTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -170,30 +170,30 @@
         android:text="Attendees"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_attendees" />
+        app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_attendees" />
 
     <TextView
-        android:id="@+id/tv_organizer_waitlist_count"
+        android:id="@+id/tv_eventDetails_waitlist_count"
         style="@style/DefaultTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="30"
         android:textAlignment="viewEnd"
-        app:layout_constraintEnd_toEndOf="@+id/tv_organizer_waitlist_count_header"
-        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_waitlist_count_header" />
+        app:layout_constraintEnd_toEndOf="@+id/tv_eventDetails_waitlist_count_header"
+        app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_waitlist_count_header" />
 
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_button_controls"
+        android:id="@+id/cl_event_details_button_controls"
         android:layout_width="0dp"
         android:layout_height="50dp"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_registration_period">
+        app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_registration_period">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_entrant_button_controls"
+            android:id="@+id/cl_eventDetails_entrant_button_controls"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginStart="6dp"
@@ -206,7 +206,7 @@
 
 
             <Button
-                android:id="@+id/btn_entrant_primary"
+                android:id="@+id/btn_eventDetails_entrant_primary"
                 style="@style/RoundedButton"
                 android:layout_width="wrap_content"
                 android:height="35dp"
@@ -219,7 +219,7 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <Button
-                android:id="@+id/btn_entrant_secondary"
+                android:id="@+id/btn_eventDetails_entrant_secondary"
                 style="@style/RoundedButton"
                 android:layout_width="wrap_content"
                 android:height="35dp"
@@ -235,7 +235,7 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
 
         <LinearLayout
-            android:id="@+id/ll_organizer_button_controls"
+            android:id="@+id/ll_eventDetails_organizer_button_controls"
             android:layout_width="0dp"
             android:layout_height="50dp"
             android:layout_marginStart="6dp"
@@ -247,7 +247,7 @@
             app:layout_constraintBottom_toBottomOf="parent">
 
             <Button
-                android:id="@+id/btn_organizer_waitlist"
+                android:id="@+id/btn_eventDetails_organizer_waitlist"
                 style="@style/RoundedButton"
                 android:layout_width="0dp"
                 android:layout_height="35dp"
@@ -259,7 +259,7 @@
                 app:backgroundTint="@color/white" />
 
             <Button
-                android:id="@+id/btn_organizer_invited"
+                android:id="@+id/btn_eventDetails_organizer_invited"
                 style="@style/RoundedButton"
                 android:layout_width="0dp"
                 android:layout_height="35dp"
@@ -271,7 +271,7 @@
                 app:backgroundTint="@color/white" />
 
             <Button
-                android:id="@+id/btn_organizer_declined"
+                android:id="@+id/btn_eventDetails_organizer_declined"
                 style="@style/RoundedButton"
                 android:layout_width="0dp"
                 android:layout_height="35dp"
@@ -283,7 +283,7 @@
                 app:backgroundTint="@color/white" />
 
             <Button
-                android:id="@+id/btn_organizer_enrolled"
+                android:id="@+id/btn_eventDetails_organizer_enrolled"
                 style="@style/RoundedButton"
                 android:layout_width="0dp"
                 android:layout_height="35dp"
@@ -298,50 +298,59 @@
     </androidx.constraintlayout.widget.ConstraintLayout>
 
 
-
     <LinearLayout
-        android:id="@+id/ll_tags"
+        android:id="@+id/ll_eventDetails_tags"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
+        android:layout_height="40dp"
+        android:layout_marginStart="10dp"
+        android:layout_marginEnd="10dp"
         android:orientation="horizontal"
-        app:layout_constraintTop_toBottomOf="@+id/cl_button_controls">
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/cl_event_details_button_controls">
 
         <TextView
-            android:id="@+id/tv_organizer_tag1"
+            android:id="@+id/tv_eventDetails_tag1"
             style="@style/DefaultTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/squared_container"
             android:text="Tag 1" />
 
         <TextView
-            android:id="@+id/tv_organizer_tag2"
+            android:id="@+id/tv_eventDetails_tag2"
             style="@style/DefaultTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:layout_marginEnd="8dp"
+            android:background="@drawable/squared_container"
             android:text="Tag 2" />
 
         <TextView
-            android:id="@+id/tv_organizer_tag3"
+            android:id="@+id/tv_eventDetails_tag3"
             style="@style/DefaultTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
+            android:background="@drawable/squared_container"
             android:text="Tag 3" />
     </LinearLayout>
 
     <ScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:background="@drawable/rounded_container"
+        android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ll_tags">
-
+        app:layout_constraintTop_toBottomOf="@+id/ll_eventDetails_tags">
 
         <TextView
-            android:id="@+id/tv_organizer_description"
+            android:id="@+id/tv_eventDetails_description"
             style="@style/DefaultTextStyle"
             android:textSize="14sp"
             android:textStyle="normal"

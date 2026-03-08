@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -21,14 +22,45 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-public class EventDetailsActivity extends AppCompatActivity {
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
+public class EventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
-    private LinearLayout organizerController;
-    private ConstraintLayout entrantController;
     private String eventId;
     private Event event;
     private User globalUser;
+
+    //=============================
+    // UI Elements
+    //=============================
+
+    // organizer Buttons
+    private Button waitlistButton;
+    private Button invitedButton;
+    private Button enrolledButton;
+    private Button declinedButton;
+    private Button editButton;
+    private Button mapButton;
+
+    // entrant buttons
+    private Button entrantPrimaryButton;
+    private Button entrantSecondaryButton;
+
+    // global UI elements
+    private ImageButton backButton;
+    private LinearLayout organizerController;
+    private ConstraintLayout entrantController;
+
+    private TextView nameHeaderTextView;
+    private TextView organizerHeaderTextview;
+    private TextView drawDateTV;
+    private TextView registrationPeriodTV;
+    private TextView attendeesTV;
+    private TextView waitListTV;
+    private TextView descriptionTV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +75,8 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         eventId = getIntent().getStringExtra("eventId");
+        setupUi();
+
         MyApp app = (MyApp) getApplication();
         globalUser = app.getCurrentUser();
 
@@ -66,64 +100,123 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
-        organizerController = findViewById(R.id.ll_organizer_button_controls);
-        entrantController = findViewById(R.id.cl_entrant_button_controls);
+
+    }
+
+    private void setupUi() {
+        waitlistButton  = findViewById(R.id.btn_eventDetails_organizer_waitlist);
+        invitedButton   = findViewById(R.id.btn_eventDetails_organizer_invited);
+        enrolledButton  = findViewById(R.id.btn_eventDetails_organizer_enrolled);
+        declinedButton  = findViewById(R.id.btn_eventDetails_organizer_declined);
+        mapButton       = findViewById(R.id.btn_eventDetails_map);
+
+        entrantPrimaryButton    = findViewById(R.id.btn_eventDetails_entrant_primary);
+        entrantSecondaryButton  = findViewById(R.id.btn_eventDetails_entrant_secondary);
+
+        nameHeaderTextView      = findViewById(R.id.tv_eventDetails_event_name_header);
+        organizerHeaderTextview = findViewById(R.id.tv_eventDetails_org_header);
+        drawDateTV              = findViewById(R.id.tv_eventDetails_draw_date);
+        registrationPeriodTV    = findViewById(R.id.tv_eventDetails_registration_period);
+        attendeesTV             = findViewById(R.id.tv_eventDetails_attendees);
+        waitListTV              = findViewById(R.id.tv_eventDetails_waitlist_count);
+        descriptionTV           = findViewById(R.id.tv_eventDetails_description);
+
+        organizerController = findViewById(R.id.ll_eventDetails_organizer_button_controls);
+        entrantController   = findViewById(R.id.cl_eventDetails_entrant_button_controls);
+
+        editButton = findViewById(R.id.btn_eventDetails_edit);
+        backButton = findViewById(R.id.btn_eventDetails_back);
+        backButton.setOnClickListener(v -> finish());
     }
 
     private void configureUIForRole(User user) {
         if (user.getRole() == Role.ORGANIZER) {
-            organizerController.setVisibility(View.VISIBLE);
             entrantController.setVisibility(View.GONE);
+            organizerController.setVisibility(View.VISIBLE);
+            editButton.setVisibility(View.VISIBLE);
+            mapButton.setVisibility(View.VISIBLE);
 
-            Button waitlistButton = findViewById(R.id.btn_organizer_waitlist);
-//            waitlistButton.setOnClickListener(v -> openUserList("waitlist"));
+            // TODO: set onClickListeners for Organizer specific buttons
+            waitlistButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open waitlist"));
+            invitedButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open invited list"));
+            enrolledButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open enrolled List"));
+            declinedButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open declined list"));
 
-            Button invitedButton = findViewById(R.id.btn_organizer_invited);
-//            invitedButton.setOnClickListener(v -> openUserList("invited"));
-
-            Button enrolledButton = findViewById(R.id.btn_organizer_enrolled);
-//            enrolledButton.setOnClickListener(v -> openUserList("enrolled"));
-
-            Button declinedButton = findViewById(R.id.btn_organizer_declined);
-//            declinedButton.setOnClickListener(v -> openUserList("declined"));
+            editButton.setOnClickListener(v -> Log.d("EventDetails", "Clicked Edit Button"));
+            editButton.setOnClickListener(v -> Log.d("EventDetails", "Clicked Map Button"));
         } else if (user.getRole() == Role.ENTRANT) {
-            organizerController.setVisibility(View.GONE);
             entrantController.setVisibility(View.VISIBLE);
-            Button entrantPrimaryButton = findViewById(R.id.btn_entrant_primary);
-            Button entrantSecondaryButton = findViewById(R.id.btn_entrant_secondary);
+            organizerController.setVisibility(View.GONE);
             entrantSecondaryButton.setVisibility(View.GONE);
+            editButton.setVisibility(View.GONE);
+            mapButton.setVisibility(View.GONE);
 
             if (event.entrantListContains(EntrantListType.INVITED, user)) {
                 entrantPrimaryButton.setText("Enroll");
-//                entrantPrimaryButton.setOnClickListener(v -> event.addToEnrolledList(user));
+                // TODO: Setup onclick listener for adding to Enrolled list
+                entrantPrimaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Enroll"));
+
 
                 entrantSecondaryButton.setVisibility(View.VISIBLE);
                 entrantSecondaryButton.setText("Decline");
-//                entrantSecondaryButton.setOnClickListener(v -> event.addToDeclineList(user));
+                // TODO: Setup onclick listener for adding to Declined list
+                entrantSecondaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Decline"));
             } else if (event.entrantListContains(EntrantListType.WAITLIST, user)) {
                 entrantPrimaryButton.setText("Remove Waitlist");
-                //                entrantPrimaryButton.setOnClickListener(v -> event.removeFromWaitlist(user));
+                // TODO: Setup onclick listener for removing from wait list
+                entrantPrimaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Remove waitlist"));
             } else {
                 entrantPrimaryButton.setText("Join Waitlist");
-                entrantPrimaryButton.setOnClickListener(v -> event.addToEntrantList(EntrantListType.WAITLIST, user));
+                // TODO: Setup onclick listener for adding to Waitlist list
+                entrantPrimaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Join waitlist"));
             }
         }
     }
 
     private void updateUi() {
-        TextView nameHeaderTextView = findViewById(R.id.tv_organizer_details_event_name_header);
-        TextView organizerHeaderTextview = findViewById(R.id.tv_organizer_details_org_header);
-        TextView drawDateTV = findViewById(R.id.tv_organizer_draw_date);
-        TextView registrationPeriodTV = findViewById(R.id.tv_organizer_registration_period);
-        TextView attendeesTV = findViewById(R.id.tv_organizer_attendees);
-        TextView waitListTV = findViewById(R.id.tv_organizer_waitlist_count);
-
         nameHeaderTextView.setText(event.getName());
+        attendeesTV.setText(String.valueOf(event.getAttendeesLimit()));
+        waitListTV.setText(String.valueOf(event.getWaitlistLimit()));
+        descriptionTV.setText(event.getDescription());
+        setupTags();
 
+        DateTimeFormatter drawDatePattern = DateTimeFormatter.ofPattern("MMM d      h:mm a");
+        String formattedDate = event.getDrawDate().format(drawDatePattern).toUpperCase();
+        drawDateTV.setText(formattedDate);
 
+        DateTimeFormatter registrationPeriodPattern = DateTimeFormatter.ofPattern("MMM d");
+        String registrationPeriodText = String.format("%s - %s",
+                event.getRegistrationStartDate().format(registrationPeriodPattern).toUpperCase(),
+                event.getRegistrationEndDate().format(registrationPeriodPattern).toUpperCase()
+        );
+        registrationPeriodTV.setText(registrationPeriodText);
 
-        // show only specific buttons for role
         configureUIForRole(globalUser);
+    }
+
+    private void setupTags() {
+        ArrayList<String> tags = event.getTagsList();
+        int numTags = tags.size();
+
+        TextView tag1 = findViewById(R.id.tv_eventDetails_tag1);
+        TextView tag2 = findViewById(R.id.tv_eventDetails_tag2);
+        TextView tag3 = findViewById(R.id.tv_eventDetails_tag3);
+        List<TextView> tagsTVs = Arrays.asList(tag1, tag2, tag3);
+
+        for (TextView tv:tagsTVs) {
+            tv.setVisibility(View.GONE);
+        }
+
+        if (numTags > 3) {
+            Log.d("EventDetailsActivity", "Number of tags exceeds limit (3). Truncating to first 3 tags.");
+            numTags = 3;
+        }
+
+        for (int i=0; i < numTags; i++) {
+            TextView tagTv = tagsTVs.get(i);
+            tagTv.setText(tags.get(i));
+            tagTv.setVisibility(View.VISIBLE);
+        }
     }
 }
 

@@ -147,22 +147,7 @@ public class Event {
     }
 
     public boolean entrantListContains(EntrantListType listType, User entrant) {
-        switch (listType) {
-            case WAITLIST:
-                return waitlist.contains(entrant);
-
-            case INVITED:
-                return invited.contains(entrant);
-
-            case ENROLLED:
-                return enrolled.contains(entrant);
-
-            case DECLINED:
-                return declined.contains(entrant);
-
-            default:
-                throw new IllegalArgumentException("Unknown list type: " + listType);
-        }
+        return getList(listType).contains(entrant);
     }
 
     public void addToEntrantList(EntrantListType listType, User entrant) {
@@ -171,19 +156,22 @@ public class Event {
                 entrant.getUserId())
         );
 
+        getList(listType).addEntrant(entrant);
+    }
+
+    public void removeFromEntrantList(EntrantListType listType, User entrant) {
+        getList(listType).removeEntrant(entrant);
+    }
+    private EntrantList getList(EntrantListType listType) {
         switch (listType) {
             case WAITLIST:
-                waitlist.addEntrant(entrant);
-                break;
+                return waitlist;
             case INVITED:
-                invited.addEntrant(entrant);
-                break;
+                return invited;
             case ENROLLED:
-                enrolled.addEntrant(entrant);
-                break;
+                return enrolled;
             case DECLINED:
-                declined.addEntrant(entrant);
-                break;
+                return declined;
             default:
                 throw new IllegalArgumentException("Unknown list type: " + listType);
         }
