@@ -24,6 +24,7 @@ public class OrganizerWaitlistActivity extends AppCompatActivity {
         Intent intent = getIntent();
         event = (Event) intent.getSerializableExtra("event");
 
+        // TESTING
         event.addToEntrantList(EntrantListType.WAITLIST, new User(Role.ENTRANT, "TEST1", "Entrant1", "entrant1@email.com", ""));
         event.addToEntrantList(EntrantListType.WAITLIST, new User(Role.ENTRANT, "TEST2", "Entrant2", "entrant2@email.com", ""));
         event.addToEntrantList(EntrantListType.WAITLIST, new User(Role.ENTRANT, "TEST3", "Entrant3", "entrant3@email.com", ""));
