@@ -2,12 +2,10 @@ package com.example.projecteventlotteryapp;
 
 import com.google.firebase.Timestamp;
 
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
-import java.util.HashMap;
 
 public class FirestoreUtils {
     /**
