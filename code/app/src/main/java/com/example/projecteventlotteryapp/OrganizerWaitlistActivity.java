@@ -20,7 +20,7 @@ import java.util.ArrayList;
  * Provides an organizer with the waitlist of entrants that have entered to join their event
  */
 public class OrganizerWaitlistActivity extends AppCompatActivity {
-    private String event;
+    private String eventId;
     private OrganizerWaitlistAdapter adapter;
     private ListView waitlistView;
     private ImageButton backBtn;
@@ -33,10 +33,10 @@ public class OrganizerWaitlistActivity extends AppCompatActivity {
 
         waitlistView = findViewById(R.id.lv_organizer_waitlist_list);
         Intent intent  = getIntent();
-        event = intent.getStringExtra("eventID");
+        eventId = intent.getStringExtra("eventID");
 
         db = FirebaseFirestore.getInstance();
-        DocumentReference eventDoc = db.collection("events").document(event);
+        DocumentReference eventDoc = db.collection("events").document(eventId);
 
         eventDoc.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()){
