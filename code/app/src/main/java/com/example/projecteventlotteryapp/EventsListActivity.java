@@ -1,17 +1,24 @@
 package com.example.projecteventlotteryapp;
 
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.tabs.TabLayout;
 
-public class EventsListActivity extends AppCompatActivity {
-    private TabLayout tabLayout;
+public class EventsListActivity extends AppCompatActivity implements CreateEventDialogFragment.CreateEventDialogListener {
+    private Button organizerController;
+    private TabLayout entrantController;
+    private User globalUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,13 +31,13 @@ public class EventsListActivity extends AppCompatActivity {
             return insets;
         });
 
-        tabLayout = (TabLayout) findViewById(R.id.tl_events_list);
+        MyApp app = (MyApp) getApplication();
+        globalUser = app.getCurrentUser();
 
-        tabLayout.addTab(tabLayout.newTab().setText("Available"));
-        tabLayout.addTab(tabLayout.newTab().setText("WaitList"));
-        tabLayout.addTab(tabLayout.newTab().setText("Enrolled"));
-        tabLayout.addTab(tabLayout.newTab().setText("Declined"));
-        tabLayout.addTab(tabLayout.newTab().setText("History"));
+        organizerController = findViewById(R.id.btn_create_event);
+        entrantController = findViewById(R.id.tl_events_list);
+
+        configureUIForRole(globalUser);
 
         // create EventListFragment
         /*
@@ -46,9 +53,36 @@ public class EventsListActivity extends AppCompatActivity {
                     .add(R.id.fl_events_list, EventsListFragment.class, null)
                     .commit();
         }
+    }
 
+    private void configureUIForRole(User user) {
+        if (user.getRole() == Role.ORGANIZER) {
+            organizerController.setVisibility(View.VISIBLE);
+            entrantController.setVisibility(View.GONE);
 
+            organizerController.setOnClickListener(view -> {
 
+                CreateEventDialogFragment createEventDialogFragment = new CreateEventDialogFragment();
+                createEventDialogFragment.show(getSupportFragmentManager(), "Create Event");
+            });
 
+        } else if (user.getRole() == Role.ENTRANT) {
+            organizerController.setVisibility(View.GONE);
+            entrantController.setVisibility(View.VISIBLE);
+
+            entrantController.addTab(entrantController.newTab().setText("Available"));
+            entrantController.addTab(entrantController.newTab().setText("WaitList"));
+            entrantController.addTab(entrantController.newTab().setText("Enrolled"));
+            entrantController.addTab(entrantController.newTab().setText("Declined"));
+            entrantController.addTab(entrantController.newTab().setText("History"));
+
+            // todo: add filtering with the tabs might need to refactor code
+        }
+    }
+
+    @Override
+    public void addEvent(Event event) {
+        // todo: add event to db?
+        Log.d("EventsListActivity", "Organizer created event: " + event.getName());
     }
 }

@@ -26,6 +26,7 @@ public class Event {
     private EntrantList declined = new EntrantList();
     private EntrantList enrolled = new EntrantList();
     private String description;
+    private String organizerId;
     // private QRCode
     // private location
     // private map
@@ -144,6 +145,14 @@ public class Event {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getOrganizerId() {
+        return organizerId;
+    }
+
+    public void setOrganizerId(String organizerId) {
+        this.organizerId = organizerId;
     }
 
     public boolean entrantListContains(EntrantListType listType, User entrant) {
