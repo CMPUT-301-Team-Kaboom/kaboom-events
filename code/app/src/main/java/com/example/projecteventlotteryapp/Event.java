@@ -6,12 +6,13 @@ import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 
-public class Event {
+public class Event implements Serializable {
     private String eventId;
     private String name;
     private int attendeesLimit;
@@ -162,7 +163,7 @@ public class Event {
     public void removeFromEntrantList(EntrantListType listType, User entrant) {
         getList(listType).removeEntrant(entrant);
     }
-    private EntrantList getList(EntrantListType listType) {
+    public EntrantList getList(EntrantListType listType) {
         switch (listType) {
             case WAITLIST:
                 return waitlist;

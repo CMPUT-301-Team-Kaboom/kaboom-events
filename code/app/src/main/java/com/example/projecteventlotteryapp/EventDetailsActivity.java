@@ -1,5 +1,6 @@
 package com.example.projecteventlotteryapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -137,7 +138,12 @@ public class EventDetailsActivity extends AppCompatActivity {
             mapButton.setVisibility(View.VISIBLE);
 
             // TODO: set onClickListeners for Organizer specific buttons
-            waitlistButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open waitlist"));
+            waitlistButton.setOnClickListener(v -> {
+                Log.d("EventDetails", "[TEMP] Open waitlist");
+                Intent intent = new Intent(EventDetailsActivity.this, OrganizerWaitlistActivity.class);
+                intent.putExtra("event", event);
+                startActivity(intent);
+            });
             invitedButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open invited list"));
             enrolledButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open enrolled List"));
             declinedButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open declined list"));
