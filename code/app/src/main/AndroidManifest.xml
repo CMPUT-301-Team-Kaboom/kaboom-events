@@ -53,6 +53,9 @@
         <activity
             android:name=".AdminActivity"
             android:exported="false" />
+        <activity
+            android:name=".OrganizerWaitlistActivity"
+            android:exported="false"/>
     </application>
 
 </manifest>

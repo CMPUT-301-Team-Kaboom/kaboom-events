@@ -1,6 +1,8 @@
 package com.example.projecteventlotteryapp;
 
-public class User {
+import java.io.Serializable;
+
+public class User implements Serializable {
     private Role role;
     private String userId;
     private String name;
