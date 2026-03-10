@@ -94,6 +94,8 @@ public class EventsListFragment extends Fragment {
         // clickListener for a ListView item
         eventsListView.setOnItemClickListener((parent, view1, position, id) -> {
             Event selectedEvent = eventsArrayList.get(position);
+            Log.d("EventsListFragment", "Event Organizer ID: " + selectedEvent.getOrganizerId());
+            Log.d("EventsListFragment", "User ID: " + globalUser.getUserId());
 
             Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
             intent.putExtra("eventId", selectedEvent.getEventId());
@@ -125,7 +127,15 @@ public class EventsListFragment extends Fragment {
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                 if (documentSnapshot.exists()) {
                                     String organizerId = documentSnapshot.getId();
+                                    String organizerName = documentSnapshot.getString("name");
                                     event.setOrganizerId(organizerId);
+                                    event.setOrganizerName(organizerName);
+
+                                    // filter (maybe add the above code to Event via fetchEventFromSnapshot later)
+                                    if (displayEventForRole(event, globalUser)) {
+                                        eventsArrayList.add(event);
+                                        eventsArrayAdapter.notifyDataSetChanged();
+                                    }
                                 }
                             }
                         });
@@ -143,14 +153,8 @@ public class EventsListFragment extends Fragment {
                             }
                         });
                     }
-
-                    // filter EventList for role
-                    if (displayEventForRole(event, globalUser)) {
-                        eventsArrayList.add(event);
-                    }
-
                 }
-                eventsArrayAdapter.notifyDataSetChanged();
+                eventsArrayAdapter.notifyDataSetChanged(); // maybe redundant
             }
         });
         return view;
@@ -158,11 +162,11 @@ public class EventsListFragment extends Fragment {
 
     private boolean displayEventForRole(Event event, User user) {
         if (user.getRole() == Role.ORGANIZER) {
-            // todo: get organizer id of event and see if it matches the user id
-            return (user.getUserId().equals(event.getOrganizerId()));
-        } else {
+            // todo: get organizer id of event and see if it matches the user id (haven't tested yet)
             Log.d("EventsListFragment", "Event Organizer ID: " + event.getOrganizerId());
-            Log.d("EventsListFragment", "User ID: " + user.getUserId());
+            Log.d("EventsListFragment", "Event Organizer Name: " + event.getOrganizerName());
+            return ("liz1".equals(event.getOrganizerId()));
+        } else {
             return true;
         }
     }
