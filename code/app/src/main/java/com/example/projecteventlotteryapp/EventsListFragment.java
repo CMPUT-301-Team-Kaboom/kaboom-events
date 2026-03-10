@@ -94,8 +94,6 @@ public class EventsListFragment extends Fragment {
         // clickListener for a ListView item
         eventsListView.setOnItemClickListener((parent, view1, position, id) -> {
             Event selectedEvent = eventsArrayList.get(position);
-            Log.d("EventsListFragment", "Event Organizer ID: " + selectedEvent.getOrganizerId());
-            Log.d("EventsListFragment", "User ID: " + globalUser.getUserId());
 
             Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
             intent.putExtra("eventId", selectedEvent.getEventId());
@@ -162,10 +160,7 @@ public class EventsListFragment extends Fragment {
 
     private boolean displayEventForRole(Event event, User user) {
         if (user.getRole() == Role.ORGANIZER) {
-            // todo: get organizer id of event and see if it matches the user id (haven't tested yet)
-            Log.d("EventsListFragment", "Event Organizer ID: " + event.getOrganizerId());
-            Log.d("EventsListFragment", "Event Organizer Name: " + event.getOrganizerName());
-            return ("liz1".equals(event.getOrganizerId()));
+            return (user.getUserId().equals(event.getOrganizerId()));
         } else {
             return true;
         }
