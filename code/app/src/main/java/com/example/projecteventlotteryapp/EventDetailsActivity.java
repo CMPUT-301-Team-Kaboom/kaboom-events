@@ -149,7 +149,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             declinedButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open declined list"));
 
             editButton.setOnClickListener(v -> Log.d("EventDetails", "Clicked Edit Button"));
-            editButton.setOnClickListener(v -> Log.d("EventDetails", "Clicked Map Button"));
+            mapButton.setOnClickListener(v -> Log.d("EventDetails", "Clicked Map Button"));
         } else if (user.getRole() == Role.ENTRANT) {
             entrantController.setVisibility(View.VISIBLE);
             organizerController.setVisibility(View.GONE);
