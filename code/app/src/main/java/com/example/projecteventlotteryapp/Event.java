@@ -2,10 +2,17 @@ package com.example.projecteventlotteryapp;
 
 import android.util.Log;
 
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import org.w3c.dom.Document;
+
+import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -21,10 +28,6 @@ public class Event {
     private LocalDate registrationStartDate;
     private LocalDate registrationEndDate;
     private ArrayList<String> tagsList;
-    private EntrantList waitlist = new EntrantList();
-    private EntrantList invited = new EntrantList();
-    private EntrantList declined = new EntrantList();
-    private EntrantList enrolled = new EntrantList();
     private String description;
     private String organizerId;
     private String organizerName;
@@ -32,6 +35,8 @@ public class Event {
     // private location
     // private map
     // private image
+    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private DocumentReference eventDoc;
 
     /**
      * Constructor for Event class
@@ -66,6 +71,7 @@ public class Event {
     ) {
         this(name, registrationStartDate, registrationEndDate, drawDate, attendeesLimit);
         this.eventId = eventId;
+        eventDoc = db.collection("events").document(this.eventId);
     }
 
     public String getEventId() {
@@ -164,23 +170,31 @@ public class Event {
         this.organizerName = organizerName;
     }
 
-    public boolean entrantListContains(EntrantListType listType, User entrant) {
-        switch (listType) {
+    private String getListField(EntrantListType type) {
+        switch (type) {
             case WAITLIST:
-                return waitlist.contains(entrant);
-
+                return "waitlist";
             case INVITED:
-                return invited.contains(entrant);
-
-            case ENROLLED:
-                return enrolled.contains(entrant);
-
+                return "invited";
             case DECLINED:
-                return declined.contains(entrant);
-
+                return "declined";
+            case ENROLLED:
+                return "enrolled";
             default:
-                throw new IllegalArgumentException("Unknown list type: " + listType);
+                throw new IllegalArgumentException("Unknown list type: " + type);
         }
+    }
+    public Task<Boolean> entrantListContains(EntrantListType listType, User entrant) {
+        return eventDoc.get().continueWith(task -> {
+            if (!task.isSuccessful()) { return false; }
+
+            DocumentSnapshot doc = task.getResult();
+            if (!doc.exists()) { return false;}
+
+            ArrayList<String> entrantList = (ArrayList<String>) doc.get(getListField(listType));
+
+            return entrantList != null && entrantList.contains(entrant.getUserId());
+        });
     }
 
     public void addToEntrantList(EntrantListType listType, User entrant) {
@@ -189,22 +203,21 @@ public class Event {
                 entrant.getUserId())
         );
 
-        switch (listType) {
-            case WAITLIST:
-                waitlist.addEntrant(entrant);
-                break;
-            case INVITED:
-                invited.addEntrant(entrant);
-                break;
-            case ENROLLED:
-                enrolled.addEntrant(entrant);
-                break;
-            case DECLINED:
-                declined.addEntrant(entrant);
-                break;
-            default:
-                throw new IllegalArgumentException("Unknown list type: " + listType);
-        }
+        eventDoc.update(getListField(listType), FieldValue.arrayUnion(entrant.getUserId()));
+    }
+
+    public void removeFromEntrantList(EntrantListType listType, User entrant) {
+        eventDoc.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()){
+                DocumentSnapshot doc = task.getResult();
+                if (doc.exists()){
+                    ArrayList<String> entrantList;
+                    entrantList = (ArrayList<String>) doc.get(getListField(listType));
+                    entrantList.remove(entrant.getUserId());
+                    eventDoc.update(getListField(listType), entrantList);
+                }
+            }
+        });
     }
 
     // Event database document conversion

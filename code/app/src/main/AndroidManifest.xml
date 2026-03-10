@@ -47,6 +47,15 @@
         <activity
             android:name=".AdminImagesActivity"
             android:exported="true"/>
+        <activity
+            android:name=".AdminHomeActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminActivity"
+            android:exported="false" />
+        <activity
+            android:name=".OrganizerWaitlistActivity"
+            android:exported="false"/>
     </application>
 
 </manifest>
