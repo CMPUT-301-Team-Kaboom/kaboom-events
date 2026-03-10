@@ -4,6 +4,7 @@ public class Entrant {
     private String name;
     private String email;
     private String phoneNumber;
+    private String deviceId;
 
     public String getName() {
         return name;
@@ -28,4 +29,8 @@ public class Entrant {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+
+    public String getDeviceId() {return deviceId;}
+
+    public void setDeviceId(String deviceId) {this.deviceId = deviceId; }
 }

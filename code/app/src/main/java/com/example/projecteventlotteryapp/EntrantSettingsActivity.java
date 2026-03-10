@@ -101,10 +101,11 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         Map<String, Object> updates = new HashMap<>();
         updates.put("name", name);
         updates.put("email", email);
-        updates.put("phone", phone);
+        updates.put("phoneNumber", phone);
+        updates.put("deviceId", deviceID);
 
         //update the profile
-        ref.update(updates).addOnSuccessListener(unused ->
+        ref.set(updates).addOnSuccessListener(unused ->
                 Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show()
         ).addOnFailureListener(e ->{
             Log.e("PROFILE", "Failed to update profile", e);

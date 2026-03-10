@@ -24,6 +24,12 @@ public class EntrantList {
         listLength++;
     }
 
+    public void removeEntrant(Entrant entrant) {
+            entrants.remove(entrant);
+            listLength--;
+    }
+    public Boolean containsEntrant(Entrant entrant) { return entrants.contains(entrant); }
+
 //    public popEntrant(Entrant entrant)
 
     public int getListLength() {

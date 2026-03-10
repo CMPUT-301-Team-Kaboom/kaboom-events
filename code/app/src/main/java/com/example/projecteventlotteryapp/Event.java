@@ -1,5 +1,7 @@
 package com.example.projecteventlotteryapp;
 
+import android.os.Build;
+
 import com.google.firebase.Timestamp;
 
 import java.time.LocalDate;
@@ -46,6 +48,7 @@ public class Event {
         this.registrationEndDate = registrationEndDate;
         this.drawDate = drawDate;
         this.attendeesLimit = attendeesLimit;
+        this.waitlist = new EntrantList();
     }
 
     public String getName() {
@@ -64,6 +67,32 @@ public class Event {
         this.attendeesLimit = attendeesLimit;
     }
 
+    public EntrantList getWaitList(){ return waitlist; }
+
+    public void addToWaitlist(Entrant entrant) {
+        if (!waitlist.containsEntrant(entrant)) {
+            waitlist.addEntrant(entrant);
+        }
+    }
+
+    public void removeFromWaitlist(Entrant entrant){
+        if (waitlist.containsEntrant(entrant)){
+            waitlist.removeEntrant(entrant);
+        }
+    }
+
+    public boolean isOnWaitlist(Entrant entrant) {return waitlist.containsEntrant(entrant);}
+
+    public boolean isRegistrationOpen(){
+        LocalDate today = null;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            today = LocalDate.now();
+            return (today.isEqual(registrationStartDate) || today.isAfter(registrationStartDate)
+                    && today.isEqual(registrationEndDate) || today.isBefore(registrationEndDate));
+        }
+        return false;
+    }
+
     public int getWaitlistLimit() {
         return waitlistLimit;
     }
@@ -72,6 +101,21 @@ public class Event {
         this.waitlistLimit = waitlistLimit;
     }
 
+    public boolean isWaitlistFull() {return waitlist.getEntrants().size() >= waitlistLimit; }
+
+    public boolean joinWaitlist(Entrant entrant) {
+        if(!isRegistrationOpen()) {return false;}
+        if(isOnWaitlist(entrant)) {return false;}
+        if(isWaitlistFull()) {return false;}
+        waitlist.addEntrant(entrant);
+        return true;
+    }
+
+    public boolean leaveWaitlist(Entrant entrant) {
+        if(!isOnWaitlist(entrant)) {return false;}
+        waitlist.removeEntrant(entrant);
+        return true;
+    }
     public boolean isGeolocationEnabled() {
         return geolocationEnabled;
     }
