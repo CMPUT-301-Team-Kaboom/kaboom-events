@@ -35,12 +35,13 @@ public class AdminImagesActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
 
-        //testing
-        Uri testUri = Uri.parse("android.resource://" + this.getPackageName() + "/drawable/default_poster");
-        Log.d("Uri", testUri.toString());
-        imageList.add(new Image(testUri));
-        imageList.add(new Image(testUri));
-        imageList.add(new Image(testUri));
+        ArrayList<Uri> savedImages = PosterImageHandler.getAllImages(this);
+
+        for (Uri uri: savedImages){
+            imageList.add(new Image(uri));
+        }
+
+        adapter.notifyDataSetChanged();
 
         ImageButton backButton = findViewById(R.id.btn_admin_images_back);
         backButton.setOnClickListener(v -> finish());
