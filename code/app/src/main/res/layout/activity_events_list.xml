@@ -37,45 +37,67 @@
         android:background="@drawable/filter_icon"
         android:scaleType="fitCenter"/>
 
-    <!--
-    The following code (and related Java code in EventsListActivity) is adapted from...
-    Author: Jignesh Mayani https://stackoverflow.com/users/1679754/jignesh-mayani
-    Title: "How do I get a round tab indicator to fill a round tab indicator background in TabLayout?"
-    Answer: https://stackoverflow.com/a/58342297
-    Date: 2019-10-11
-    Retrieved: 2026-02-26
-    License: CC-BY-SA 4.0
-    -->
-    <com.google.android.material.tabs.TabLayout
-        android:id="@+id/tl_events_list"
-        android:layout_width="match_parent"
-        android:layout_height="36dp"
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/cl_controllers"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
         android:layout_marginTop="12dp"
-        android:layout_marginLeft="20dp"
-        android:layout_marginRight="20dp"
-        android:background="@drawable/tab_container"
-        app:tabGravity="fill"
-        app:tabInlineLabel="true"
-        app:tabIndicator="@drawable/tab"
-        app:tabIndicatorColor="@color/primaryAccent"
-        app:tabIndicatorFullWidth="true"
-        app:tabIndicatorGravity="stretch"
-        app:tabIndicatorHeight="54dp"
-        app:tabMode="fixed"
-        app:tabTextColor="@color/white"
+        android:layout_marginStart="20dp"
+        android:layout_marginEnd="20dp"
         app:layout_constraintTop_toBottomOf="@id/btn_info"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent" />
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!--
+        The following code is adapted from...
+        Author: Jignesh Mayani https://stackoverflow.com/users/1679754/jignesh-mayani
+        Title: "How do I get a round tab indicator to fill a round tab indicator background in TabLayout?"
+        Answer: https://stackoverflow.com/a/58342297
+        Date: 2019-10-11
+        Retrieved: 2026-02-26
+        License: CC-BY-SA 4.0
+        -->
+        <com.google.android.material.tabs.TabLayout
+            android:id="@+id/tl_events_list"
+            android:layout_width="match_parent"
+            android:layout_height="36dp"
+            android:background="@drawable/tab_container"
+            app:tabIndicator="@drawable/tab"
+            app:tabIndicatorColor="@color/primaryAccent"
+            app:tabIndicatorHeight="26dp"
+            app:tabIndicatorFullWidth="true"
+            app:tabIndicatorGravity="center"
+            app:tabMode="fixed"
+            app:tabTextColor="@color/white"
+            app:tabPaddingStart="8dp"
+            app:tabPaddingEnd="8dp"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+        <Button
+            style="@style/RoundedButton"
+            android:id="@+id/btn_create_event"
+            android:layout_width="wrap_content"
+            android:layout_height="40dp"
+            android:text="Create Event"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
     <FrameLayout
         android:id="@+id/fl_events_list"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginTop="12dp"
-        app:layout_constraintTop_toBottomOf="@id/tl_events_list"
+        app:layout_constraintTop_toBottomOf="@id/cl_controllers"
         app:layout_constraintBottom_toTopOf="@id/horizontal_line"
-        app:layout_constraintStart_toStartOf="@id/tl_events_list"
-        app:layout_constraintEnd_toEndOf="@id/tl_events_list" />
+        app:layout_constraintStart_toStartOf="@id/cl_controllers"
+        app:layout_constraintEnd_toEndOf="@id/cl_controllers" />
 
     <!--
     The following code is adapted from...
