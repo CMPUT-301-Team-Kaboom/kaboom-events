@@ -179,32 +179,33 @@ public class CreateEventDialogFragment extends DialogFragment {
         HashMap<String, Object> eventData = new HashMap<>();
 
         MyApp app = (MyApp) requireActivity().getApplication();
-        eventData.put("organizer", app.getCurrentUser());
+        DocumentReference organizerRef =
+                db.collection("organizers").document(app.getCurrentUser().getUserId());
+        eventData.put("organizer", organizerRef);
         eventData.put("name", event.getName());
 
 
         ZoneId zoneId = ZoneId.systemDefault();
-        String zoneIdString = zoneId.toString();
         // TODO: update to grab system zoneid
         eventData.put(
                 "drawDate",
                 FirestoreUtils.localDateTimeToTimestamp(
                         event.getDrawDate(),
-                        ZoneId.of(zoneIdString)
+                        zoneId
                 )
         );
         eventData.put(
                 "registrationEndDate",
                 FirestoreUtils.localDateToTimestamp(
                         event.getRegistrationEndDate(),
-                        ZoneId.of(zoneIdString)
+                        zoneId
                 )
         );
         eventData.put(
                 "registrationStartDate",
                 FirestoreUtils.localDateToTimestamp(
                         event.getRegistrationStartDate(),
-                        ZoneId.of(zoneIdString)
+                        zoneId
                 )
         );
         eventData.put("entrantsLimit", event.getAttendeesLimit());
@@ -212,7 +213,7 @@ public class CreateEventDialogFragment extends DialogFragment {
         // setting null values
         eventData.put("description", null);
         eventData.put("geoLocationEnabled", false);
-        eventData.put("Location", null);
+        eventData.put("location", null);
         eventData.put("qrCodePath", null);
         eventData.put("tags", null);
         eventData.put("waitlist", null);
