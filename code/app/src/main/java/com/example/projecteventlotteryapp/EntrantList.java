@@ -2,6 +2,7 @@ package com.example.projecteventlotteryapp;
 
 import android.util.Log;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
@@ -9,7 +10,7 @@ import java.util.ArrayList;
  * ex Waitlist, Invited, Enrolled, Declined
  * TODO: decide if this should be changed to store only entrant IDs instead
  */
-public class EntrantList {
+public class EntrantList implements Serializable {
     private ArrayList<User> entrants;
     private int listLength;
 

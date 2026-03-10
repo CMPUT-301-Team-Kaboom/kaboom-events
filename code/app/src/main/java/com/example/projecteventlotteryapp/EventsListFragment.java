@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 
@@ -21,6 +22,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,6 +34,8 @@ public class EventsListFragment extends Fragment {
     private CollectionReference eventsRef;
     private CollectionReference organizerRef;
     private CollectionReference posterRef;
+
+    private User globalUser;
 
     private ListView eventsListView;
 
@@ -59,11 +63,14 @@ public class EventsListFragment extends Fragment {
         // setup db
         db = FirebaseFirestore.getInstance();
         eventsRef = db.collection("events");
+
+        // get user role
+        MyApp app = (MyApp) getActivity().getApplication();
+        globalUser = app.getCurrentUser();
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_events_list, container, false);
 
@@ -90,11 +97,16 @@ public class EventsListFragment extends Fragment {
 
             Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
             intent.putExtra("eventId", selectedEvent.getEventId());
-            // need a way to track who the current user is
 
             startActivity(intent);
         });
 
+        /*
+        TODO:
+            This works fine. As a stretch goal and if we have time, update so there is separate logic
+            for entrant/organizer, and change so that organizer does a query on events instead of
+            fetching all events and filtering by looking at the organizerRef for each.
+         */
         // set listener
         eventsRef.addSnapshotListener((value, error) -> {
             if (error != null) {
@@ -104,7 +116,6 @@ public class EventsListFragment extends Fragment {
                 eventsArrayList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
                     Event event = Event.fetchEventFromSnapshot(snapshot);
-                    eventsArrayList.add(event);
 
                     // fetch organizer and poster from DocumentReferences
                     /*
@@ -119,8 +130,16 @@ public class EventsListFragment extends Fragment {
                             @Override
                             public void onSuccess(DocumentSnapshot documentSnapshot) {
                                 if (documentSnapshot.exists()) {
+                                    String organizerId = documentSnapshot.getId();
                                     String organizerName = documentSnapshot.getString("name");
-                                    // event.setOrganizerName(organizerName); if we add organizer to Event
+                                    event.setOrganizerId(organizerId);
+                                    event.setOrganizerName(organizerName);
+
+                                    // filter (maybe add the above code to Event via fetchEventFromSnapshot later)
+                                    if (displayEventForRole(event, globalUser)) {
+                                        eventsArrayList.add(event);
+                                        eventsArrayAdapter.notifyDataSetChanged();
+                                    }
                                 }
                             }
                         });
@@ -138,11 +157,18 @@ public class EventsListFragment extends Fragment {
                             }
                         });
                     }
-
                 }
-                eventsArrayAdapter.notifyDataSetChanged();
+                eventsArrayAdapter.notifyDataSetChanged(); // maybe redundant
             }
         });
         return view;
+    }
+
+    private boolean displayEventForRole(Event event, User user) {
+        if (user.getRole() == Role.ORGANIZER) {
+            return (user.getUserId().equals(event.getOrganizerId()));
+        } else {
+            return true;
+        }
     }
 }

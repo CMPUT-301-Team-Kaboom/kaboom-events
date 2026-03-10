@@ -2,17 +2,26 @@ package com.example.projecteventlotteryapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.view.View;
 import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
-public class EventsListActivity extends AppCompatActivity {
+import com.google.android.material.tabs.TabLayout;
 
+public class EventsListActivity extends AppCompatActivity {
+    private Button organizerController;
+    private TabLayout entrantController;
+    private User globalUser;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,6 +33,14 @@ public class EventsListActivity extends AppCompatActivity {
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
+
+        MyApp app = (MyApp) getApplication();
+        globalUser = app.getCurrentUser();
+
+        organizerController = findViewById(R.id.btn_create_event);
+        entrantController = findViewById(R.id.tl_events_list);
+
+        configureUIForRole(globalUser);
 
         // create EventListFragment
         /*
@@ -54,7 +71,30 @@ public class EventsListActivity extends AppCompatActivity {
                 startActivity(new Intent(EventsListActivity.this, CriteriaAppGuideActivity.class));
             }
         });
+    }
 
+    private void configureUIForRole(User user) {
+        if (user.getRole() == Role.ORGANIZER) {
+            organizerController.setVisibility(View.VISIBLE);
+            entrantController.setVisibility(View.GONE);
 
+            organizerController.setOnClickListener(view -> {
+
+                CreateEventDialogFragment createEventDialogFragment = new CreateEventDialogFragment();
+                createEventDialogFragment.show(getSupportFragmentManager(), "Create Event");
+            });
+
+        } else if (user.getRole() == Role.ENTRANT) {
+            organizerController.setVisibility(View.GONE);
+            entrantController.setVisibility(View.VISIBLE);
+
+            entrantController.addTab(entrantController.newTab().setText("Available"));
+            entrantController.addTab(entrantController.newTab().setText("WaitList"));
+            entrantController.addTab(entrantController.newTab().setText("Enrolled"));
+            entrantController.addTab(entrantController.newTab().setText("Declined"));
+            entrantController.addTab(entrantController.newTab().setText("History"));
+
+            // todo: add filtering with the tabs might need to refactor code
+        }
     }
 }
