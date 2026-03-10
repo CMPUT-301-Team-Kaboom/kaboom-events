@@ -19,6 +19,10 @@ import java.util.ArrayList;
 public class OrganizerArrayAdapter extends ArrayAdapter<User> {
     private ArrayList<User> organizers;
     private Context context;
+    private OnDeleteClickListener deleteListener;
+    public interface OnDeleteClickListener {
+        void onDeleteClick(User organizer);
+    }
     public OrganizerArrayAdapter(Context context, ArrayList<User> organizers) {
         super(context, 0, organizers);
         this.organizers = organizers;
@@ -37,10 +41,17 @@ public class OrganizerArrayAdapter extends ArrayAdapter<User> {
         ImageView organizerIconImageView = view.findViewById(R.id.iv_organizer_item_icon);
         TextView organizerNameTextView = view.findViewById(R.id.tv_organizer_item_name);
         TextView organizerEmailTextView = view.findViewById(R.id.tv_organizer_item_email);
+        ImageView profileDeleteIcon = view.findViewById(R.id.iv_organizer_item_delete);
 
         organizerItemPositionTextView.setText(String.valueOf(position + 1));
         organizerNameTextView.setText(organizer.getName());
         organizerEmailTextView.setText(organizer.getEmail());
+
+        profileDeleteIcon.setOnClickListener(v -> {
+            if (deleteListener != null) {
+                deleteListener.onDeleteClick(organizer);
+            }
+        });
 
         return view;
     }
