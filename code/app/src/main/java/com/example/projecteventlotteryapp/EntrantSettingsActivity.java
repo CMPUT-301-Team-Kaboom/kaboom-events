@@ -29,6 +29,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
     private EditText emailEditText;
     private EditText phoneEditText;
     private Button btnSave;
+    private Button btnDelete;
 
 
     @Override
@@ -41,18 +42,20 @@ public class EntrantSettingsActivity extends AppCompatActivity {
 
         // Get the device ID
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-
         // connects the variables to their UI elements in the xml
         nameEditText = findViewById(R.id.et_name);
         emailEditText = findViewById(R.id.et_edit_email);
         phoneEditText = findViewById(R.id.et_edit_phone);
         btnSave = findViewById(R.id.btn_save_profile);
+        btnDelete = findViewById(R.id.btn_delete_profile);
 
         //puts the saved data into the text hints
         loadProfileFromFirestore();
 
         //save when save button is clicked
         btnSave.setOnClickListener(v -> updateProfileInFirestore());
+        btnDelete.setOnClickListener(v -> deleteProfileFromFirestore());
+
     }
 
     // this function reads from the firestore and loads the data into the text hints
@@ -113,5 +116,23 @@ public class EntrantSettingsActivity extends AppCompatActivity {
 
     }
 
+    private void deleteProfileFromFirestore() {
+        DocumentReference userRef = db.collection("entrants").document(deviceID);
+
+        userRef.delete().addOnSuccessListener(unused -> {
+            Toast.makeText(this, "Profile deleted successfully", Toast.LENGTH_SHORT).show();
+
+            //clear text fields
+            nameEditText.setText("");
+            emailEditText.setText("");
+            phoneEditText.setText("");
+
+            //close activity and return to previous screen
+            //finish();        //this will close the app. not sure if that is what we want to do when we delete our profile right now
+        }).addOnFailureListener(e -> {
+            Log.e("PROFILE", "Failed to delete profile", e);
+            Toast.makeText(this, "Failed to delete profile", Toast.LENGTH_SHORT).show();
+        });
+    }
 
 }
