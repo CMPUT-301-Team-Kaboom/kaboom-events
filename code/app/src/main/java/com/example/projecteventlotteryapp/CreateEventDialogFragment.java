@@ -34,20 +34,6 @@ import java.util.HashMap;
  * create an instance of this fragment.
  */
 public class CreateEventDialogFragment extends DialogFragment {
-    interface CreateEventDialogListener {
-        void addEvent(Event event);
-    }
-    private CreateEventDialogListener listener;
-
-    @Override
-    public void onAttach(@NonNull Context context) {
-        super.onAttach(context);
-        if (context instanceof  CreateEventDialogListener) {
-            listener = (CreateEventDialogListener) context;
-        } else {
-            throw new RuntimeException("Implement Listener");
-        }
-    }
 
     @NonNull
     @Override

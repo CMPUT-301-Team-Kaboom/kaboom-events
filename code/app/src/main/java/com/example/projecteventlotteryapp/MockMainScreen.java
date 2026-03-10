@@ -15,7 +15,7 @@ import androidx.core.view.WindowInsetsCompat;
  *
  * TODO: remove
  */
-public class MockMainScreen extends AppCompatActivity implements CreateEventDialogFragment.CreateEventDialogListener {
+public class MockMainScreen extends AppCompatActivity {
     private Button addEventButton;
 
     @Override
@@ -35,16 +35,5 @@ public class MockMainScreen extends AppCompatActivity implements CreateEventDial
             CreateEventDialogFragment createEventDialogFragment = new CreateEventDialogFragment();
             createEventDialogFragment.show(getSupportFragmentManager(), "Create Event");
         });
-    }
-
-    @Override
-    public void addEvent(Event event) {
-        Log.d("Mock Activity", "Event Details: " +
-                "\nName: " + event.getName() +
-                "\nDraw date: " + event.getDrawDate().toString() +
-                "\nReg Start: " + event.getRegistrationStartDate().toString() +
-                "\nReg End: " + event.getRegistrationEndDate().toString() +
-                "\nEntrants Limit: " + event.getAttendeesLimit()
-        );
     }
 }
