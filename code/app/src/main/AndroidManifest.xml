@@ -35,9 +35,6 @@
             android:name=".EventDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".MockMainScreen"
-            android:exported="false"/>
-        <activity
             android:name=".MainActivity"
             android:exported="true">
         </activity>
@@ -56,6 +53,12 @@
         <activity
             android:name=".OrganizerWaitlistActivity"
             android:exported="false"/>
+        <activity
+            android:name=".AdminProfilesListActivity"
+            android:exported="true" />
+        <activity
+            android:name=".AdminOrganizersListActivity"
+            android:exported="true" />
     </application>
 
 </manifest>

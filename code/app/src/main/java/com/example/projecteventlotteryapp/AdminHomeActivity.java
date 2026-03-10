@@ -20,7 +20,16 @@ public class AdminHomeActivity extends AppCompatActivity {
         Button viewOrganizers = findViewById(R.id.btn_view_organizers);
         Button viewImages = findViewById(R.id.btn_view_images);
 
-        // set on click listeners
+        // navigate to entrants (profiles) list
+        viewEntrants.setOnClickListener(v -> {
+            startActivity(new Intent(AdminHomeActivity.this, AdminProfilesListActivity.class));
+        });
+
+        // navigate to organizers list
+        viewOrganizers.setOnClickListener(v -> {
+            startActivity(new Intent(AdminHomeActivity.this, AdminOrganizersListActivity.class));
+        });
+
         viewImages.setOnClickListener(v -> {
             // navigate to view images activity
             startActivity(new Intent(AdminHomeActivity.this, AdminImagesActivity.class));

@@ -18,7 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.tabs.TabLayout;
 
-public class EventsListActivity extends AppCompatActivity implements CreateEventDialogFragment.CreateEventDialogListener {
+public class EventsListActivity extends AppCompatActivity {
     private Button organizerController;
     private TabLayout entrantController;
     private User globalUser;
@@ -96,11 +96,5 @@ public class EventsListActivity extends AppCompatActivity implements CreateEvent
 
             // todo: add filtering with the tabs might need to refactor code
         }
-    }
-
-    @Override
-    public void addEvent(Event event) {
-        // todo: add event to db?
-        Log.d("EventsListActivity", "Organizer created event: " + event.getName());
     }
 }
