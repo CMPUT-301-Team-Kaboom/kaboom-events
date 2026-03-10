@@ -25,7 +25,6 @@ public class AdminProfilesListActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
 
         ImageButton backButton = findViewById(R.id.btn_entrant_list_back);
-        // TODO: connect back arrow with admin home
         backButton.setOnClickListener(v -> finish());
 
         profileListView = findViewById(R.id.lv_entrant_list);
