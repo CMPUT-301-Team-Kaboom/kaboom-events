@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="8dp"
+    android:background="@color/primaryBackground">
+
+    <TextView
+        android:id="@+id/tv_organizer_item_position"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:text="1"
+        android:textColor="@color/primaryAccent"
+        android:textSize="34sp"
+        app:layout_constraintBottom_toTopOf="@+id/separator_line"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/iv_organizer_item_icon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="12dp"
+        app:layout_constraintBottom_toBottomOf="@+id/tv_organizer_item_position"
+        app:layout_constraintStart_toEndOf="@+id/tv_organizer_item_position"
+        app:layout_constraintTop_toTopOf="@+id/tv_organizer_item_position"
+        app:srcCompat="@drawable/profile_icon" />
+
+    <ImageView
+        android:id="@+id/iv_organizer_item_delete"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        app:layout_constraintBottom_toTopOf="@+id/iv_organizer_item_icon"
+        app:layout_constraintEnd_toEndOf="@+id/iv_organizer_item_icon"
+        app:layout_constraintStart_toEndOf="@+id/iv_organizer_item_icon"
+        app:layout_constraintTop_toTopOf="@+id/iv_organizer_item_icon"
+        app:srcCompat="@drawable/delete_image" />
+
+    <TextView
+        android:id="@+id/tv_organizer_item_name"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_marginEnd="8dp"
+        android:text="First Last"
+        android:textColor="@color/primaryAccent"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toStartOf="@+id/btn_organizer_item_notifications"
+        app:layout_constraintStart_of="@+id/iv_organizer_item_icon"
+        app:layout_constraintStart_toEndOf="@+id/iv_organizer_item_icon"
+        app:layout_constraintTop_toTopOf="@+id/iv_organizer_item_icon" />
+
+    <TextView
+        android:id="@+id/tv_organizer_item_email"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="example@ualberta.ca"
+        android:textColor="@color/white"
+        app:layout_constraintEnd_toEndOf="@+id/tv_organizer_item_name"
+        app:layout_constraintStart_toStartOf="@+id/tv_organizer_item_name"
+        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_item_name" />
+
+    <View
+        android:id="@+id/separator_line"
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginTop="8dp"
+        android:background="@color/primaryAccent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tv_organizer_item_position" />
+
+    <Button
+        android:id="@+id/btn_organizer_item_notifications"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="16dp"
+        android:text="Notifications"
+        android:textSize="12sp"
+        app:layout_constraintBottom_toTopOf="@+id/separator_line"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -34,11 +34,11 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="12dp"
-        android:layout_marginEnd="8dp"
+        android:layout_marginEnd="16dp"
         android:text="First Last"
         android:textColor="@color/primaryAccent"
         android:textSize="20sp"
-        app:layout_constraintEnd_toStartOf="@+id/iv_profile_item_delete"
+        app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/iv_profile_item_icon"
         app:layout_constraintTop_toTopOf="@+id/iv_profile_item_icon" />
 
