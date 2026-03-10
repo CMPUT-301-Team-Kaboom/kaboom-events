@@ -3,9 +3,11 @@ package com.example.projecteventlotteryapp;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
@@ -13,27 +15,45 @@ public class AdminOrganizersListActivity extends AppCompatActivity {
     private ListView organizerListView;
     private OrganizerArrayAdapter organizerAdapter;
     private ArrayList<User> organizerDataList;
+    private FirebaseFirestore db;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_organizers_list);
 
-        // initialize ui components
-        TextView header = findViewById(R.id.tv_organizer_list_header);
-        header.setText("All Organizers");
+        db = FirebaseFirestore.getInstance();
 
         ImageButton backButton = findViewById(R.id.btn_organizer_list_back);
+        // TODO: connect back arrow with admin home
         backButton.setOnClickListener(v -> finish());
 
         organizerListView = findViewById(R.id.lv_organizer_list);
         organizerDataList = new ArrayList<>();
 
-        // initialize adapter
-        organizerAdapter = new OrganizerArrayAdapter(this, organizerDataList);
+        organizerAdapter = new OrganizerArrayAdapter(this, organizerDataList, user -> {
+            db.collection("organizers").document(user.getUserId()).delete();
+            organizerDataList.remove(user);
+            organizerAdapter.notifyDataSetChanged();
+        });
         organizerListView.setAdapter(organizerAdapter);
 
-        // todo: get organizer data from firestore
-        // loadOrganizers();
+        loadOrganizers();
+    }
+
+    private void loadOrganizers() {
+        db.collection("organizers").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                organizerDataList.clear();
+                for (DocumentSnapshot doc : task.getResult().getDocuments()) {
+                    User user = new User(Role.ORGANIZER, doc.getId(), 
+                            doc.getString("name"), 
+                            doc.getString("email"), 
+                            doc.getString("phoneNumber"));
+                    organizerDataList.add(user);
+                }
+                organizerAdapter.notifyDataSetChanged();
+            }
+        });
     }
 }

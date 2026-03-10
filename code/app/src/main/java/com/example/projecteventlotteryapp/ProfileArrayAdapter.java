@@ -1,3 +1,4 @@
+//reference: https://stackoverflow.com/questions/61830784/recyclerview-in-android-studio-error-null-object-reference#:~:text=Comments&text=You%20need%20to%20do%20two,use%20the%20Anonymous%20class%20here.
 package com.example.projecteventlotteryapp;
 
 import android.content.Context;
@@ -22,10 +23,11 @@ public class ProfileArrayAdapter extends ArrayAdapter<User> {
         void onDeleteClick(User user);
     }
 
-    public ProfileArrayAdapter(Context context, ArrayList<User> profiles) {
+    public ProfileArrayAdapter(Context context, ArrayList<User> profiles, OnDeleteClickListener deleteListener) {
         super(context, 0, profiles);
         this.profiles = profiles;
         this.context = context;
+        this.deleteListener = deleteListener;
     }
 
     @NonNull
@@ -38,7 +40,7 @@ public class ProfileArrayAdapter extends ArrayAdapter<User> {
 
         User profile = profiles.get(position);
         TextView profileItemPositionTextView = view.findViewById(R.id.tv_profile_item_position);
-        ImageView profileIconImageView = view.findViewById(R.id.iv_organizer_item_icon);
+        ImageView profileIconImageView = view.findViewById(R.id.iv_profile_item_icon);
         TextView profileNameTextView = view.findViewById(R.id.tv_profile_item_name);
         TextView profileEmailTextView = view.findViewById(R.id.tv_profile_item_email);
         ImageView profileDeleteIcon = view.findViewById(R.id.iv_profile_item_delete);
