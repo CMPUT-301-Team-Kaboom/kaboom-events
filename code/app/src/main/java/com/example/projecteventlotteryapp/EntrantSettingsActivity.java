@@ -129,7 +129,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
             phoneEditText.setText("");
 
             //close activity and return to previous screen
-            //finish();        //this will close the app. not sure if that is what we want to do when we delete our profile right now
+            finish();
         }).addOnFailureListener(e -> {
             Log.e("PROFILE", "Failed to delete profile", e);
             Toast.makeText(this, "Failed to delete profile", Toast.LENGTH_SHORT).show();
