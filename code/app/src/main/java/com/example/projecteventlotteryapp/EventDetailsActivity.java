@@ -33,7 +33,7 @@ import java.util.List;
 public class EventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String eventId;
-    //private Event event;
+    private Event event;
     private User globalUser;
 
     //=============================
@@ -92,9 +92,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         Log.d("EventActivity", "DocumentSnapshot data: " + document.getData());
-                        Event.fetchEventFromSnapshot(document, event -> {
-                            updateUi(event);
-                        });
+                        event = Event.fetchEventFromSnapshot(document);
+                        updateUi();
                     } else {
                         Log.d("EventActivity", "No such document");
                     }
@@ -134,7 +133,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> finish());
     }
 
-    private void configureUIForRole(User user, Event event) {
+    private void configureUIForRole(User user) {
         if (user.getRole() == Role.ORGANIZER) {
             entrantController.setVisibility(View.GONE);
             organizerController.setVisibility(View.VISIBLE);
@@ -193,12 +192,12 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void updateUi(Event event) {
+    private void updateUi() {
         nameHeaderTextView.setText(event.getName());
         attendeesTV.setText(String.valueOf(event.getAttendeesLimit()));
         waitListTV.setText(String.valueOf(event.getWaitlistLimit()));
         descriptionTV.setText(event.getDescription());
-        setupTags(event);
+        setupTags();
 
         DateTimeFormatter drawDatePattern = DateTimeFormatter.ofPattern("MMM d      h:mm a");
         String formattedDate = event.getDrawDate().format(drawDatePattern).toUpperCase();
@@ -211,14 +210,24 @@ public class EventDetailsActivity extends AppCompatActivity {
         );
         registrationPeriodTV.setText(registrationPeriodText);
 
-        Log.d("EventDetails", "Poster Url: " + event.getPoster().getImageUrl());
+        db.collection("events").document(eventId).get().addOnSuccessListener(doc->{
+            if (doc.exists()){
+                DocumentReference posterRef = doc.getDocumentReference("poster");
 
-        Glide.with(this).load(event.getPoster().getImageUrl()).into(posterIV);
+                posterRef.get().addOnSuccessListener(posterDoc -> {
+                    if (posterDoc.exists()){
+                        Glide.with(this).load(posterDoc.getString("url")).into(posterIV);
+                    } else {
+                        Glide.with(this).load(R.drawable.default_poster).into(posterIV);
+                    }
+                });
+            }
+        });
 
-        configureUIForRole(globalUser, event);
+        configureUIForRole(globalUser);
     }
 
-    private void setupTags(Event event) {
+    private void setupTags() {
         ArrayList<String> tags = event.getTagsList();
         int numTags = tags.size();
 

@@ -84,7 +84,6 @@ public class PosterImageHandler {
      *
      * @param callback  callback to make sure that getting all posters happens in order rather than asynchronously
      * @return          An ArrayList of Image objects that represents all the posters in the database
-     * @see             Image
      */
     public static void getAllPosters(Consumer<ArrayList<Image>> callback){
         posterCollectionRef.get().addOnSuccessListener(snapshot -> {
@@ -107,17 +106,16 @@ public class PosterImageHandler {
      * poster was deleted from to the default poster document reference
      *
      * @param image The image being deleted
-     * @see         Image
      */
     public static void deletePoster(Image image){
         DocumentReference posterRef = posterCollectionRef.document(image.getImageId());
         DocumentReference defaultPosterRef = posterCollectionRef.document("default_poster");
 
         db.collection("events")
-                        .whereEqualTo("poster", posterRef).get().addOnSuccessListener(querySnapshot -> {
-                            for (DocumentSnapshot doc : querySnapshot.getDocuments()){
-                                doc.getReference().update("poster", defaultPosterRef);
-                            }
+                .whereEqualTo("poster", posterRef).get().addOnSuccessListener(querySnapshot -> {
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()){
+                        doc.getReference().update("poster", defaultPosterRef);
+                    }
                 });
 
         posterRef.delete();
