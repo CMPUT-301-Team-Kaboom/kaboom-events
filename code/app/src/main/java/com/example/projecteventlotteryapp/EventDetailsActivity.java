@@ -177,7 +177,15 @@ public class EventDetailsActivity extends AppCompatActivity {
                         } else {
                             entrantPrimaryButton.setText("Join Waitlist");
                             // TODO: Setup onclick listener for adding to Waitlist list
-                            entrantPrimaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Join waitlist"));
+                            entrantPrimaryButton.setOnClickListener(v -> {
+                                event.addToEntrantList(EntrantListType.WAITLIST, user)
+                                        .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully joined Waitlist");
+                                        entrantPrimaryButton.setText("Remove Waitlist");
+                                        configureUIForRole(user);
+                                        })
+                                        .addOnFailureListener(e -> {Log.d("EventDetails", "Failed to join Waitlist");
+                                        });
+                            });
                         }
                     });
                 }
