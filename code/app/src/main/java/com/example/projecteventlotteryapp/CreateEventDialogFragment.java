@@ -169,9 +169,11 @@ public class CreateEventDialogFragment extends DialogFragment {
         MyApp app = (MyApp) requireActivity().getApplication();
         DocumentReference organizerRef =
                 db.collection("organizers").document(app.getCurrentUser().getUserId());
+        DocumentReference defaultPoster =
+                db.collection("posters").document("default_poster");
         eventData.put("organizer", organizerRef);
         eventData.put("name", event.getName());
-        eventData.put("poster", "");
+        eventData.put("poster", defaultPoster);
 
         ZoneId zoneId = ZoneId.systemDefault();
         // TODO: update to grab system zoneid
