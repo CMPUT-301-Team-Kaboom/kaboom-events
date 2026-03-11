@@ -101,6 +101,12 @@ public class EventsListFragment extends Fragment {
             startActivity(intent);
         });
 
+        /*
+        TODO:
+            This works fine. As a stretch goal and if we have time, update so there is separate logic
+            for entrant/organizer, and change so that organizer does a query on events instead of
+            fetching all events and filtering by looking at the organizerRef for each.
+         */
         // set listener
         eventsRef.addSnapshotListener((value, error) -> {
             if (error != null) {

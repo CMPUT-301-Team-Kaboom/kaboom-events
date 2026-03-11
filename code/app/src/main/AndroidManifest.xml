@@ -16,9 +16,6 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ProjectEventLotteryApp">
         <activity
-            android:name=".AdminEventsActivity"
-            android:exported="false" />
-        <activity
             android:name=".RegistrationActivity"
             android:exported="true">
             <intent-filter>
@@ -32,12 +29,9 @@
             android:exported="false" />
         <activity
             android:name=".EventsListActivity"
-            android:exported="true"></activity>
-        <activity
-            android:name=".EventDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".MockMainScreen"
+            android:name=".EventDetailsActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
@@ -56,6 +50,15 @@
             android:exported="false" />
         <activity
             android:name=".OrganizerWaitlistActivity"
+            android:exported="false" />
+        <activity
+            android:name=".AdminProfilesListActivity"
+            android:exported="true" />
+        <activity
+            android:name=".AdminOrganizersListActivity"
+            android:exported="true" />
+        <activity
+            android:name=".AdminEventsActivity"
             android:exported="false" />
     </application>
 

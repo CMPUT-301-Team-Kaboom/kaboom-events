@@ -31,7 +31,7 @@
         <TextView
             android:id="@+id/tv_eventDetails_event_name_header"
             style="@style/DefaultTextStyle"
-            android:layout_width="wrap_content"
+            android:layout_width="300dp"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
             android:text="Event Name"
