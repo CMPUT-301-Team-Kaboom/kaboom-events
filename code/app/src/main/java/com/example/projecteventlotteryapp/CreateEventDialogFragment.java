@@ -26,6 +26,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
@@ -202,11 +203,11 @@ public class CreateEventDialogFragment extends DialogFragment {
         eventData.put("location", null);
         eventData.put("qrCodePath", null);
         eventData.put("tags", null);
-        eventData.put("waitlist", null);
-        eventData.put("enrolled", null);
-        eventData.put("invited", null);
-        eventData.put("declined", null);
         eventData.put("waitlistLimit", -1);  // -1 indicates no limit
+        eventData.put("waitlist", new ArrayList<>());
+        eventData.put("enrolled", new ArrayList<>());
+        eventData.put("invited", new ArrayList<>());
+        eventData.put("declined", new ArrayList<>());
 
         db.collection("events")
             .add(eventData)
