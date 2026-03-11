@@ -197,14 +197,6 @@ public class Event {
         });
     }
 
-    public void addToEntrantList(EntrantListType listType, User entrant) {
-        Log.d("AddToEntrantList", String.format("Type: %s | userId: %s",
-                listType.toString(),
-                entrant.getUserId())
-        );
-
-        eventDoc.update(getListField(listType), FieldValue.arrayUnion(entrant.getUserId()));
-    }
 
     public void removeFromEntrantList(EntrantListType listType, User entrant) {
         eventDoc.get().addOnCompleteListener(task -> {
