@@ -116,8 +116,7 @@ public class EventsListFragment extends Fragment {
                 eventsArrayList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
                     Event event = Event.fetchEventFromSnapshot(snapshot);
-
-                    // fetch organizer and poster from DocumentReferences
+                        // fetch organizer and poster from DocumentReferences
                     /*
                     The following code is adapted from...
                     Source: https://firebase.google.com/docs/firestore/query-data/get-data
@@ -137,6 +136,7 @@ public class EventsListFragment extends Fragment {
 
                                     // filter (maybe add the above code to Event via fetchEventFromSnapshot later)
                                     if (displayEventForRole(event, globalUser)) {
+                                        Log.d("EventList", "Added event: " + event.getEventId() + " for user: " + globalUser.getUserId());
                                         eventsArrayList.add(event);
                                         eventsArrayAdapter.notifyDataSetChanged();
                                     }
@@ -146,14 +146,11 @@ public class EventsListFragment extends Fragment {
                     }
 
                     DocumentReference posterRef = snapshot.getDocumentReference("poster");
-                    if (posterRef != null) {
-                        posterRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                if (documentSnapshot.exists()) {
-                                    String posterPath = documentSnapshot.getString("path");
-                                    // something to do with PosterImageHandler
-                                }
+                    if (posterRef != null){
+                        posterRef.get().addOnSuccessListener(doc -> {
+                            if (doc.exists()){
+                                String imageUrl = doc.getString("url");
+                                event.setPoster(imageUrl);
                             }
                         });
                     }
@@ -166,8 +163,10 @@ public class EventsListFragment extends Fragment {
 
     private boolean displayEventForRole(Event event, User user) {
         if (user.getRole() == Role.ORGANIZER) {
+            Log.d("EventList", "Organizer: " + user.getUserId());
             return (user.getUserId().equals(event.getOrganizerId()));
         } else {
+            Log.d("EventList", "User: " + user.getUserId());
             return true;
         }
     }

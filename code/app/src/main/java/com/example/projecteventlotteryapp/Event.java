@@ -1,14 +1,17 @@
 package com.example.projecteventlotteryapp;
 
+import android.net.Uri;
 import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
 import org.w3c.dom.Document;
 
@@ -17,6 +20,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public class Event {
     private String eventId;
@@ -34,8 +38,10 @@ public class Event {
     // private QRCode
     // private location
     // private map
-    // private image
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+    private String poster;
+
+    private static FirebaseFirestore db;
+    static { db = FirebaseFirestore.getInstance(); }
     private DocumentReference eventDoc;
 
     /**
@@ -169,6 +175,8 @@ public class Event {
     public void setOrganizerName(String organizerName) {
         this.organizerName = organizerName;
     }
+    public void setPoster(String poster) { this.poster = poster; }
+    public String getPoster() { return poster; }
 
     private String getListField(EntrantListType type) {
         switch (type) {
@@ -236,6 +244,7 @@ public class Event {
         // get array field
         ArrayList<String> tagsList = fetchStringArrayList(snapshot, "tags");
 
+        DocumentReference organizer = snapshot.getDocumentReference("organizer");
 
         Event event = new Event (
                 eventId,

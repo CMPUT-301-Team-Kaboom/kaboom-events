@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -17,6 +18,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
@@ -56,7 +58,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     private ImageButton backButton;
     private LinearLayout organizerController;
     private ConstraintLayout entrantController;
-
     private TextView nameHeaderTextView;
     private TextView organizerHeaderTextview;
     private TextView drawDateTV;
@@ -64,6 +65,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private TextView attendeesTV;
     private TextView waitListTV;
     private TextView descriptionTV;
+    private ImageView posterIV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -148,6 +150,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         attendeesTV             = findViewById(R.id.tv_eventDetails_attendees);
         waitListTV              = findViewById(R.id.tv_eventDetails_waitlist_count);
         descriptionTV           = findViewById(R.id.tv_eventDetails_description);
+        posterIV                = findViewById(R.id.img_eventDetails_poster);
 
         organizerController = findViewById(R.id.ll_eventDetails_organizer_button_controls);
         entrantController   = findViewById(R.id.cl_eventDetails_entrant_button_controls);
@@ -175,7 +178,11 @@ public class EventDetailsActivity extends AppCompatActivity {
             enrolledButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open enrolled List"));
             declinedButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open declined list"));
 
-            editButton.setOnClickListener(v -> Log.d("EventDetails", "Clicked Edit Button"));
+            editButton.setOnClickListener(v -> {
+                Intent intent = new Intent(this, EditEventActivity.class);
+                intent.putExtra("eventId", eventId);
+                startActivity(intent);
+            });
             mapButton.setOnClickListener(v -> Log.d("EventDetails", "Clicked Map Button"));
         } else if (user.getRole() == Role.ENTRANT) {
             entrantController.setVisibility(View.VISIBLE);
@@ -237,6 +244,20 @@ public class EventDetailsActivity extends AppCompatActivity {
                 event.getRegistrationEndDate().format(registrationPeriodPattern).toUpperCase()
         );
         registrationPeriodTV.setText(registrationPeriodText);
+
+        db.collection("events").document(eventId).get().addOnSuccessListener(doc->{
+            if (doc.exists()){
+                DocumentReference posterRef = doc.getDocumentReference("poster");
+
+                posterRef.get().addOnSuccessListener(posterDoc -> {
+                    if (posterDoc.exists()){
+                        Glide.with(this).load(posterDoc.getString("url")).into(posterIV);
+                    } else {
+                        Glide.with(this).load(R.drawable.default_poster).into(posterIV);
+                    }
+                });
+            }
+        });
 
         configureUIForRole(globalUser);
     }
