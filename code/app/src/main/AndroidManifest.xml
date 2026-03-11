@@ -59,6 +59,9 @@
         <activity
             android:name=".AdminEventsActivity"
             android:exported="false" />
+        <activity
+            android:name=".EditEventActivity"
+            android:exported="false"/>
     </application>
 
 </manifest>

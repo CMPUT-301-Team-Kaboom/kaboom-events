@@ -7,6 +7,7 @@ import android.app.TimePickerDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
@@ -72,9 +73,26 @@ public class EditEventActivity extends AppCompatActivity {
         attachDatePicker(editDrawDate);
         attachTimePicker(editDrawTime);
 
+        posterImageLauncher = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null){
+                        eventPosterFilepath = uri;
+                        try {
+                            editBanner.setImageURI(uri);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(this, "Failed to upload image!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+        );
+
         // set up save button listener
         saveButton.setOnClickListener(v -> saveEventDetails());
-        bannerEditButton.setOnClickListener(v -> getImage());
+        bannerEditButton.setOnClickListener(v -> {
+            posterImageLauncher.launch("image/*");
+        });
     }
 
     private void saveEventDetails() {
@@ -130,24 +148,6 @@ public class EditEventActivity extends AppCompatActivity {
         PosterImageHandler.uploadPoster(eventId, this, eventPosterFilepath);
 
         finish(); // close activity
-    }
-    private void getImage(){
-        posterImageLauncher = registerForActivityResult(
-                new ActivityResultContracts.GetContent(),
-                uri -> {
-                    if (uri != null){
-                        eventPosterFilepath = uri;
-                        try {
-                            editBanner.setImageURI(uri);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                            Toast.makeText(this, "Failed to upload image!", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                }
-        );
-
-        posterImageLauncher.launch("image/*");
     }
 
     private boolean fieldNotEmpty(EditText field) {

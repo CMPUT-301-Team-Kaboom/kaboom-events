@@ -3,6 +3,7 @@ package com.example.projecteventlotteryapp;
 import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -17,6 +18,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.function.Consumer;
 
 public class Event {
     private String eventId;
@@ -34,7 +36,7 @@ public class Event {
     // private QRCode
     // private location
     // private map
-    // private image
+    private Image poster;
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference eventDoc;
 
@@ -59,6 +61,8 @@ public class Event {
         this.registrationEndDate = registrationEndDate;
         this.drawDate = drawDate;
         this.attendeesLimit = attendeesLimit;
+        this.poster = new Image("default_poster",
+                "https://firebasestorage.googleapis.com/v0/b/kaboom-events.firebasestorage.app/o/posters%2Fdefault_poster.jpg?alt=media&token=da888917-b752-4b05-b775-ed0ea7d699bb");
     }
 
     public Event(
@@ -169,6 +173,8 @@ public class Event {
     public void setOrganizerName(String organizerName) {
         this.organizerName = organizerName;
     }
+    public void setPoster(Image poster) { this.poster = poster; }
+    public Image getPoster() { return poster; }
 
     private String getListField(EntrantListType type) {
         switch (type) {
@@ -221,7 +227,7 @@ public class Event {
     }
 
     // Event database document conversion
-    public static Event fetchEventFromSnapshot(DocumentSnapshot snapshot) {
+    public static void fetchEventFromSnapshot(DocumentSnapshot snapshot, Consumer<Event> callback) {
         // get string fields
         String eventId = snapshot.getId();
         String description = snapshot.getString("description");
@@ -244,6 +250,8 @@ public class Event {
         // get array field
         ArrayList<String> tagsList = fetchStringArrayList(snapshot, "tags");
 
+        DocumentReference poster = snapshot.getDocumentReference("poster");
+        DocumentReference organizer = snapshot.getDocumentReference("organizer");
 
         Event event = new Event (
                 eventId,
@@ -260,8 +268,26 @@ public class Event {
         event.setTagsList(tagsList);
         event.setWaitlistLimit(waitlistLimit);
 
-        Log.d("Event", "Fetched event.\nEventId: " + eventId + "\nname: " + name);
-        return event;
+        Task<DocumentSnapshot> posterTask;
+        Task<DocumentSnapshot> organizerTask;
+
+        if (poster != null){posterTask = poster.get();} else {
+            posterTask = null;
+        }
+        if (organizer != null) {organizerTask = organizer.get();} else {
+            organizerTask = null;
+        }
+
+        Tasks.whenAllSuccess(posterTask, organizerTask).addOnSuccessListener(results -> {
+            DocumentSnapshot posterSnapshot = posterTask.getResult();
+            DocumentSnapshot organizerSnapshot = organizerTask.getResult();
+
+            event.setPoster(new Image(posterSnapshot.getId(), posterSnapshot.getString("url")));
+            //set organizer
+
+            callback.accept(event);
+        });
+        Log.d("Event", "Fetched event.\nEventId: " + eventId + "\nname: " + name + "\nposter: " + event.getPoster().getImageId());
     }
 
     private static int fetchInt(DocumentSnapshot snapshot, String field) {

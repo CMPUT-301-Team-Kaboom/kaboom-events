@@ -32,7 +32,7 @@ public class PosterImageHandler {
     private static FirebaseStorage storage;
     private static final String POSTER_DIR = "posters";
     private static final String STORAGE_DIR = "posters/";
-    public PosterImageHandler(){
+    static {
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
 
@@ -60,17 +60,21 @@ public class PosterImageHandler {
             return posterRef.getDownloadUrl();
         }).addOnSuccessListener(downloadUri -> {
             String downloadUrl = downloadUri.toString();
+            String posterId = eventId + UUID.randomUUID().toString();
 
             Map<String, Object> poster = new HashMap<>();
 
             poster.put("url", downloadUrl);
             poster.put("path", posterFilepath);
 
-            posterCollectionRef.add(poster);
+            posterCollectionRef.document(posterId).set(poster);
+
+            DocumentReference eventDoc = db.collection("events").document(eventId);
+            eventDoc.update("poster", posterCollectionRef.document(posterId));
         });
     }
 
-    public static ArrayList<Uri> getAllPosters(Consumer<ArrayList<Image>> callback){
+    public static void getAllPosters(Consumer<ArrayList<Image>> callback){
         posterCollectionRef.get().addOnSuccessListener(snapshot -> {
 
             ArrayList<Image> posters = new ArrayList<>();

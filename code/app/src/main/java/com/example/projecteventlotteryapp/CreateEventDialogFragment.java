@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firestore.v1.FirestoreGrpc;
 
@@ -168,9 +169,11 @@ public class CreateEventDialogFragment extends DialogFragment {
         MyApp app = (MyApp) requireActivity().getApplication();
         DocumentReference organizerRef =
                 db.collection("organizers").document(app.getCurrentUser().getUserId());
+        DocumentReference defaultPosterRef =
+                db.collection("posters").document("default_poster");
         eventData.put("organizer", organizerRef);
         eventData.put("name", event.getName());
-
+        eventData.put("poster", defaultPosterRef);
 
         ZoneId zoneId = ZoneId.systemDefault();
         // TODO: update to grab system zoneid

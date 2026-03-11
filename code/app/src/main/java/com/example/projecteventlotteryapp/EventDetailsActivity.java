@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -17,6 +18,7 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
@@ -31,7 +33,7 @@ import java.util.List;
 public class EventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String eventId;
-    private Event event;
+    //private Event event;
     private User globalUser;
 
     //=============================
@@ -54,7 +56,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     private ImageButton backButton;
     private LinearLayout organizerController;
     private ConstraintLayout entrantController;
-
     private TextView nameHeaderTextView;
     private TextView organizerHeaderTextview;
     private TextView drawDateTV;
@@ -62,6 +63,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private TextView attendeesTV;
     private TextView waitListTV;
     private TextView descriptionTV;
+    private ImageView posterIV;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,8 +92,9 @@ public class EventDetailsActivity extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         Log.d("EventActivity", "DocumentSnapshot data: " + document.getData());
-                        event = Event.fetchEventFromSnapshot(document);
-                        updateUi();
+                        Event.fetchEventFromSnapshot(document, event -> {
+                            updateUi(event);
+                        });
                     } else {
                         Log.d("EventActivity", "No such document");
                     }
@@ -121,6 +124,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         attendeesTV             = findViewById(R.id.tv_eventDetails_attendees);
         waitListTV              = findViewById(R.id.tv_eventDetails_waitlist_count);
         descriptionTV           = findViewById(R.id.tv_eventDetails_description);
+        posterIV                = findViewById(R.id.img_eventDetails_poster);
 
         organizerController = findViewById(R.id.ll_eventDetails_organizer_button_controls);
         entrantController   = findViewById(R.id.cl_eventDetails_entrant_button_controls);
@@ -130,7 +134,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> finish());
     }
 
-    private void configureUIForRole(User user) {
+    private void configureUIForRole(User user, Event event) {
         if (user.getRole() == Role.ORGANIZER) {
             entrantController.setVisibility(View.GONE);
             organizerController.setVisibility(View.VISIBLE);
@@ -148,7 +152,11 @@ public class EventDetailsActivity extends AppCompatActivity {
             enrolledButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open enrolled List"));
             declinedButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open declined list"));
 
-            editButton.setOnClickListener(v -> Log.d("EventDetails", "Clicked Edit Button"));
+            editButton.setOnClickListener(v -> {
+                Intent intent = new Intent(this, EditEventActivity.class);
+                intent.putExtra("eventId", eventId);
+                startActivity(intent);
+            });
             mapButton.setOnClickListener(v -> Log.d("EventDetails", "Clicked Map Button"));
         } else if (user.getRole() == Role.ENTRANT) {
             entrantController.setVisibility(View.VISIBLE);
@@ -185,12 +193,12 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
-    private void updateUi() {
+    private void updateUi(Event event) {
         nameHeaderTextView.setText(event.getName());
         attendeesTV.setText(String.valueOf(event.getAttendeesLimit()));
         waitListTV.setText(String.valueOf(event.getWaitlistLimit()));
         descriptionTV.setText(event.getDescription());
-        setupTags();
+        setupTags(event);
 
         DateTimeFormatter drawDatePattern = DateTimeFormatter.ofPattern("MMM d      h:mm a");
         String formattedDate = event.getDrawDate().format(drawDatePattern).toUpperCase();
@@ -203,10 +211,14 @@ public class EventDetailsActivity extends AppCompatActivity {
         );
         registrationPeriodTV.setText(registrationPeriodText);
 
-        configureUIForRole(globalUser);
+        Log.d("EventDetails", "Poster Url: " + event.getPoster().getImageUrl());
+
+        Glide.with(this).load(event.getPoster().getImageUrl()).into(posterIV);
+
+        configureUIForRole(globalUser, event);
     }
 
-    private void setupTags() {
+    private void setupTags(Event event) {
         ArrayList<String> tags = event.getTagsList();
         int numTags = tags.size();
 

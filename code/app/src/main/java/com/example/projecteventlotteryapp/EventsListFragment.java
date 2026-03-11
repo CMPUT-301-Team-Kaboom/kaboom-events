@@ -115,48 +115,48 @@ public class EventsListFragment extends Fragment {
             if (value != null && !value.isEmpty()) {
                 eventsArrayList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
-                    Event event = Event.fetchEventFromSnapshot(snapshot);
-
-                    // fetch organizer and poster from DocumentReferences
+                    Event.fetchEventFromSnapshot(snapshot, event -> {
+                        // fetch organizer and poster from DocumentReferences
                     /*
                     The following code is adapted from...
                     Source: https://firebase.google.com/docs/firestore/query-data/get-data
                     Title: "Get data with Cloud Firestore"
                     Retrieved: 2026-03-03
                     */
-                    DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
-                    if (organizerRef != null) {
-                        organizerRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                if (documentSnapshot.exists()) {
-                                    String organizerId = documentSnapshot.getId();
-                                    String organizerName = documentSnapshot.getString("name");
-                                    event.setOrganizerId(organizerId);
-                                    event.setOrganizerName(organizerName);
+                        DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
+                        if (organizerRef != null) {
+                            organizerRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    if (documentSnapshot.exists()) {
+                                        String organizerId = documentSnapshot.getId();
+                                        String organizerName = documentSnapshot.getString("name");
+                                        event.setOrganizerId(organizerId);
+                                        event.setOrganizerName(organizerName);
 
-                                    // filter (maybe add the above code to Event via fetchEventFromSnapshot later)
-                                    if (displayEventForRole(event, globalUser)) {
-                                        eventsArrayList.add(event);
-                                        eventsArrayAdapter.notifyDataSetChanged();
+                                        // filter (maybe add the above code to Event via fetchEventFromSnapshot later)
+                                        if (displayEventForRole(event, globalUser)) {
+                                            eventsArrayList.add(event);
+                                            eventsArrayAdapter.notifyDataSetChanged();
+                                        }
                                     }
                                 }
-                            }
-                        });
-                    }
+                            });
+                        }
 
-                    DocumentReference posterRef = snapshot.getDocumentReference("poster");
-                    if (posterRef != null) {
-                        posterRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                if (documentSnapshot.exists()) {
-                                    String posterPath = documentSnapshot.getString("path");
-                                    // something to do with PosterImageHandler
+                        DocumentReference posterRef = snapshot.getDocumentReference("poster");
+                        if (posterRef != null) {
+                            posterRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                                @Override
+                                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                    if (documentSnapshot.exists()) {
+                                        String posterUrl = documentSnapshot.getString("url");
+                                        event.setPoster(new Image(documentSnapshot.getId(), posterUrl));
+                                    }
                                 }
-                            }
-                        });
-                    }
+                            });
+                        }
+                    });
                 }
                 eventsArrayAdapter.notifyDataSetChanged(); // maybe redundant
             }
