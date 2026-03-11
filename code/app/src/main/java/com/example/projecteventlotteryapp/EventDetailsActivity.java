@@ -13,6 +13,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -220,6 +221,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     event.entrantListContains(EntrantListType.WAITLIST, user).addOnSuccessListener(waitlisted -> {
                         if (waitlisted){
                             entrantPrimaryButton.setText("Remove Waitlist");
+                            entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
                             entrantPrimaryButton.setOnClickListener(v -> {
                                 removeFromEntrantList(EntrantListType.WAITLIST, user)
                                         .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully Left Waitlist");
@@ -231,6 +233,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                             });
                         } else {
                             entrantPrimaryButton.setText("Join Waitlist");
+                            entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.secondaryAccent));
                             entrantPrimaryButton.setOnClickListener(v -> {
                                 addToEntrantList(EntrantListType.WAITLIST, user)
                                         .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully joined Waitlist");
