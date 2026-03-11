@@ -118,6 +118,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
 
     private void deleteProfileFromFirestore() {
         DocumentReference userRef = db.collection("entrants").document(deviceID);
+        // TODO: Delete profile from everywhere in database (inside waitlists etc.)
 
         userRef.delete().addOnSuccessListener(unused -> {
             Toast.makeText(this, "Profile deleted successfully", Toast.LENGTH_SHORT).show();
