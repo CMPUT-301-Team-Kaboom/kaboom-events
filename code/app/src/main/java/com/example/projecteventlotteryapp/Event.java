@@ -229,14 +229,13 @@ public class Event {
     }
 
     // Event database document conversion
-    public static void fetchEventFromSnapshot(DocumentSnapshot snapshot, Consumer<Event> callback) {
+    public static Event fetchEventFromSnapshot(DocumentSnapshot snapshot) {
         // get string fields
         String eventId = snapshot.getId();
         String description = snapshot.getString("description");
         String location = snapshot.getString("location");
         String name = snapshot.getString("name");
         String qrcodePath = snapshot.getString("qrCodePath");
-        String poster = snapshot.getString("poster");
 
         // get number fields
         int attendeesLimit = fetchInt(snapshot, "entrantsLimit");
@@ -269,28 +268,9 @@ public class Event {
         event.setGeolocationEnabled(geolocationEnabled);
         event.setTagsList(tagsList);
         event.setWaitlistLimit(waitlistLimit);
-        event.setPoster(poster);
 
-        Task<DocumentSnapshot> organizerTask;
-
-        if (organizer != null) {organizerTask = organizer.get();} else {
-            organizerTask = null;
-        }
-
-        // using a callback here to make sure this happens before any UI is set so that posters are set properly
-//        Tasks.whenAllSuccess(posterTask, organizerTask).addOnSuccessListener(results -> {
-//            DocumentSnapshot posterSnapshot = posterTask.getResult();
-//            DocumentSnapshot organizerSnapshot = organizerTask.getResult();
-//
-//            if (posterSnapshot.exists()) {
-//                event.setPoster(new Image(posterSnapshot.getId(), posterSnapshot.getString("url")));
-//            }
-//
-//            //set organizer
-//
-//            callback.accept(event);
-//        });
         Log.d("Event", "Fetched event.\nEventId: " + eventId + "\nname: " + name);
+        return event;
     }
 
     private static int fetchInt(DocumentSnapshot snapshot, String field) {

@@ -65,9 +65,17 @@ public class PosterImageHandler {
             return posterRef.getDownloadUrl();
         }).addOnSuccessListener(downloadUri -> {
             String downloadUrl = downloadUri.toString();
+            String posterId = eventId + "_poster";
+
+            Map<String, Object> poster = new HashMap<>();
+
+            poster.put("url", downloadUrl);
+            poster.put("path", posterFilepath);
+
+            posterCollectionRef.document(posterId).set(poster);
 
             DocumentReference eventDoc = db.collection("events").document(eventId);
-            eventDoc.update("poster", downloadUrl);
+            eventDoc.update("poster", posterCollectionRef.document(posterId));
         });
     }
 
@@ -77,16 +85,16 @@ public class PosterImageHandler {
      * @param callback  callback to make sure that getting all posters happens in order rather than asynchronously
      * @return          An ArrayList of Image objects that represents all the posters in the database
      */
-    public static void getAllPosters(Consumer<ArrayList<String>> callback){
-        db.collection("events").get().addOnSuccessListener(snapshot -> {
+    public static void getAllPosters(Consumer<ArrayList<Image>> callback){
+        posterCollectionRef.get().addOnSuccessListener(snapshot -> {
 
-            ArrayList<String> posters = new ArrayList<>();
+            ArrayList<Image> posters = new ArrayList<>();
 
             for (DocumentSnapshot doc : snapshot){
-                String url = doc.getString("poster");
-                if (url.isEmpty()) { continue; }
+                if (doc.getId().equals("default_poster")) { continue; }
+                String url = doc.getString("url");
 
-                posters.add(url);
+                posters.add(new Image(doc.getId(), url));
             }
 
             callback.accept(posters);
@@ -97,18 +105,20 @@ public class PosterImageHandler {
      * Deletes a poster from the database and storage. Sets the document reference of the event that the
      * poster was deleted from to the default poster document reference
      *
-     * @param imageUrl The url of the image being deleted
+     * @param image The image being deleted
      */
-    public static void deletePoster(String imageUrl){
+    public static void deletePoster(Image image){
+        DocumentReference posterRef = posterCollectionRef.document(image.getImageId());
         DocumentReference defaultPosterRef = posterCollectionRef.document("default_poster");
 
         db.collection("events")
-                        .whereEqualTo("poster", imageUrl).get().addOnSuccessListener(querySnapshot -> {
-                            for (DocumentSnapshot doc : querySnapshot.getDocuments()){
-                                doc.getReference().update("poster", null);
-                            }
+                .whereEqualTo("poster", posterRef).get().addOnSuccessListener(querySnapshot -> {
+                    for (DocumentSnapshot doc : querySnapshot.getDocuments()){
+                        doc.getReference().update("poster", defaultPosterRef);
+                    }
                 });
 
-        storage.getReferenceFromUrl(imageUrl).delete();
+        posterRef.delete();
+        storage.getReferenceFromUrl(image.getImageUrl()).delete();
     }
 }

@@ -115,7 +115,7 @@ public class EventsListFragment extends Fragment {
             if (value != null && !value.isEmpty()) {
                 eventsArrayList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
-                    Event.fetchEventFromSnapshot(snapshot, event -> {
+                    Event event = Event.fetchEventFromSnapshot(snapshot);
                         // fetch organizer and poster from DocumentReferences
                     /*
                     The following code is adapted from...
@@ -123,31 +123,37 @@ public class EventsListFragment extends Fragment {
                     Title: "Get data with Cloud Firestore"
                     Retrieved: 2026-03-03
                     */
-                        DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
-                        if (organizerRef != null) {
-                            organizerRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    if (documentSnapshot.exists()) {
-                                        String organizerId = documentSnapshot.getId();
-                                        String organizerName = documentSnapshot.getString("name");
-                                        event.setOrganizerId(organizerId);
-                                        event.setOrganizerName(organizerName);
+                    DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
+                    if (organizerRef != null) {
+                        organizerRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                if (documentSnapshot.exists()) {
+                                    String organizerId = documentSnapshot.getId();
+                                    String organizerName = documentSnapshot.getString("name");
+                                    event.setOrganizerId(organizerId);
+                                    event.setOrganizerName(organizerName);
 
-                                        // filter (maybe add the above code to Event via fetchEventFromSnapshot later)
-                                        if (displayEventForRole(event, globalUser)) {
-                                            Log.d("EventList", "Added event: " + event.getEventId() + " for user: " + globalUser.getUserId());
-                                            eventsArrayList.add(event);
-                                            eventsArrayAdapter.notifyDataSetChanged();
-                                        }
+                                    // filter (maybe add the above code to Event via fetchEventFromSnapshot later)
+                                    if (displayEventForRole(event, globalUser)) {
+                                        Log.d("EventList", "Added event: " + event.getEventId() + " for user: " + globalUser.getUserId());
+                                        eventsArrayList.add(event);
+                                        eventsArrayAdapter.notifyDataSetChanged();
                                     }
                                 }
-                            });
-                        }
+                            }
+                        });
+                    }
 
-                        String poster = snapshot.getString("poster");
-                        event.setPoster(poster);
-                    });
+                    DocumentReference posterRef = snapshot.getDocumentReference("poster");
+                    if (posterRef != null){
+                        posterRef.get().addOnSuccessListener(doc -> {
+                            if (doc.exists()){
+                                String imageUrl = doc.getString("url");
+                                event.setPoster(imageUrl);
+                            }
+                        });
+                    }
                 }
                 eventsArrayAdapter.notifyDataSetChanged(); // maybe redundant
             }

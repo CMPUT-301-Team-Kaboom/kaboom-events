@@ -23,8 +23,8 @@ public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.
     the following code is adapted from https://www.geeksforgeeks.org/android/how-to-build-an-image-gallery-android-app-with-recyclerview-and-glide/
      */
     private Context context;
-    ArrayList<String> imageList;
-    public AdminImagesAdapter(Context context, ArrayList<String> imageList){
+    ArrayList<Image> imageList;
+    public AdminImagesAdapter(Context context, ArrayList<Image> imageList){
         this.context = context;
         this.imageList = imageList;
     }
@@ -38,15 +38,15 @@ public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.
 
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
-        String imageUrl = imageList.get(position);
+        Image model = imageList.get(position);
 
-        Glide.with(context).load(imageUrl).into(holder.image);
+        Glide.with(context).load(model.getImageUrl()).into(holder.image);
 
         holder.deleteBtn.setOnClickListener(v -> {
             int pos = holder.getBindingAdapterPosition();
 
             if (pos != RecyclerView.NO_POSITION) {
-                String image = imageList.get(pos);
+                Image image = imageList.get(pos);
 
                 PosterImageHandler.deletePoster(image);
 
