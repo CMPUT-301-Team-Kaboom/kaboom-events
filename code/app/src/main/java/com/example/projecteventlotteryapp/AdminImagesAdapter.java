@@ -15,6 +15,9 @@ import com.bumptech.glide.Glide;
 
 import java.util.ArrayList;
 
+/*
+Custom adapter class that sets the image url of the images being displayed to the admin
+ */
 public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.ViewHolder>{
     /*
     the following code is adapted from https://www.geeksforgeeks.org/android/how-to-build-an-image-gallery-android-app-with-recyclerview-and-glide/

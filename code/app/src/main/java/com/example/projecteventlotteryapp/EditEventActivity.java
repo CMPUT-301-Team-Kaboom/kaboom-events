@@ -145,7 +145,7 @@ public class EditEventActivity extends AppCompatActivity {
 
         // TODO: update the event object and database
         // TODO: figure out image and QR code, as well as location
-        PosterImageHandler.uploadPoster(eventId, this, eventPosterFilepath);
+        PosterImageHandler.uploadPoster(eventId, eventPosterFilepath);
 
         finish(); // close activity
     }

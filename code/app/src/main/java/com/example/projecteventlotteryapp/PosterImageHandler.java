@@ -26,6 +26,11 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.function.Consumer;
 
+/**
+ * Static poster handler class that handles poster uploading and, retrieving all posters, and poster deletion
+ *
+ * @author Ashley Kang (akang2)
+ */
 public class PosterImageHandler {
     private static FirebaseFirestore db;
     private static CollectionReference posterCollectionRef;
@@ -38,14 +43,15 @@ public class PosterImageHandler {
         posterCollectionRef = db.collection("posters");
     }
 
-    public interface PosterUploadListener {
-        void onSuccess();
-        void onFailure(Exception e);
-    }
-
-    private static PosterUploadListener listener;
-
-    public static void uploadPoster(String eventId, Context context, Uri uri){
+    /**
+     * Uploads a poster from the user's phone and adds it to both the Firebase photo storage and to the Firebase database
+     * under posters and as a document reference in the event that it's a poster for.
+     *
+     * @param eventId ID of the event that the poster is for, as stored in the database
+     * @param uri URI of the image as uploaded from the user's phone
+     * @see EditEventActivity calls the function after the activity requests an image from the user's image gallery
+     */
+    public static void uploadPoster(String eventId, Uri uri){
         /*
         the following code is referenced from https://firebase.google.com/docs/storage/android/upload-files
          */
@@ -73,6 +79,13 @@ public class PosterImageHandler {
         });
     }
 
+    /**
+     * Retrieves all poster documents from the posters collection in the database
+     *
+     * @param callback  callback to make sure that getting all posters happens in order rather than asynchronously
+     * @return          An ArrayList of Image objects that represents all the posters in the database
+     * @see             Image
+     */
     public static void getAllPosters(Consumer<ArrayList<Image>> callback){
         posterCollectionRef.get().addOnSuccessListener(snapshot -> {
 
@@ -89,6 +102,13 @@ public class PosterImageHandler {
         });
     }
 
+    /**
+     * Deletes a poster from the database and storage. Sets the document reference of the event that the
+     * poster was deleted from to the default poster document reference
+     *
+     * @param image The image being deleted
+     * @see         Image
+     */
     public static void deletePoster(Image image){
         DocumentReference posterRef = posterCollectionRef.document(image.getImageId());
         DocumentReference defaultPosterRef = posterCollectionRef.document("default_poster");
