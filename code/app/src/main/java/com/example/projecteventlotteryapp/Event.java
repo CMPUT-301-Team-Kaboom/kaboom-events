@@ -10,6 +10,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.storage.FirebaseStorage;
 
 import org.w3c.dom.Document;
 
@@ -37,7 +38,9 @@ public class Event {
     // private location
     // private map
     private Image poster;
-    private FirebaseFirestore db = FirebaseFirestore.getInstance();
+
+    private static FirebaseFirestore db;
+    static { db = FirebaseFirestore.getInstance(); }
     private DocumentReference eventDoc;
 
     /**
@@ -269,6 +272,7 @@ public class Event {
         event.setWaitlistLimit(waitlistLimit);
 
         Task<DocumentSnapshot> posterTask;
+        Task<DocumentSnapshot> defaultPosterTask;
         Task<DocumentSnapshot> organizerTask;
 
         if (poster != null){posterTask = poster.get();} else {
@@ -277,12 +281,19 @@ public class Event {
         if (organizer != null) {organizerTask = organizer.get();} else {
             organizerTask = null;
         }
+        defaultPosterTask = db.collection("posters").document("default_poster").get();
 
-        Tasks.whenAllSuccess(posterTask, organizerTask).addOnSuccessListener(results -> {
+        Tasks.whenAllSuccess(posterTask, organizerTask, defaultPosterTask).addOnSuccessListener(results -> {
             DocumentSnapshot posterSnapshot = posterTask.getResult();
+            DocumentSnapshot defaultPosterSnapshot = defaultPosterTask.getResult();
             DocumentSnapshot organizerSnapshot = organizerTask.getResult();
 
-            event.setPoster(new Image(posterSnapshot.getId(), posterSnapshot.getString("url")));
+            if (!posterSnapshot.exists()){
+                event.setPoster(new Image(defaultPosterSnapshot.getId(), defaultPosterSnapshot.getString("url")));
+            } else {
+                event.setPoster(new Image(posterSnapshot.getId(), posterSnapshot.getString("url")));
+            }
+
             //set organizer
 
             callback.accept(event);

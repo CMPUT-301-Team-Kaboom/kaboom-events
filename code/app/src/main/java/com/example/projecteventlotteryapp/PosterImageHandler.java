@@ -30,7 +30,6 @@ public class PosterImageHandler {
     private static FirebaseFirestore db;
     private static CollectionReference posterCollectionRef;
     private static FirebaseStorage storage;
-    private static final String POSTER_DIR = "posters";
     private static final String STORAGE_DIR = "posters/";
     static {
         db = FirebaseFirestore.getInstance();
@@ -60,7 +59,7 @@ public class PosterImageHandler {
             return posterRef.getDownloadUrl();
         }).addOnSuccessListener(downloadUri -> {
             String downloadUrl = downloadUri.toString();
-            String posterId = eventId + UUID.randomUUID().toString();
+            String posterId = eventId + "_poster";
 
             Map<String, Object> poster = new HashMap<>();
 
@@ -80,6 +79,7 @@ public class PosterImageHandler {
             ArrayList<Image> posters = new ArrayList<>();
 
             for (DocumentSnapshot doc : snapshot){
+                if (doc.getId().equals("default_poster")) { continue; }
                 String url = doc.getString("url");
 
                 posters.add(new Image(doc.getId(), url));
@@ -90,8 +90,17 @@ public class PosterImageHandler {
     }
 
     public static void deletePoster(Image image){
-        posterCollectionRef.document(image.getImageId()).delete();
+        DocumentReference posterRef = posterCollectionRef.document(image.getImageId());
+        DocumentReference defaultPosterRef = posterCollectionRef.document("default_poster");
 
+        db.collection("events")
+                        .whereEqualTo("poster", posterRef).get().addOnSuccessListener(querySnapshot -> {
+                            for (DocumentSnapshot doc : querySnapshot.getDocuments()){
+                                doc.getReference().update("poster", defaultPosterRef);
+                            }
+                });
+
+        posterRef.delete();
         storage.getReferenceFromUrl(image.getImageUrl()).delete();
     }
 }
