@@ -14,6 +14,7 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -106,7 +107,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
     private String getListField(EntrantListType type) {
@@ -131,6 +131,11 @@ public class EventDetailsActivity extends AppCompatActivity {
         );
 
         return eventDoc.update(getListField(listType), FieldValue.arrayUnion(entrant.getUserId()));
+    }
+
+    public Task<Void> removeFromEntrantList(EntrantListType listType, User entrant) {
+        return eventDoc.update(getListField(listType),
+                FieldValue.arrayRemove(entrant.getUserId()));
     }
 
     private void setupUi() {
@@ -206,11 +211,19 @@ public class EventDetailsActivity extends AppCompatActivity {
                     event.entrantListContains(EntrantListType.WAITLIST, user).addOnSuccessListener(waitlisted -> {
                         if (waitlisted){
                             entrantPrimaryButton.setText("Remove Waitlist");
-                            // TODO: Setup onclick listener for removing from wait list
-                            entrantPrimaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Remove waitlist"));
+                            entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
+                            entrantPrimaryButton.setOnClickListener(v -> {
+                                removeFromEntrantList(EntrantListType.WAITLIST, user)
+                                        .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully Left Waitlist");
+                                            entrantPrimaryButton.setText("Join Waitlist");
+                                            configureUIForRole(user);
+                                        })
+                                        .addOnFailureListener(e -> {Log.d("EventDetails", "Failed to join Waitlist");
+                                        });
+                            });
                         } else {
                             entrantPrimaryButton.setText("Join Waitlist");
-                            // TODO: Setup onclick listener for adding to Waitlist list
+                            entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.secondaryAccent));
                             entrantPrimaryButton.setOnClickListener(v -> {
                                 addToEntrantList(EntrantListType.WAITLIST, user)
                                         .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully joined Waitlist");
