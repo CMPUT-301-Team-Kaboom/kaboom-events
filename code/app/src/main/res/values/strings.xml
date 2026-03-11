@@ -2,7 +2,13 @@
     <string name="app_name">ProjectEventLotteryApp</string>
     <string name="long_placeholder_text">The missile knows where it is at all times. It knows this because it knows where it isn\'t. By subtracting where it is from where it isn\'t, or where it isn\'t from where it is (whichever is greater), it obtains a difference, or deviation. The guidance subsystem uses deviations to generate corrective commands to drive the missile from a position where it is to a position where it isn\'t, and arriving at a position where it wasn\'t, it now is. Consequently, the position where it is, is now the position that it wasn\'t, and it follows that the position that it was, is now the position that it isn\'t.\nIn the event that the position that it is in is not the position that it wasn\'t, the system has acquired a variation, the variation being the difference between where the missile is, and where it wasn\'t. If variation is considered to be a significant factor, it too may be corrected by the GEA. However, the missile must also know where it was.\nThe missile guidance computer scenario works as follows. Because a variation has modified some of the information the missile has obtained, it is not sure just where it is. However, it is sure where it isn\'t, within reason, and it knows where it was. It now subtracts where it should be from where it wasn\'t, or vice-versa, and by differentiating this from the algebraic sum of where it shouldn\'t be, and where it was, it is able to obtain the deviation and its variation, which is called error.</string>
     <string name="short_placeholder_text">The missile knows where it is at all times. It knows this because it knows where it isn\'t.</string>
-    <string name="sample_description_text">Today when I walked into my economics class I saw something I dread every time I close my eyes. Someone had brought their new gaming laptop to class.</string>
-    <string name="second_sample_description_text">The Forklift he used to bring it was still running idle at the back. I started sweating as I sat down and gazed over at the 700lb beast that was his laptop.</string>
-    <string name="third_sample_description_text">I keep telling myself I\'m going to be alright and that there\'s nothing to worry about. He somehow finds a fucking outlet. Tears are running down my cheeks as I send my last texts to my family saying I love them. The teacher starts the lecture, and the student turns his laptop on. The colored lights on his RGB Backlit keyboard flare to life like a nuclear flash, and a deep humming fills my ears and shakes my very soul.</string>
+    <string name="info_text_1">
+        Instead of rushing to register, you simply join the event’s waiting list during the open registration period. Anyone who signs up before the deadline has an equal chance of being selected.
+    </string>
+    <string name="info_text_2">
+        When registration closes, the system runs a random lottery draw to fill the available spots. If you are selected, you will receive a notification asking you to confirm your spot. If someone declines or does not respond, another person from the waiting list will be randomly selected.
+    </string>
+    <string name="info_text_3">
+
+    </string>
 </resources>

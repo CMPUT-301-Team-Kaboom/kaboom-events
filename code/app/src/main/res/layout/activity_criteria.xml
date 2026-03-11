@@ -13,11 +13,11 @@
         android:layout_width="51dp"
         android:layout_height="48dp"
         android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
         android:background="@null"
         android:contentDescription="Back to Events List"
+        app:layout_constraintBottom_toBottomOf="@+id/CriteriaHeader"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/CriteriaHeader"
         app:srcCompat="@drawable/left_arrow" />
 
     <!-- Page Header -->
@@ -46,127 +46,56 @@
             android:layout_height="wrap_content"
             android:paddingBottom="32dp">
 
-            <!-- First Card -->
-            <ImageView
-                android:id="@+id/FirstCard"
-                android:layout_width="320dp"
-                android:layout_height="240dp"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:srcCompat="@drawable/rounded_container" />
 
-            <TextView
-                android:id="@+id/firstCardHeader"
-                style="@style/DefaultTextStyle"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="I fucking"
-                app:layout_constraintStart_toStartOf="@+id/FirstCard"
-                app:layout_constraintTop_toTopOf="@+id/FirstCard" />
-
-            <TextView
-                android:id="@+id/firstCardText"
-                style="@style/DefaultTextStyle"
-                android:layout_width="300dp"
+            <LinearLayout
+                android:id="@+id/ll_box_1"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:textStyle="normal"
-                android:text="@string/sample_description_text"
-                android:textAlignment="textStart"
-                app:layout_constraintBottom_toBottomOf="@+id/FirstCard"
-                app:layout_constraintEnd_toEndOf="@+id/FirstCard"
-                app:layout_constraintStart_toStartOf="@+id/FirstCard"
-                app:layout_constraintTop_toBottomOf="@+id/firstCardHeader" />
-
-
-            <!-- Second Card -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/secondCard"
-                android:layout_width="320dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginEnd="12dp"
                 android:background="@drawable/rounded_container"
+                android:orientation="vertical"
+                android:padding="16dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/FirstCard">
-
-            <TextView
-                android:id="@+id/secondCardHeader"
-                style="@style/DefaultTextStyle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="8dp"
-                android:text="hate gaming"
-                app:layout_constraintStart_toStartOf="@+id/secondCard"
-                app:layout_constraintTop_toTopOf="@+id/secondCard" />
-
-            <TextView
-                android:id="@+id/secondCardText"
-                style="@style/DefaultTextStyle"
-                android:layout_width="300dp"
-                android:layout_height="wrap_content"
-                android:layout_marginStart="16dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginEnd="16dp"
-                android:layout_marginBottom="16dp"
-                android:textStyle="normal"
-                android:text="@string/second_sample_description_text"
-                android:textAlignment="textStart"
-                app:layout_constraintBottom_toBottomOf="@+id/secondCard"
-                app:layout_constraintEnd_toEndOf="@+id/secondCard"
-                app:layout_constraintStart_toStartOf="@+id/secondCard"
-                app:layout_constraintTop_toBottomOf="@+id/secondCardHeader" />
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-
-    <!-- Third Card -->
-            <androidx.constraintlayout.widget.ConstraintLayout
-                android:id="@+id/thirdCard"
-                android:layout_width="320dp"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="32dp"
-                android:background="@drawable/rounded_container"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/secondCard">
+                app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/thirdCardHeader"
                     style="@style/DefaultTextStyle"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="8dp"
-                    android:text="laptops"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    android:text="Joining An Event"/>
 
                 <TextView
-                    android:id="@+id/thirdCardText"
                     style="@style/DefaultTextStyle"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="16dp"
-                    android:layout_marginTop="16dp"
-                    android:layout_marginEnd="16dp"
-                    android:layout_marginBottom="16dp"
-                    android:textStyle="normal"
-                    android:text="@string/third_sample_description_text"
+                    android:text="@string/info_text_1"
                     android:textAlignment="textStart"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/thirdCardHeader" />
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:textStyle="normal" />
+            </LinearLayout>
 
+            <LinearLayout
+                android:id="@+id/ll_box_2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/rounded_container"
+                android:orientation="vertical"
+                android:padding="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ll_box_1">
+
+                <TextView
+                    style="@style/DefaultTextStyle"
+                    android:text="Lottery Selection"/>
+
+                <TextView
+                    style="@style/DefaultTextStyle"
+                    android:text="@string/info_text_2"
+                    android:textAlignment="textStart"
+                    android:textStyle="normal" />
+            </LinearLayout>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 
