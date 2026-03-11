@@ -132,11 +132,10 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     public Task<Void> removeFromEntrantList(EntrantListType listType, User entrant) {
         return eventDoc.get().continueWithTask(task -> {
-            //if we cannot find the event
             if (!task.isSuccessful()) {
                 throw task.getException();
             }
-            
+
             DocumentSnapshot doc = task.getResult();
             if (doc == null || !doc.exists()) {
                 throw new Exception("Document does not exist");
@@ -221,7 +220,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                     event.entrantListContains(EntrantListType.WAITLIST, user).addOnSuccessListener(waitlisted -> {
                         if (waitlisted){
                             entrantPrimaryButton.setText("Remove Waitlist");
-                            // TODO: Setup onclick listener for removing from wait list
                             entrantPrimaryButton.setOnClickListener(v -> {
                                 removeFromEntrantList(EntrantListType.WAITLIST, user)
                                         .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully Left Waitlist");
@@ -233,7 +231,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                             });
                         } else {
                             entrantPrimaryButton.setText("Join Waitlist");
-                            // TODO: Setup onclick listener for adding to Waitlist list
                             entrantPrimaryButton.setOnClickListener(v -> {
                                 addToEntrantList(EntrantListType.WAITLIST, user)
                                         .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully joined Waitlist");
