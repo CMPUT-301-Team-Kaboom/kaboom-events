@@ -45,7 +45,7 @@ public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.
             if (pos != RecyclerView.NO_POSITION) {
                 Image image = imageList.get(pos);
 
-                PosterImageHandler.deleteImage(image.getImageUrl());
+                PosterImageHandler.deletePoster(image);
 
                 imageList.remove(position);
                 notifyItemRemoved(position);

@@ -5,17 +5,13 @@ import android.net.Uri;
 public class Image {
     // imageUrl is set to Uri for ui testing
     // TODO: change back to string when connecting to database
-    // private String storagePath
-    // private String imageId
-    // private String imageUrl
-    private Uri imageUrl;
-    public Image(Uri imageUrl){
+     private String imageId;
+     private String imageUrl;
+    public Image(String imageId, String imageUrl) {
         this.imageUrl = imageUrl;
+        this.imageId = imageId;
     }
-    public void setImageUrl(Uri imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-    public Uri getImageUrl() {
-        return imageUrl;
-    }
+
+    public String getImageId(){ return imageId; }
+    public String getImageUrl() {return imageUrl; }
 }

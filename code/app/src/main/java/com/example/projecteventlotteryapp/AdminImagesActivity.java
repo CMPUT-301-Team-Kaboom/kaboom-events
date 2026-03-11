@@ -35,13 +35,12 @@ public class AdminImagesActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
 
-        ArrayList<Uri> savedImages = PosterImageHandler.getAllImages(this);
+        PosterImageHandler.getAllPosters(posters -> {
+            imageList.clear();
+            imageList.addAll(posters);
 
-        for (Uri uri: savedImages){
-            imageList.add(new Image(uri));
-        }
-
-        adapter.notifyDataSetChanged();
+            adapter.notifyDataSetChanged();
+        });
 
         ImageButton backButton = findViewById(R.id.btn_admin_images_back);
         backButton.setOnClickListener(v -> finish());
