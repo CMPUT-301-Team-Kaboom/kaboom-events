@@ -26,7 +26,7 @@ public class AdminImagesActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private AdminImagesAdapter adapter;
     private GridLayoutManager manager;
-    private ArrayList<Image> imageList;
+    private ArrayList<String> imageList;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {

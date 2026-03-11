@@ -211,9 +211,14 @@ public class EventDetailsActivity extends AppCompatActivity {
         );
         registrationPeriodTV.setText(registrationPeriodText);
 
-        Log.d("EventDetails", "Poster Url: " + event.getPoster().getImageUrl());
+        Log.d("EventDetails", "Poster Url: " + event.getPoster());
+        String poster = event.getPoster();
 
-        Glide.with(this).load(event.getPoster().getImageUrl()).into(posterIV);
+        if (!poster.isEmpty()){
+            Glide.with(this).load(poster).into(posterIV);
+        } else {
+            Glide.with(this).load(R.drawable.default_poster).into(posterIV);
+        }
 
         configureUIForRole(globalUser, event);
     }

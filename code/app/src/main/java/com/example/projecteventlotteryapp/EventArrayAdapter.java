@@ -50,7 +50,6 @@ public class EventArrayAdapter extends ArrayAdapter<Event>  {
         String formattedDate = event.getDrawDate().format(datePattern);
         drawDateTextView.setText("Drawn on " + formattedDate);
         attendeesTextView.setText("Attendees: " + event.getAttendeesLimit());
-        Glide.with(context).load(event.getPoster().getImageUrl()).into(posterImageView);
 
         return view;
     }

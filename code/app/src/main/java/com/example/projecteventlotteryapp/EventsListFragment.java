@@ -144,18 +144,8 @@ public class EventsListFragment extends Fragment {
                             });
                         }
 
-                        DocumentReference posterRef = snapshot.getDocumentReference("poster");
-                        if (posterRef != null) {
-                            posterRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                                @Override
-                                public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                    if (documentSnapshot.exists()) {
-                                        String posterUrl = documentSnapshot.getString("url");
-                                        event.setPoster(new Image(documentSnapshot.getId(), posterUrl));
-                                    }
-                                }
-                            });
-                        }
+                        String poster = snapshot.getString("poster");
+                        event.setPoster(poster);
                     });
                 }
                 eventsArrayAdapter.notifyDataSetChanged(); // maybe redundant
