@@ -1,6 +1,7 @@
 package com.example.projecteventlotteryapp;
 
 import android.os.Bundle;
+import android.widget.ImageButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -35,5 +36,8 @@ public class AdminEventsActivity extends AppCompatActivity {
                     .add(R.id.fl_admin_events_list, EventsListFragment.class, null)
                     .commit();
         }
+
+        ImageButton backButton = findViewById(R.id.btn_admin_events_back);
+        backButton.setOnClickListener(v -> finish());
     }
 }
