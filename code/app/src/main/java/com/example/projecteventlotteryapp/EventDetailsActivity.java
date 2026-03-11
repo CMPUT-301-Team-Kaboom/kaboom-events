@@ -132,25 +132,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     public Task<Void> removeFromEntrantList(EntrantListType listType, User entrant) {
-        return eventDoc.get().continueWithTask(task -> {
-            if (!task.isSuccessful()) {
-                throw task.getException();
-            }
-
-            DocumentSnapshot doc = task.getResult();
-            if (doc == null || !doc.exists()) {
-                throw new Exception("Document does not exist");
-            }
-
-            ArrayList<String> entrantList =
-                    (ArrayList<String>) doc.get(getListField(listType));
-            if (entrantList == null) {
-                entrantList = new ArrayList<>();
-            }
-
-            entrantList.remove(entrant.getUserId());
-            return eventDoc.update(getListField(listType), entrantList);
-        });
+        return eventDoc.update(getListField(listType),
+                FieldValue.arrayRemove(entrant.getUserId()));
     }
 
     private void setupUi() {
