@@ -173,7 +173,15 @@ public class EventDetailsActivity extends AppCompatActivity {
                         if (waitlisted){
                             entrantPrimaryButton.setText("Remove Waitlist");
                             // TODO: Setup onclick listener for removing from wait list
-                            entrantPrimaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Remove waitlist"));
+                            entrantPrimaryButton.setOnClickListener(v -> {
+                                event.removeFromEntrantList(EntrantListType.WAITLIST, user)
+                                        .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully Left Waitlist");
+                                            entrantPrimaryButton.setText("Join Waitlist");
+                                            configureUIForRole(user);
+                                        })
+                                        .addOnFailureListener(e -> {Log.d("EventDetails", "Failed to join Waitlist");
+                                        });
+                            });
                         } else {
                             entrantPrimaryButton.setText("Join Waitlist");
                             // TODO: Setup onclick listener for adding to Waitlist list
