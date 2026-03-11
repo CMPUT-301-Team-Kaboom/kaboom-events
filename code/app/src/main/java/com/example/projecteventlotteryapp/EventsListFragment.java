@@ -136,6 +136,7 @@ public class EventsListFragment extends Fragment {
 
                                         // filter (maybe add the above code to Event via fetchEventFromSnapshot later)
                                         if (displayEventForRole(event, globalUser)) {
+                                            Log.d("EventList", "Added event: " + event.getEventId() + " for user: " + globalUser.getUserId());
                                             eventsArrayList.add(event);
                                             eventsArrayAdapter.notifyDataSetChanged();
                                         }
@@ -156,8 +157,10 @@ public class EventsListFragment extends Fragment {
 
     private boolean displayEventForRole(Event event, User user) {
         if (user.getRole() == Role.ORGANIZER) {
+            Log.d("EventList", "Organizer: " + user.getUserId());
             return (user.getUserId().equals(event.getOrganizerId()));
         } else {
+            Log.d("EventList", "User: " + user.getUserId());
             return true;
         }
     }
