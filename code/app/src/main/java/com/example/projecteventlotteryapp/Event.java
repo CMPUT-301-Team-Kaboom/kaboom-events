@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 
-public class Event{
+public class Event {
     private String eventId;
     private String name;
     private int attendeesLimit;
@@ -29,6 +29,8 @@ public class Event{
     private LocalDate registrationEndDate;
     private ArrayList<String> tagsList;
     private String description;
+    private String organizerId;
+    private String organizerName;
     // private QRCode
     // private location
     // private map
@@ -151,6 +153,23 @@ public class Event{
     public void setDescription(String description) {
         this.description = description;
     }
+
+    public String getOrganizerId() {
+        return organizerId;
+    }
+
+    public void setOrganizerId(String organizerId) {
+        this.organizerId = organizerId;
+    }
+
+    public String getOrganizerName() {
+        return organizerName;
+    }
+
+    public void setOrganizerName(String organizerName) {
+        this.organizerName = organizerName;
+    }
+
     private String getListField(EntrantListType type) {
         switch (type) {
             case WAITLIST:

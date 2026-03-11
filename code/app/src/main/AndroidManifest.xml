@@ -28,25 +28,19 @@
             android:exported="false" />
         <activity
             android:name=".EventsListActivity"
-            android:exported="true" >
-        </activity>
-      
+            android:exported="false" />
         <activity
             android:name=".EventDetailsActivity"
             android:exported="false" />
         <activity
-            android:name=".MockMainScreen"
-            android:exported="false"/>
-        <activity
             android:name=".MainActivity"
-            android:exported="true">
-        </activity>
+            android:exported="true"></activity>
         <activity
             android:name=".CriteriaAppGuideActivity"
             android:exported="false" />
         <activity
             android:name=".AdminImagesActivity"
-            android:exported="true"/>
+            android:exported="true" />
         <activity
             android:name=".AdminHomeActivity"
             android:exported="false" />
@@ -55,10 +49,16 @@
             android:exported="false" />
         <activity
             android:name=".OrganizerWaitlistActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
-            android:name=".EditEventActivity"
-            android:exported="true"/>
+            android:name=".AdminProfilesListActivity"
+            android:exported="true" />
+        <activity
+            android:name=".AdminOrganizersListActivity"
+            android:exported="true" />
+        <activity
+            android:name=".AdminEventsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
