@@ -21,6 +21,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.format.DateTimeFormatter;
@@ -33,6 +34,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private String eventId;
     private Event event;
     private User globalUser;
+    private DocumentReference eventDoc;
 
     //=============================
     // UI Elements
@@ -76,6 +78,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         eventId = getIntent().getStringExtra("eventId");
+        eventDoc = db.collection("events").document(this.eventId);
         setupUi();
 
         MyApp app = (MyApp) getApplication();
@@ -102,6 +105,30 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
 
 
+    }
+
+    private String getListField(EntrantListType type) {
+        switch (type) {
+            case WAITLIST:
+                return "waitlist";
+            case INVITED:
+                return "invited";
+            case DECLINED:
+                return "declined";
+            case ENROLLED:
+                return "enrolled";
+            default:
+                throw new IllegalArgumentException("Unknown list type: " + type);
+        }
+    }
+
+    private Task<Void> addToEntrantList(EntrantListType listType, User entrant) {
+        Log.d("AddToEntrantList", String.format("Type: %s | userId: %s",
+                listType.toString(),
+                entrant.getUserId())
+        );
+
+        return eventDoc.update(getListField(listType), FieldValue.arrayUnion(entrant.getUserId()));
     }
 
     private void setupUi() {
@@ -178,7 +205,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                             entrantPrimaryButton.setText("Join Waitlist");
                             // TODO: Setup onclick listener for adding to Waitlist list
                             entrantPrimaryButton.setOnClickListener(v -> {
-                                event.addToEntrantList(EntrantListType.WAITLIST, user)
+                                addToEntrantList(EntrantListType.WAITLIST, user)
                                         .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully joined Waitlist");
                                         entrantPrimaryButton.setText("Remove Waitlist");
                                         configureUIForRole(user);
