@@ -130,6 +130,29 @@ public class EventDetailsActivity extends AppCompatActivity {
         return eventDoc.update(getListField(listType), FieldValue.arrayUnion(entrant.getUserId()));
     }
 
+    public Task<Void> removeFromEntrantList(EntrantListType listType, User entrant) {
+        return eventDoc.get().continueWithTask(task -> {
+            //if we cannot find the event
+            if (!task.isSuccessful()) {
+                throw task.getException();
+            }
+            
+            DocumentSnapshot doc = task.getResult();
+            if (doc == null || !doc.exists()) {
+                throw new Exception("Document does not exist");
+            }
+
+            ArrayList<String> entrantList =
+                    (ArrayList<String>) doc.get(getListField(listType));
+            if (entrantList == null) {
+                entrantList = new ArrayList<>();
+            }
+
+            entrantList.remove(entrant.getUserId());
+            return eventDoc.update(getListField(listType), entrantList);
+        });
+    }
+
     private void setupUi() {
         waitlistButton  = findViewById(R.id.btn_eventDetails_organizer_waitlist);
         invitedButton   = findViewById(R.id.btn_eventDetails_organizer_invited);
@@ -200,7 +223,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                             entrantPrimaryButton.setText("Remove Waitlist");
                             // TODO: Setup onclick listener for removing from wait list
                             entrantPrimaryButton.setOnClickListener(v -> {
-                                event.removeFromEntrantList(EntrantListType.WAITLIST, user)
+                                removeFromEntrantList(EntrantListType.WAITLIST, user)
                                         .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully Left Waitlist");
                                             entrantPrimaryButton.setText("Join Waitlist");
                                             configureUIForRole(user);

@@ -198,20 +198,6 @@ public class Event {
     }
 
 
-    public void removeFromEntrantList(EntrantListType listType, User entrant) {
-        eventDoc.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()){
-                DocumentSnapshot doc = task.getResult();
-                if (doc.exists()){
-                    ArrayList<String> entrantList;
-                    entrantList = (ArrayList<String>) doc.get(getListField(listType));
-                    entrantList.remove(entrant.getUserId());
-                    eventDoc.update(getListField(listType), entrantList);
-                }
-            }
-        });
-    }
-
     // Event database document conversion
     public static Event fetchEventFromSnapshot(DocumentSnapshot snapshot) {
         // get string fields
