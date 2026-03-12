@@ -49,6 +49,8 @@ public class FilterEventsDialogFragment extends DialogFragment {
     */
     interface FilterEventsListener {
         void filterEvents(String name, String status, ArrayList<String> tags, LocalDate startDate, LocalDate endDate, LocalDate drawDate);
+
+        void clearFilters();
     }
 
     private FilterEventsListener listener;
@@ -134,7 +136,7 @@ public class FilterEventsDialogFragment extends DialogFragment {
         });
 
         clearFiltersButton.setOnClickListener(v -> {
-            // todo: remove filter selections or maybe rebuild fragment from scratch?
+            listener.clearFilters();
             dialog.dismiss();
         });
 

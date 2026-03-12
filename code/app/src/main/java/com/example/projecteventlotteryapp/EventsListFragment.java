@@ -182,12 +182,22 @@ public class EventsListFragment extends Fragment {
         filterName = name;
         filterStatus = status;
         filterTags = tags;
+        if (tags != null) {
+            filterTags = new ArrayList<>(tags);
+        }
         filterRegStart = regStart;
         filterRegEnd = regEnd;
         filterDrawDate = drawDate;
 
         // get filtered events
         getFilteredEvents();
+    }
+
+    /**
+     *  Get all events again without filters.
+     */
+    void clearFilters() {
+        getEventsForRole();
     }
 
     /**
@@ -201,11 +211,18 @@ public class EventsListFragment extends Fragment {
     */
     private void getFilteredEvents() {
         Query query = eventsRef;
-        Log.d("EventsListFragment", "check query: " + eventsRef.getClass());
 
-        // check name filter
+        // filter by role
+        if (globalUser.getRole() == Role.ORGANIZER) {
+            Log.d("EventsListFragment", "filter organizer: " + globalUser.getUserId());
+            DocumentReference organizerRef = db.collection("organizers")
+                    .document(globalUser.getUserId());
+            query = query.whereEqualTo("organizer", organizerRef);
+        }
+
+        // filter by name
         if (filterName != null) {
-            Log.d("EventsListFragment", "in check name: " + filterName);
+            Log.d("EventsListFragment", "filter name: " + filterName);
             query = query.whereEqualTo("name", filterName);
         }
 
@@ -216,36 +233,21 @@ public class EventsListFragment extends Fragment {
         }
         */
 
-        // check tags filter
+        // filter by tags
         if (filterTags != null) {
-            Log.d("EventsListFragment", "in check tags: " + filterTags);
+            Log.d("EventsListFragment", "filter tags: " + filterTags);
             query = query.whereArrayContainsAny("tags", filterTags);
         }
 
-        // check registration date filter
-        if (filterRegStart != null && filterRegEnd != null) {
-            Log.d("EventsListFragment", "in check registration: " + filterRegStart + "\n" + filterRegEnd);
-            Timestamp start = convertStartLocalDateToTimestamp(filterRegStart);
-            Timestamp end = convertEndLocalDateToTimestamp(filterRegEnd);
-            query = query.whereLessThanOrEqualTo("registrationStartDate", end)
-                    .whereGreaterThanOrEqualTo("registrationEndDate", start);
-        } else if (filterRegStart != null) {
-            Log.d("EventsListFragment", "in check registration: " + filterRegStart);
+        // filter by registration date (one-sided)
+        if (filterRegStart != null && filterRegEnd == null) {
+            Log.d("EventsListFragment", "filter registration start: " + filterRegStart);
             Timestamp start = convertStartLocalDateToTimestamp(filterRegStart);
             query = query.whereGreaterThanOrEqualTo("registrationStartDate", start);
-        } else if (filterRegEnd != null) {
-            Log.d("EventsListFragment", "in check registration: " + filterRegEnd);
+        } else if (filterRegEnd != null && filterRegStart == null) {
+            Log.d("EventsListFragment", "filter registration end: " + filterRegEnd);
             Timestamp end = convertEndLocalDateToTimestamp(filterRegEnd);
             query = query.whereLessThanOrEqualTo("registrationEndDate", end);
-        }
-
-        // check draw date filter
-        if (filterDrawDate != null) {
-            Log.d("EventsListFragment", "in check draw: " + filterDrawDate);
-            Timestamp start = convertStartLocalDateToTimestamp(filterDrawDate);
-            Timestamp end = convertEndLocalDateToTimestamp(filterDrawDate);
-            query = query.whereGreaterThanOrEqualTo("drawDate", start)
-                    .whereLessThanOrEqualTo("drawDate", end);
         }
 
         // do filtered query
@@ -253,9 +255,23 @@ public class EventsListFragment extends Fragment {
             eventsArrayList.clear();
             for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
                 Event event = Event.fetchEventFromSnapshot(snapshot);
-                if (displayEventForRole(event, globalUser)) {
-                    eventsArrayList.add(event);
+
+                // filter by registration date range
+                if (filterRegStart != null && filterRegEnd != null) {
+                    if (event.getRegistrationEndDate().compareTo(filterRegStart) < 0 || event.getRegistrationStartDate().compareTo(filterRegEnd) > 0) {
+                        continue;  // not in range
+                    }
                 }
+
+                // filter by draw date
+                if (filterDrawDate != null) {
+                    LocalDate eventDate = event.getDrawDate().toLocalDate();
+                    if (!eventDate.equals(filterDrawDate)) {
+                        continue;  // not on draw date
+                    }
+                }
+
+                eventsArrayList.add(event);
             }
             eventsArrayAdapter.notifyDataSetChanged();
         });

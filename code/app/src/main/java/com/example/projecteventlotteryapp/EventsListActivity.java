@@ -146,4 +146,9 @@ private Button organizerController;
             eventsListFragment.applyFilters(name, status, tags, startDate, endDate, drawDate);
         }
     }
+
+    @Override
+    public void clearFilters() {
+        eventsListFragment.clearFilters();
+    }
 }
