@@ -2,17 +2,31 @@ package com.example.projecteventlotteryapp;
 
 import android.net.Uri;
 
+/**
+ * Represents an image in the app.
+ *
+ * Carries the ID of the image, which is the document ID of the image in the database, and the
+ * download url of the image from storage
+ *
+ * @author Ashley Kang
+ */
 public class Image {
-    // imageUrl is set to Uri for ui testing
-    // TODO: change back to string when connecting to database
-    private Uri imageUrl;
-    public Image(Uri imageUrl){
+     private String imageId;
+     private String imageUrl;
+    public Image(String imageId, String imageUrl) {
         this.imageUrl = imageUrl;
+        this.imageId = imageId;
     }
-    public void setImageUrl(Uri imageUrl) {
-        this.imageUrl = imageUrl;
-    }
-    public Uri getImageUrl() {
-        return imageUrl;
-    }
+
+    /**
+     * Retrieves the Image ID.
+     * @return the ID of the image
+     */
+    public String getImageId(){ return imageId; }
+
+    /**
+     * Retrieves the Image URL.
+     * @return the URL of the image
+     */
+    public String getImageUrl() {return imageUrl; }
 }

@@ -11,8 +11,13 @@ import android.widget.ImageView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.bumptech.glide.Glide;
+
 import java.util.ArrayList;
 
+/*
+Custom adapter class that sets the image url of the images being displayed to the admin
+ */
 public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.ViewHolder>{
     /*
     the following code is adapted from https://www.geeksforgeeks.org/android/how-to-build-an-image-gallery-android-app-with-recyclerview-and-glide/
@@ -34,13 +39,19 @@ public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.
     @Override
     public void onBindViewHolder(@NonNull ViewHolder holder, int position) {
         Image model = imageList.get(position);
-        holder.image.setImageResource(R.drawable.default_poster);
+
+        Glide.with(context).load(model.getImageUrl()).into(holder.image);
+
         holder.deleteBtn.setOnClickListener(v -> {
             int pos = holder.getBindingAdapterPosition();
 
             if (pos != RecyclerView.NO_POSITION) {
                 Image image = imageList.get(pos);
-                deleteImage(image, pos);
+
+                PosterImageHandler.deletePoster(image);
+
+                imageList.remove(position);
+                notifyItemRemoved(position);
             }
         });
     }
@@ -48,11 +59,6 @@ public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.
     @Override
     public int getItemCount() {
         return imageList.size();
-    }
-
-    private void deleteImage(Image image, int position){
-        imageList.remove(position);
-        notifyItemRemoved(position);
     }
 
     public static class ViewHolder extends RecyclerView.ViewHolder {

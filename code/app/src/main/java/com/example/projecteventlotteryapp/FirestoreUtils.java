@@ -7,6 +7,14 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
 
+/**
+ * Helper class for Firestore actions
+ *
+ * <p>This class is designed to encapsulate commonly used Firestore actions. All methods should
+ * be static and an instance of this class should not be needed in order to use its methods.</p>
+ *
+ * Example usage: var = FirestoreUtils.LocalDate(date, zoneId);
+ */
 public class FirestoreUtils {
     /**
      * Converts a LocalDate to a Firestore Timestamp at the start of the day in the given time zone.

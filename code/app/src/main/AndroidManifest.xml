@@ -20,7 +20,6 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -61,8 +60,13 @@
             android:name=".AdminEventsActivity"
             android:exported="false" />
         <activity
+<<<<<<< HEAD
             android:name=".adminNotificationsActivity"
             android:exported="false" />
+=======
+            android:name=".EditEventActivity"
+            android:exported="false"/>
+>>>>>>> dev
     </application>
 
 </manifest>
