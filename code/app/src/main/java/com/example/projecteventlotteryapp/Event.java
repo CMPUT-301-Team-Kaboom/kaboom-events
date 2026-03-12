@@ -13,6 +13,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 
+import org.checkerframework.common.returnsreceiver.qual.This;
 import org.w3c.dom.Document;
 
 import java.lang.reflect.Array;
@@ -22,6 +23,16 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.function.Consumer;
 
+/**
+ * Model for an Event
+ *
+ * <p>This class models an event entity stored in Firebase Firestore. It stores
+ *  metadata such as registration dates, draw date, attendee limits, organizer
+ *  information, and lists of entrants. Instances of this class are used to help display
+ *  database information.</p>
+ *
+ *  TODO: reduce scope of the class and move non-model functionality into a controller class
+ */
 public class Event {
     private String eventId;
     private String name;
@@ -45,13 +56,15 @@ public class Event {
     private DocumentReference eventDoc;
 
     /**
-     * Constructor for Event class
+     * Creates a new Event object with basic event information.
+     * <p> This constructor is typically used when creating a new event before
+     * it has been stored in the database.</p>
      *
-     * TODO: Remove waitlistLimit from UI Diagram
-     * @param name
-     * @param registrationStartDate
-     * @param registrationEndDate
-     * @param drawDate
+     * @param name name of the event
+     * @param registrationStartDate the date when event registration opens
+     * @param registrationEndDate the date when event registration closes
+     * @param drawDate the date and time when the lottery draw occurs
+     * @param attendeesLimit the maximum number of entrants that can attend the event
      */
     public Event(
             String name,
@@ -67,6 +80,19 @@ public class Event {
         this.attendeesLimit = attendeesLimit;
     }
 
+    /**
+     * Creates an Event object that corresponds to an existing Firestore document.
+     *
+     * <p>This constructor initializes the event with a known event ID and
+     * creates a reference to the associated Firestore document.</p>
+     *
+     * @param eventId the unique identifier of the event document in Firestore
+     * @param name the name of the event
+     * @param registrationStartDate the date when event registration opens
+     * @param registrationEndDate the date when event registration closes
+     * @param drawDate the date and time when the lottery draw occurs
+     * @param attendeesLimit the maximum number of entrants that can attend the event
+     */
     public Event(
             String eventId,
             String name,
@@ -178,6 +204,18 @@ public class Event {
     public void setPoster(String poster) { this.poster = poster; }
     public String getPoster() { return poster; }
 
+    /**
+     * Returns the Firestore field name corresponding to a specific entrant list type.
+     *
+     * <p>This method converts an {@link EntrantListType} enum value into the
+     * associated Firestore field used to store that list.</p>
+     *
+     * TODO: Consider moving to the EntrantListType enum
+     *
+     * @param type the entrant list type
+     * @return the Firestore field name representing the list
+     * @throws IllegalArgumentException if the list type is unknown
+     */
     private String getListField(EntrantListType type) {
         switch (type) {
             case WAITLIST:
@@ -192,6 +230,20 @@ public class Event {
                 throw new IllegalArgumentException("Unknown list type: " + type);
         }
     }
+
+    /**
+     * Checks whether a specific entrant exists in one of the event's entrant lists.
+     *
+     * <p>This method retrieves the event document from Firestore and checks if
+     * the entrant's user ID exists in the specified list.</p>
+     *
+     * TODO: Consider turning into a query instead of fetching the eventDoc
+     *
+     * @param listType the entrant list to check
+     * @param entrant the user whose membership in the list is being checked
+     * @return a {@link Task} that resolves to {@code true} if the entrant exists
+     * in the list, or {@code false} otherwise
+     */
     public Task<Boolean> entrantListContains(EntrantListType listType, User entrant) {
         return eventDoc.get().continueWith(task -> {
             if (!task.isSuccessful()) { return false; }
@@ -206,21 +258,15 @@ public class Event {
     }
 
 
-    public void removeFromEntrantList(EntrantListType listType, User entrant) {
-        eventDoc.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()){
-                DocumentSnapshot doc = task.getResult();
-                if (doc.exists()){
-                    ArrayList<String> entrantList;
-                    entrantList = (ArrayList<String>) doc.get(getListField(listType));
-                    entrantList.remove(entrant.getUserId());
-                    eventDoc.update(getListField(listType), entrantList);
-                }
-            }
-        });
-    }
-
-    // Event database document conversion
+    /**
+     * Creates an Event object from a Firestore document snapshot.
+     *
+     * <p>This method extracts fields from the snapshot and converts them into
+     * the appropriate Java types used by the Event class.</p>
+     *
+     * @param snapshot the Firestore document snapshot representing the event
+     * @return a populated Event object
+     */
     public static Event fetchEventFromSnapshot(DocumentSnapshot snapshot) {
         // get string fields
         String eventId = snapshot.getId();
@@ -265,6 +311,12 @@ public class Event {
         return event;
     }
 
+    /**
+     * Fetches an int value from an event document snapshot
+     * @param snapshot snapshot of the event
+     * @param field the field we want the value of
+     * @return the value of the fetched field
+     */
     private static int fetchInt(DocumentSnapshot snapshot, String field) {
         Long value = snapshot.getLong(field);
 
@@ -275,6 +327,12 @@ public class Event {
         }
     }
 
+    /**
+     * Fetches a localDate value from an event document snapshot
+     * @param snapshot snapshot of the event
+     * @param field the field we want the value of
+     * @return the value of the fetched field
+     */
     private static LocalDate fetchLocalDate(DocumentSnapshot snapshot, String field) {
         /*
         The following code is adapted from...
@@ -294,6 +352,12 @@ public class Event {
         }
     }
 
+    /**
+     * Fetches a LocalDateTime value from an event document snapshot
+     * @param snapshot snapshot of the event
+     * @param field the field we want the value of
+     * @return the value of the fetched field
+     */
     private static LocalDateTime fetchLocalDateTime(DocumentSnapshot snapshot, String field) {
         Timestamp value = snapshot.getTimestamp(field);
 
@@ -304,6 +368,12 @@ public class Event {
         }
     }
 
+    /**
+     * Fetches a boolean value from an event document snapshot
+     * @param snapshot snapshot of the event
+     * @param field the field we want the value of
+     * @return the value of the fetched field
+     */
     private static boolean fetchBoolean(DocumentSnapshot snapshot, String field) {
         Boolean value = snapshot.getBoolean(field);
 
@@ -314,6 +384,12 @@ public class Event {
         }
     }
 
+    /**
+     * Fetches a String list value from an event document snapshot and returns an ArrayList representation of it
+     * @param snapshot snapshot of the event
+     * @param field the field we want the value of
+     * @return Arraylist of the string list
+     */
     private static ArrayList<String> fetchStringArrayList(DocumentSnapshot snapshot, String field) {
         /*
         The following code is adapted from...

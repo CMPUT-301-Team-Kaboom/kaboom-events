@@ -47,6 +47,11 @@ dependencies {
     //    Glide dependency (image loading)
     implementation ("com.github.bumptech.glide:glide:4.16.0")
 
+    //    Mockito dependencies
+    testImplementation("org.mockito:mockito-core:5.5.0")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
+    testImplementation("org.mockito:mockito-android:5.5.0")
+
     //    default dependencies
     implementation(libs.appcompat)
     implementation(libs.material)
