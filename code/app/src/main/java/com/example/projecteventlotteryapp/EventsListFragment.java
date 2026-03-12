@@ -40,8 +40,6 @@ import java.util.Objects;
 public class EventsListFragment extends Fragment {
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
-    private CollectionReference organizerRef;
-    private CollectionReference posterRef;
 
     private EventUtils eventUtils;
     private User globalUser;
@@ -164,71 +162,140 @@ public class EventsListFragment extends Fragment {
 
             for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
                 Event event = eventUtils.fetchEventFromSnapshot(snapshot);
-                eventsArrayList.add(event);
-            }
-            if (value != null && !value.isEmpty()) {
-                eventsArrayList.clear();
-                for (QueryDocumentSnapshot snapshot : value) {
-                    Event event = eventUtils.fetchEventFromSnapshot(snapshot);
-                        // fetch organizer and poster from DocumentReferences
-                    /*
-                    The following code is adapted from...
-                    Source: https://firebase.google.com/docs/firestore/query-data/get-data
-                    Title: "Get data with Cloud Firestore"
-                    Retrieved: 2026-03-03
-                    */
-                    DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
-                    if (organizerRef != null) {
-                        organizerRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                if (documentSnapshot.exists()) {
-                                    String organizerId = documentSnapshot.getId();
-                                    String organizerName = documentSnapshot.getString("name");
-                                    event.setOrganizerId(organizerId);
-                                    event.setOrganizerName(organizerName);
 
-                                    // filter (maybe add the above code to Event via fetchEventFromSnapshot later)
-                                    if (displayEventForRole(event, globalUser)) {
-                                        Log.d("EventList", "Added event: " + event.getEventId() + " for user: " + globalUser.getUserId());
-                                        eventsArrayList.add(event);
-                                        eventsArrayAdapter.notifyDataSetChanged();
-                                    }
-                                }
-                            }
-                        });
-                    }
+                // get organizer
+                DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
+                if (organizerRef != null) {
+                    eventUtils.fetchOrganizerForEvent(event, organizerRef)
+                            .addOnSuccessListener(aVoid -> {
+                                eventsArrayList.add(event);
+                                eventsArrayAdapter.notifyDataSetChanged();
+                            });
+                } else {
+                    eventsArrayList.add(event);
+                    eventsArrayAdapter.notifyDataSetChanged();
                 }
-
-                // filter by draw date
-                if (filterDrawDate != null) {
-                    LocalDate eventDate = event.getDrawDate().toLocalDate();
-                    if (!eventDate.equals(filterDrawDate)) {
-                        continue;  // not on draw date
-                    }
-                }
-
-                eventsArrayList.add(event);
             }
-            eventsArrayAdapter.notifyDataSetChanged();
         });
     }
 
     /**
-     * Helper to determine whether or not display an event based on user role and ID.
+     * Make a call to apply filters to a query for a list of events from the database.
      *
-     * @param event to check
-     * @param user to get role and ID of
-     * @return boolean of whether or not this event should be displayed in the context
+     * @param name of event
+     * @param status of user
+     * @param tags for event
+     * @param regStart of event
+     * @param regEnd of event
+     * @param drawDate of event
      */
-    private boolean displayEventForRole(Event event, User user) {
-        if (user.getRole() == Role.ORGANIZER) {
-            Log.d("EventList", "Organizer: " + user.getUserId());
-            return (user.getUserId().equals(event.getOrganizerId()));
-        } else {
-            Log.d("EventList", "User: " + user.getUserId());
-            return true;
+    void applyFilters(String name, String status, ArrayList<String> tags, LocalDate regStart, LocalDate regEnd, LocalDate drawDate) {
+        // Store filter parameters
+        filterName = name;
+        filterStatus = status;
+        filterTags = tags;
+        if (tags != null) {
+            filterTags = new ArrayList<>(tags);
         }
+        filterRegStart = regStart;
+        filterRegEnd = regEnd;
+        filterDrawDate = drawDate;
+
+        // get filtered events
+        getFilteredEvents();
+    }
+
+    /**
+     *  Get all events again without filters.
+     */
+    void clearFilters() {
+        getEventsForRole();
+    }
+
+    /**
+     * Perform the filtering of events fetched from the database.
+     */
+    /*
+    The following code is adapted from...
+    Title: "Perform simple and compound queries in Cloud Firestore"
+    Source: https://firebase.google.com/docs/firestore/query-data/
+    Retrieved: 2026-03-11
+    */
+    private void getFilteredEvents() {
+        Query query = eventsRef;
+
+        // filter by role
+        if (globalUser.getRole() == Role.ORGANIZER) {
+            Log.d("EventsListFragment", "filter organizer: " + globalUser.getUserId());
+            DocumentReference organizerRef = db.collection("organizers")
+                    .document(globalUser.getUserId());
+            query = query.whereEqualTo("organizer", organizerRef);
+        }
+
+        // filter by name
+        if (filterName != null) {
+            Log.d("EventsListFragment", "filter name: " + filterName);
+            query = query.whereEqualTo("name", filterName);
+        }
+
+        /*
+        todo: status not sure how this works yet
+        if (filterStatus != null) {
+            query = query.whereEqualTo("name", filterStatus);
+        }
+        */
+
+        // filter by tags
+        if (filterTags != null) {
+            Log.d("EventsListFragment", "filter tags: " + filterTags);
+            query = query.whereArrayContainsAny("tags", filterTags);
+        }
+
+        // filter by registration date (one-sided)
+        if (filterRegStart != null && filterRegEnd == null) {
+            Log.d("EventsListFragment", "filter registration start: " + filterRegStart);
+            Timestamp start = convertStartLocalDateToTimestamp(filterRegStart);
+            query = query.whereGreaterThanOrEqualTo("registrationStartDate", start);
+        } else if (filterRegEnd != null && filterRegStart == null) {
+            Log.d("EventsListFragment", "filter registration end: " + filterRegEnd);
+            Timestamp end = convertEndLocalDateToTimestamp(filterRegEnd);
+            query = query.whereLessThanOrEqualTo("registrationEndDate", end);
+        }
+
+        // do filtered query
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            eventsArrayList.clear();
+            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                Event event = eventUtils.fetchEventFromSnapshot(snapshot);
+                    // filter by registration date range
+                    if (filterRegStart != null && filterRegEnd != null) {
+                        if (event.getRegistrationEndDate().isBefore(filterRegStart) || event.getRegistrationStartDate().isAfter(filterRegEnd)) {
+                            return;  // not in range
+                        }
+                    }
+
+                    // filter by draw date
+                    if (filterDrawDate != null) {
+                        LocalDate eventDate = event.getDrawDate().toLocalDate();
+                        if (!eventDate.equals(filterDrawDate)) {
+                            return;  // not on draw date
+                        }
+                    }
+
+                    // get organizer
+                    DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
+                    if (organizerRef != null) {
+                        eventUtils.fetchOrganizerForEvent(event, organizerRef)
+                                .addOnSuccessListener(aVoid -> {
+                                    eventsArrayList.add(event);
+                                    eventsArrayAdapter.notifyDataSetChanged();
+                                });
+                    } else {
+                        eventsArrayList.add(event);
+                        eventsArrayAdapter.notifyDataSetChanged();
+                    }
+            }
+        });
     }
 
     /**
