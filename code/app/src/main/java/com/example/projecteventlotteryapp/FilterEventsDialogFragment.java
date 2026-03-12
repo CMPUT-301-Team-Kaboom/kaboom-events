@@ -81,7 +81,7 @@ public class FilterEventsDialogFragment extends DialogFragment {
             // validation
             boolean isValid = true;
 
-            String name = filterName.getText().toString().trim().toLowerCase();
+            String name = filterName.getText().toString().trim();
             if (name.isEmpty()) {
                 name = null;
             }

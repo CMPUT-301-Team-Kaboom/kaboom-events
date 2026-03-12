@@ -151,10 +151,9 @@ public class EventsListFragment extends Fragment {
         Query query = eventsRef;
         Log.d("EventsListFragment", "check query: " + eventsRef.getClass());
 
-
         // check name filter
         if (filterName != null) {
-            Log.d("EventsListFragment", "in check name: " + filterName + " " + filterName.getClass());
+            Log.d("EventsListFragment", "in check name: " + filterName);
             query = query.whereEqualTo("name", filterName);
         }
 
