@@ -15,6 +15,14 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
+/**
+ * Custom array adapter for displaying a list of user objects specifically representing
+ * organizers within the admin view
+ * This adapter populates a list item with the organizer's name, email, and their position in the
+ * list. it also provides a functional delete icon and a notifications button
+ * The notifications button will lead to an activity that contains all the notifications that
+ * organizer has sent in a list
+ */
 public class OrganizerArrayAdapter extends ArrayAdapter<User> {
     private ArrayList<User> organizers;
     private Context context;

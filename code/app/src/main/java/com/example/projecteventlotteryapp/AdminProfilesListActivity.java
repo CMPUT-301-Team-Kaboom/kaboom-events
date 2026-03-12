@@ -11,6 +11,11 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
+/**
+ * Admin Profiles List Activity
+ * Allows admin users to view and manage entrant accounts
+ * Fetches accounts from Firestore database and displays it in a List View
+ */
 public class AdminProfilesListActivity extends AppCompatActivity {
     private ListView profileListView;
     private ProfileArrayAdapter profileAdapter;
