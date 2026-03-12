@@ -5,9 +5,7 @@ plugins {
 
 android {
     namespace = "com.example.projecteventlotteryapp"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.projecteventlotteryapp"
@@ -39,6 +37,11 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-storage")
+    implementation(fileTree(mapOf<String, Any>(
+        "dir" to "/Users/kevincao/Library/Android/sdk/platforms/android-36",
+        "include" to listOf("*.aar", "*.jar"),
+        "exclude" to emptyList<String>()
+    )))
 
     // JUnit5 unit testing
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
