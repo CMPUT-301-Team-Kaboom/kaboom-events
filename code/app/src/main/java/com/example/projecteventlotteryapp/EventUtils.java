@@ -6,6 +6,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 
@@ -17,6 +18,13 @@ import java.util.HashMap;
 
 /**
  * Utility class to provide database operations on the Event class
+ *
+ * <p>This class is designed to encapsulated all database operates for Events. An instance of this
+ * class should be declared with an injection of the database instance that the operations are
+ * performed on.</p>
+ *
+ * Example usage:
+ * EventUtils eventUtils = new EventUtils(FirebaseFirestore.getInstance());
  *
  * @see Event
  */
@@ -81,6 +89,44 @@ public class EventUtils {
             return entrantList != null && entrantList.contains(entrant.getUserId());
         });
     }
+
+    /**
+     * Adds an entrant to a specified entrant list for this event.
+     *
+     * <p>This method updates the Firestore event document by adding the entrant's
+     * user ID to the corresponding list field using {@code FieldValue.arrayUnion}.
+     * If the user ID already exists in the list, Firestore will not add a duplicate.</p>
+     *
+     * @param listType the entrant list to which the user should be added
+     * @param entrant the user being added to the list
+     * @return a {@link Task} representing the asynchronous Firestore update operation
+     */
+    public Task<Void> addToEntrantList(EntrantListType listType, User entrant, String eventId) {
+        Log.d("AddToEntrantList", String.format("Type: %s | userId: %s",
+                listType.toString(),
+                entrant.getUserId())
+        );
+
+        DocumentReference eventDoc = db.collection("events").document(eventId);
+
+        return eventDoc.update(getListField(listType), FieldValue.arrayUnion(entrant.getUserId()));
+    }
+
+    /**
+     * Removes an entrant from a specified entrant list for this event.
+     *
+     * <p>This function updates the Firestore event document by removing an entrant's userID from
+     * the corresponding list field using {@code FieldValue.arrayRemove}.</p>
+     * @param listType the list to remove the entrant from
+     * @param entrant the entrant to add to the list
+     * @return a {@link Task} representing the asynchronous Firestore update operation
+     */
+    public Task<Void> removeFromEntrantList(EntrantListType listType, User entrant, String eventId) {
+        DocumentReference eventDoc = db.collection("events").document(eventId);
+
+        return eventDoc.update(getListField(listType), FieldValue.arrayRemove(entrant.getUserId()));
+    }
+
     /**
      * Creates an Event object from a Firestore document snapshot.
      *

@@ -163,7 +163,7 @@ public class EventsListFragment extends Fragment {
             eventsArrayList.clear();
 
             for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
-                Event event = Event.fetchEventFromSnapshot(snapshot);
+                Event event = eventUtils.fetchEventFromSnapshot(snapshot);
                 eventsArrayList.add(event);
             }
             if (value != null && !value.isEmpty()) {

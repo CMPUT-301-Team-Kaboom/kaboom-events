@@ -129,40 +129,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
     /**
-     * Adds an entrant to a specified entrant list for this event.
-     *
-     * <p>This method updates the Firestore event document by adding the entrant's
-     * user ID to the corresponding list field using {@code FieldValue.arrayUnion}.
-     * If the user ID already exists in the list, Firestore will not add a duplicate.</p>
-     *
-     * @param listType the entrant list to which the user should be added
-     * @param entrant the user being added to the list
-     * @return a {@link Task} representing the asynchronous Firestore update operation
-     */
-    private Task<Void> addToEntrantList(EntrantListType listType, User entrant) {
-        Log.d("AddToEntrantList", String.format("Type: %s | userId: %s",
-                listType.toString(),
-                entrant.getUserId())
-        );
-
-        return eventDoc.update(eventUtils.getListField(listType), FieldValue.arrayUnion(entrant.getUserId()));
-    }
-
-    /**
-     * Removes an entrant from a specified entrant list for this event.
-     *
-     * <p>This function updates the Firestore event document by removing an entrant's userID from
-     * the corresponding list field using {@code FieldValue.arrayRemove}.</p>
-     * @param listType the list to remove the entrant from
-     * @param entrant the entrant to add to the list
-     * @return a {@link Task} representing the asynchronous Firestore update operation
-     */
-    public Task<Void> removeFromEntrantList(EntrantListType listType, User entrant) {
-        return eventDoc.update(eventUtils.getListField(listType),
-                FieldValue.arrayRemove(entrant.getUserId()));
-    }
-
-    /**
      * Helps setup the UI of the activity by defining local variables.
      */
     private void setupUi() {
@@ -251,12 +217,12 @@ public class EventDetailsActivity extends AppCompatActivity {
                     // TODO: Setup onclick listener for adding to Declined list
                     entrantSecondaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Decline"));
                 } else {
-                    eventUtils.entrantListContains(EntrantListType.WAITLIST, user, event.getEventId()).addOnSuccessListener(waitlisted -> {
+                    eventUtils.entrantListContains(EntrantListType.WAITLIST, user, eventId).addOnSuccessListener(waitlisted -> {
                         if (waitlisted){
                             entrantPrimaryButton.setText("Remove Waitlist");
                             entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
                             entrantPrimaryButton.setOnClickListener(v -> {
-                                removeFromEntrantList(EntrantListType.WAITLIST, user)
+                                eventUtils.removeFromEntrantList(EntrantListType.WAITLIST, user, eventId)
                                         .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully Left Waitlist");
                                             entrantPrimaryButton.setText("Join Waitlist");
                                             configureUIForRole(user);
@@ -268,7 +234,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                             entrantPrimaryButton.setText("Join Waitlist");
                             entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.secondaryAccent));
                             entrantPrimaryButton.setOnClickListener(v -> {
-                                addToEntrantList(EntrantListType.WAITLIST, user)
+                                eventUtils.addToEntrantList(EntrantListType.WAITLIST, user, eventId)
                                         .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully joined Waitlist");
                                         entrantPrimaryButton.setText("Remove Waitlist");
                                         configureUIForRole(user);
