@@ -35,7 +35,7 @@ public class DatabaseTestsViaUI {
     private FirebaseFirestore db;
     private CollectionReference entrantsRef;
     private final List<String> createdEntrantIds = new ArrayList<>();
-    private final List<String> createdOrfanizerIds = new ArrayList<>();
+    private final List<String> createdOrganizerIds = new ArrayList<>();
     private final List<String> createdAdminIds = new ArrayList<>();
 
     @Rule
@@ -58,7 +58,7 @@ public class DatabaseTestsViaUI {
             latch.await(5, TimeUnit.SECONDS);
         }
         // Clean up organizers
-        for (String docId : createdOrfanizerIds) {
+        for (String docId : createdOrganizerIds) {
             if (docId == null) continue;
             CountDownLatch latch = new CountDownLatch(1);
             db.collection("organizers").document(docId).delete()
@@ -130,7 +130,7 @@ public class DatabaseTestsViaUI {
 
         latch.await(5, TimeUnit.SECONDS);
         assertTrue(userExists[0]);
-        createdOrfanizerIds.add(newOrganizerId[0]);
+        createdOrganizerIds.add(newOrganizerId[0]);
     }
 
     @Test
