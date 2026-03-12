@@ -4,16 +4,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/tertiaryBackground"
+    android:background="@drawable/rounded_container"
+    android:padding="22dp"
     tools:context=".FilterEventsDialogFragment">
 
+    <!-- does this really sort or is it just filter? -->
     <TextView
-        android:id="@+id/tv_filter_events_header"
         style="@style/MainHeaderTextviewStyle"
+        android:id="@+id/tv_filter_events_header"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Sort / Filter"
-        android:layout_marginTop="12dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -25,12 +26,12 @@
         android:layout_height="wrap_content"
         android:text="Name"
         app:layout_constraintHorizontal_bias="0.044"
-        app:layout_constraintBottom_toTopOf="@id/et_event_edit_name"
-        app:layout_constraintStart_toStartOf="@id/et_event_edit_name"
-        app:layout_constraintEnd_toEndOf="@id/et_event_edit_name" />
+        app:layout_constraintBottom_toTopOf="@id/et_filter_name"
+        app:layout_constraintStart_toStartOf="@id/et_filter_name"
+        app:layout_constraintEnd_toEndOf="@id/et_filter_name" />
 
     <EditText
-        android:id="@+id/et_event_edit_name"
+        android:id="@+id/et_filter_name"
         style="@style/BodyRoundedEditTextStyle"
         android:layout_width="325dp"
         android:layout_height="35dp"
@@ -48,9 +49,9 @@
         android:text="Enrollment Status"
         android:layout_marginTop="12dp"
         app:layout_constraintHorizontal_bias="0.044"
-        app:layout_constraintTop_toBottomOf="@id/et_event_edit_name"
-        app:layout_constraintStart_toStartOf="@id/et_event_edit_name"
-        app:layout_constraintEnd_toEndOf="@id/et_event_edit_name" />
+        app:layout_constraintTop_toBottomOf="@id/et_filter_name"
+        app:layout_constraintStart_toStartOf="@id/et_filter_name"
+        app:layout_constraintEnd_toEndOf="@id/et_filter_name" />
 
     <!--
     The following code is adapted from Google AI Overview...
@@ -61,14 +62,16 @@
         style="@style/SelectAllButton"
         android:id="@+id/mbtn_filter_enrolled"
         android:text="Enrolled"
+        android:backgroundTint="@color/primaryBackground"
         app:layout_constraintTop_toBottomOf="@id/tv_filter_enrollment_status_header"
-        app:layout_constraintStart_toStartOf="@id/et_event_edit_name"
+        app:layout_constraintStart_toStartOf="@id/et_filter_name"
         app:layout_constraintEnd_toStartOf="@id/mbtn_filter_declined" />
 
     <Button
         style="@style/SelectAllButton"
         android:id="@+id/mbtn_filter_declined"
         android:text="Declined"
+        android:backgroundTint="@color/primaryBackground"
         app:layout_constraintTop_toTopOf="@id/mbtn_filter_enrolled"
         app:layout_constraintStart_toEndOf="@id/mbtn_filter_enrolled"
         app:layout_constraintEnd_toEndOf="@id/mbtn_filter_invited" />
@@ -77,14 +80,16 @@
         style="@style/SelectAllButton"
         android:id="@+id/mbtn_filter_invited"
         android:text="Invited"
+        android:backgroundTint="@color/primaryBackground"
         app:layout_constraintTop_toTopOf="@id/mbtn_filter_enrolled"
         app:layout_constraintStart_toEndOf="@id/mbtn_filter_declined"
-        app:layout_constraintEnd_toEndOf="@id/et_event_edit_name"  />
+        app:layout_constraintEnd_toEndOf="@id/et_filter_name"  />
 
     <Button
         style="@style/SelectAllButton"
         android:id="@+id/mbtn_filter_on_wait"
         android:text="On Waitlist"
+        android:backgroundTint="@color/primaryBackground"
         app:layout_constraintTop_toBottomOf="@id/mbtn_filter_enrolled"
         app:layout_constraintStart_toStartOf="@id/mbtn_filter_enrolled"
         app:layout_constraintEnd_toStartOf="@id/mbtn_filter_not_on_wait" />
@@ -93,9 +98,10 @@
         style="@style/SelectAllButton"
         android:id="@+id/mbtn_filter_not_on_wait"
         android:text="Not On Waitlist"
+        android:backgroundTint="@color/primaryBackground"
         app:layout_constraintTop_toBottomOf="@id/mbtn_filter_enrolled"
         app:layout_constraintStart_toEndOf="@id/mbtn_filter_on_wait"
-        app:layout_constraintEnd_toEndOf="@id/et_event_edit_name" />
+        app:layout_constraintEnd_toEndOf="@id/et_filter_name" />
 
     <TextView
         style="@style/HeaderRoundedEditTextStyle"
@@ -106,8 +112,8 @@
         android:layout_marginTop="17dp"
         app:layout_constraintHorizontal_bias="0.044"
         app:layout_constraintTop_toBottomOf="@id/mbtn_filter_on_wait"
-        app:layout_constraintStart_toStartOf="@id/et_event_edit_name"
-        app:layout_constraintEnd_toEndOf="@id/et_event_edit_name" />
+        app:layout_constraintStart_toStartOf="@id/et_filter_name"
+        app:layout_constraintEnd_toEndOf="@id/et_filter_name" />
 
     <!-- todo: tags -->
 
@@ -120,8 +126,8 @@
         android:layout_marginTop="12dp"
         app:layout_constraintHorizontal_bias="0.044"
         app:layout_constraintTop_toBottomOf="@id/tv_filter_tags_header"
-        app:layout_constraintStart_toStartOf="@id/et_event_edit_name"
-        app:layout_constraintEnd_toEndOf="@id/et_event_edit_name" />
+        app:layout_constraintStart_toStartOf="@id/et_filter_name"
+        app:layout_constraintEnd_toEndOf="@id/et_filter_name" />
 
     <EditText
         style="@style/BodyRoundedEditTextStyle"
@@ -134,7 +140,7 @@
         android:textAlignment="center"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/tv_filter_registration_header"
-        app:layout_constraintStart_toStartOf="@id/et_event_edit_name" />
+        app:layout_constraintStart_toStartOf="@id/et_filter_name" />
 
     <EditText
         style="@style/BodyRoundedEditTextStyle"
@@ -147,7 +153,7 @@
         android:textAlignment="center"
         android:textSize="14sp"
         app:layout_constraintTop_toTopOf="@id/et_filter_registration_start"
-        app:layout_constraintEnd_toEndOf="@id/et_event_edit_name" />
+        app:layout_constraintEnd_toEndOf="@id/et_filter_name" />
 
     <TextView
         style="@style/DefaultTextStyle"
@@ -170,8 +176,8 @@
         android:layout_marginTop="12dp"
         app:layout_constraintHorizontal_bias="0.05"
         app:layout_constraintTop_toBottomOf="@id/et_filter_registration_start"
-        app:layout_constraintStart_toStartOf="@id/et_event_edit_name"
-        app:layout_constraintEnd_toEndOf="@id/et_event_edit_name" />
+        app:layout_constraintStart_toStartOf="@id/et_filter_name"
+        app:layout_constraintEnd_toEndOf="@id/et_filter_name" />
 
     <EditText
         style="@style/BodyRoundedEditTextStyle"
@@ -190,7 +196,7 @@
     <Button
         style="@style/RoundedButton"
         android:id="@+id/btn_clear_filters"
-        android:layout_width="120dp"
+        android:layout_width="140dp"
         android:layout_height="40dp"
         android:layout_marginTop="36dp"
         android:backgroundTint="@color/grey"
@@ -203,7 +209,7 @@
     <Button
         style="@style/RoundedButton"
         android:id="@+id/btn_filter_confirm"
-        android:layout_width="120dp"
+        android:layout_width="140dp"
         android:layout_height="40dp"
         android:backgroundTint="@color/secondaryAccent"
         android:text="Confirm"

@@ -2,6 +2,7 @@ package com.example.projecteventlotteryapp;
 
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
@@ -34,7 +35,8 @@ public class Event {
     // private QRCode
     // private location
     // private map
-    // private image
+    private String poster;
+
     private FirebaseFirestore db = FirebaseFirestore.getInstance();
     private DocumentReference eventDoc;
 
@@ -259,6 +261,33 @@ public class Event {
         event.setGeolocationEnabled(geolocationEnabled);
         event.setTagsList(tagsList);
         event.setWaitlistLimit(waitlistLimit);
+
+        DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
+        if (organizerRef != null) {
+            organizerRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot.exists()) {
+                        String organizerId = documentSnapshot.getId();
+                        String organizerName = documentSnapshot.getString("name");
+                        event.setOrganizerId(organizerId);
+                        event.setOrganizerName(organizerName);
+                    }
+                }
+            });
+        }
+
+        /*
+        DocumentReference posterRef = snapshot.getDocumentReference("poster");
+        if (posterRef != null){
+            posterRef.get().addOnSuccessListener(doc -> {
+                if (doc.exists()){
+                    String imageUrl = doc.getString("url");
+                    event.setPoster(imageUrl);
+                }
+            });
+        }
+        */
 
         Log.d("Event", "Fetched event.\nEventId: " + eventId + "\nname: " + name);
         return event;

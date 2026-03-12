@@ -15,13 +15,19 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.DialogFragment;
 
 import com.google.android.material.tabs.TabLayout;
 
-public class EventsListActivity extends AppCompatActivity {
+import java.time.LocalDate;
+import java.util.ArrayList;
+
+public class EventsListActivity extends AppCompatActivity implements FilterEventsDialogFragment.FilterEventsListener{
     private Button organizerController;
     private TabLayout entrantController;
     private User globalUser;
+
+    private EventsListFragment eventsListFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,9 +57,10 @@ public class EventsListActivity extends AppCompatActivity {
         Retrieved: 2026-02-28
         */
         if (savedInstanceState == null) {
+            eventsListFragment = new EventsListFragment();
             getSupportFragmentManager().beginTransaction()
                     .setReorderingAllowed(true)
-                    .add(R.id.fl_events_list, EventsListFragment.class, null)
+                    .add(R.id.fl_events_list, eventsListFragment)
                     .commit();
         }
 
@@ -71,6 +78,15 @@ public class EventsListActivity extends AppCompatActivity {
                 startActivity(new Intent(EventsListActivity.this, CriteriaAppGuideActivity.class));
             }
         });
+
+        // find button
+        ImageButton filterButton = findViewById(R.id.btn_filter);
+
+        // set click listener for filter button
+        filterButton.setOnClickListener(view -> {
+            FilterEventsDialogFragment filterEventsDialogFragment = new FilterEventsDialogFragment();
+            filterEventsDialogFragment.show(getSupportFragmentManager(), "Filter Events");
+        });
     }
 
     private void configureUIForRole(User user) {
@@ -79,7 +95,6 @@ public class EventsListActivity extends AppCompatActivity {
             entrantController.setVisibility(View.GONE);
 
             organizerController.setOnClickListener(view -> {
-
                 CreateEventDialogFragment createEventDialogFragment = new CreateEventDialogFragment();
                 createEventDialogFragment.show(getSupportFragmentManager(), "Create Event");
             });
@@ -95,6 +110,13 @@ public class EventsListActivity extends AppCompatActivity {
             entrantController.addTab(entrantController.newTab().setText("History"));
 
             // todo: add filtering with the tabs might need to refactor code
+        }
+    }
+
+    @Override
+    public void filterEvents(String name, String status, ArrayList<String> tags, LocalDate startDate, LocalDate endDate, LocalDate drawDate) {
+        if (eventsListFragment != null) {
+            eventsListFragment.applyFilters(name, status, tags, startDate, endDate, drawDate);
         }
     }
 }
