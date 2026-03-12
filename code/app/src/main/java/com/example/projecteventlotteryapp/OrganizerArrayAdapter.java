@@ -1,4 +1,3 @@
-// reference: https://stackoverflow.com/questions/61830784/recyclerview-in-android-studio-error-null-object-reference#:~:text=Comments&text=You%20need%20to%20do%20two,use%20the%20Anonymous%20class%20here.
 package com.example.projecteventlotteryapp;
 
 import android.content.Context;
@@ -15,20 +14,34 @@ import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
 
+/**
+ * Custom array adapter for displaying a list of user objects specifically representing
+ * organizers within the admin view
+ * This adapter populates a list item with the organizer's name, email, and their position in the
+ * list. it also provides a functional delete icon and a notifications button
+ * The notifications button will lead to an activity that contains all the notifications that
+ * organizer has sent in a list
+ */
 public class OrganizerArrayAdapter extends ArrayAdapter<User> {
     private ArrayList<User> organizers;
     private Context context;
     private OnDeleteClickListener deleteListener;
+    private OnNotifyClickListener notifyListener;
 
     public interface OnDeleteClickListener {
         void onDeleteClick(User organizer);
     }
 
-    public OrganizerArrayAdapter(Context context, ArrayList<User> organizers, OnDeleteClickListener deleteListener) {
+    public interface OnNotifyClickListener {
+        void onNotifyClick(User organizer);
+    }
+
+    public OrganizerArrayAdapter(Context context, ArrayList<User> organizers, OnDeleteClickListener deleteListener, OnNotifyClickListener notifyListener) {
         super(context, 0, organizers);
         this.organizers = organizers;
         this.context = context;
         this.deleteListener = deleteListener;
+        this.notifyListener = notifyListener;
     }
 
     @NonNull
@@ -52,6 +65,12 @@ public class OrganizerArrayAdapter extends ArrayAdapter<User> {
         deleteIcon.setOnClickListener(v -> {
             if (deleteListener != null) {
                 deleteListener.onDeleteClick(organizer);
+            }
+        });
+        
+        notificationsBtn.setOnClickListener(v -> {
+            if (notifyListener != null) {
+                notifyListener.onNotifyClick(organizer);
             }
         });
 

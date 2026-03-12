@@ -15,13 +15,19 @@ import android.widget.ListView;
 
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -34,9 +40,6 @@ import java.util.Objects;
 public class EventsListFragment extends Fragment {
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
-    private CollectionReference organizerRef;
-    private CollectionReference posterRef;
-
     private User globalUser;
 
     private ListView eventsListView;
@@ -44,16 +47,18 @@ public class EventsListFragment extends Fragment {
     private ArrayList<Event> eventsArrayList;
     private ArrayAdapter<Event> eventsArrayAdapter;
 
+    // filters
+    private String filterName;
+    private String filterStatus;
+    private ArrayList<String> filterTags;
+    private LocalDate filterRegStart;
+    private LocalDate filterRegEnd;
+    private LocalDate filterDrawDate;
 
     public EventsListFragment() {
         // required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of this fragment.
-     *
-     * @return A new instance of fragment EventsListFragment.
-     */
     public static EventsListFragment newInstance() {
         return new EventsListFragment();
     }
@@ -103,10 +108,8 @@ public class EventsListFragment extends Fragment {
         // inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_events_list, container, false);
 
-        // get ListView
+        // setup ListView and EventArrayAdapter
         eventsListView = view.findViewById(R.id.lv_events_list);
-
-        // set up arrays
         eventsArrayList = new ArrayList<Event>();
         /*
         The following code is adapted from...
@@ -120,7 +123,7 @@ public class EventsListFragment extends Fragment {
         eventsArrayAdapter = new EventArrayAdapter(getActivity(), eventsArrayList);
         eventsListView.setAdapter(eventsArrayAdapter);
 
-        // clickListener for a ListView item
+        // listener for a ListView event items
         eventsListView.setOnItemClickListener((parent, view1, position, id) -> {
             Event selectedEvent = eventsArrayList.get(position);
 
@@ -130,64 +133,148 @@ public class EventsListFragment extends Fragment {
             startActivity(intent);
         });
 
-        /*
+        // get events for user role
+        getEventsForRole();
+
+        return view;
+    }
+
+    /*
         TODO:
             This works fine. As a stretch goal and if we have time, update so there is separate logic
             for entrant/organizer, and change so that organizer does a query on events instead of
             fetching all events and filtering by looking at the organizerRef for each.
-         */
-        // set listener
-        eventsRef.addSnapshotListener((value, error) -> {
-            if (error != null) {
-                Log.e(EventsListFragment.class.getSimpleName() + " Firestore", error.toString());
+    */
+    private void getEventsForRole() {
+        Query query = eventsRef;
+
+        // filter by role
+        if (globalUser.getRole() == Role.ORGANIZER) {
+            DocumentReference organizerRef = db.collection("organizers")
+                    .document(globalUser.getUserId());
+            query = query.whereEqualTo("organizer", organizerRef);
+        }
+
+        // get events
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            eventsArrayList.clear();
+
+            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                Event event = Event.fetchEventFromSnapshot(snapshot);
+                eventsArrayList.add(event);
             }
-            if (value != null && !value.isEmpty()) {
-                eventsArrayList.clear();
-                for (QueryDocumentSnapshot snapshot : value) {
-                    Event event = Event.fetchEventFromSnapshot(snapshot);
-                        // fetch organizer and poster from DocumentReferences
-                    /*
-                    The following code is adapted from...
-                    Source: https://firebase.google.com/docs/firestore/query-data/get-data
-                    Title: "Get data with Cloud Firestore"
-                    Retrieved: 2026-03-03
-                    */
-                    DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
-                    if (organizerRef != null) {
-                        organizerRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
-                            @Override
-                            public void onSuccess(DocumentSnapshot documentSnapshot) {
-                                if (documentSnapshot.exists()) {
-                                    String organizerId = documentSnapshot.getId();
-                                    String organizerName = documentSnapshot.getString("name");
-                                    event.setOrganizerId(organizerId);
-                                    event.setOrganizerName(organizerName);
+            eventsArrayAdapter.notifyDataSetChanged();
+        });
+    }
 
-                                    // filter (maybe add the above code to Event via fetchEventFromSnapshot later)
-                                    if (displayEventForRole(event, globalUser)) {
-                                        Log.d("EventList", "Added event: " + event.getEventId() + " for user: " + globalUser.getUserId());
-                                        eventsArrayList.add(event);
-                                        eventsArrayAdapter.notifyDataSetChanged();
-                                    }
-                                }
-                            }
-                        });
-                    }
+    /**
+     * Make a call to apply filters to a query for a list of events from the database.
+     *
+     * @param name of event
+     * @param status of user
+     * @param tags for event
+     * @param regStart of event
+     * @param regEnd of event
+     * @param drawDate of event
+     */
+    void applyFilters(String name, String status, ArrayList<String> tags, LocalDate regStart, LocalDate regEnd, LocalDate drawDate) {
+        // Store filter parameters
+        filterName = name;
+        filterStatus = status;
+        filterTags = tags;
+        if (tags != null) {
+            filterTags = new ArrayList<>(tags);
+        }
+        filterRegStart = regStart;
+        filterRegEnd = regEnd;
+        filterDrawDate = drawDate;
 
-                    DocumentReference posterRef = snapshot.getDocumentReference("poster");
-                    if (posterRef != null){
-                        posterRef.get().addOnSuccessListener(doc -> {
-                            if (doc.exists()){
-                                String imageUrl = doc.getString("url");
-                                event.setPoster(imageUrl);
-                            }
-                        });
+        // get filtered events
+        getFilteredEvents();
+    }
+
+    /**
+     *  Get all events again without filters.
+     */
+    void clearFilters() {
+        getEventsForRole();
+    }
+
+    /**
+     * Perform the filtering of events fetched from the database.
+     */
+    /*
+    The following code is adapted from...
+    Title: "Perform simple and compound queries in Cloud Firestore"
+    Source: https://firebase.google.com/docs/firestore/query-data/
+    Retrieved: 2026-03-11
+    */
+    private void getFilteredEvents() {
+        Query query = eventsRef;
+
+        // filter by role
+        if (globalUser.getRole() == Role.ORGANIZER) {
+            Log.d("EventsListFragment", "filter organizer: " + globalUser.getUserId());
+            DocumentReference organizerRef = db.collection("organizers")
+                    .document(globalUser.getUserId());
+            query = query.whereEqualTo("organizer", organizerRef);
+        }
+
+        // filter by name
+        if (filterName != null) {
+            Log.d("EventsListFragment", "filter name: " + filterName);
+            query = query.whereEqualTo("name", filterName);
+        }
+
+        /*
+        todo: status not sure how this works yet
+        if (filterStatus != null) {
+            query = query.whereEqualTo("name", filterStatus);
+        }
+        */
+
+        // filter by tags
+        if (filterTags != null) {
+            Log.d("EventsListFragment", "filter tags: " + filterTags);
+            query = query.whereArrayContainsAny("tags", filterTags);
+        }
+
+        // filter by registration date (one-sided)
+        if (filterRegStart != null && filterRegEnd == null) {
+            Log.d("EventsListFragment", "filter registration start: " + filterRegStart);
+            Timestamp start = convertStartLocalDateToTimestamp(filterRegStart);
+            query = query.whereGreaterThanOrEqualTo("registrationStartDate", start);
+        } else if (filterRegEnd != null && filterRegStart == null) {
+            Log.d("EventsListFragment", "filter registration end: " + filterRegEnd);
+            Timestamp end = convertEndLocalDateToTimestamp(filterRegEnd);
+            query = query.whereLessThanOrEqualTo("registrationEndDate", end);
+        }
+
+        // do filtered query
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            eventsArrayList.clear();
+            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                Event event = Event.fetchEventFromSnapshot(snapshot);
+
+                // filter by registration date range
+                if (filterRegStart != null && filterRegEnd != null) {
+                    if (event.getRegistrationEndDate().compareTo(filterRegStart) < 0 || event.getRegistrationStartDate().compareTo(filterRegEnd) > 0) {
+                        continue;  // not in range
                     }
                 }
-                eventsArrayAdapter.notifyDataSetChanged(); // maybe redundant
+
+                // filter by draw date
+                if (filterDrawDate != null) {
+                    LocalDate eventDate = event.getDrawDate().toLocalDate();
+                    if (!eventDate.equals(filterDrawDate)) {
+                        continue;  // not on draw date
+                    }
+                }
+
+                eventsArrayList.add(event);
             }
+            eventsArrayAdapter.notifyDataSetChanged();
         });
-        return view;
     }
 
     /**
@@ -205,5 +292,46 @@ public class EventsListFragment extends Fragment {
             Log.d("EventList", "User: " + user.getUserId());
             return true;
         }
+    }
+
+    /**
+     * Helper to convert LocalDate to Timestamp for the end of that date for database comparison.
+     * @param localDate to convert
+     * @return Timestamp result
+     */
+    /*
+    The following code is adapted from Google AI Overview...
+    Query: "java convert local date to timestamp firebase"
+    Retrieved: 2026-03-12
+    */
+    public static Timestamp convertEndLocalDateToTimestamp(LocalDate localDate) {
+        // convert LocalDate to ZonedDateTime using the system's default time zone at midnight
+        ZonedDateTime zonedDateTime = localDate
+                .atTime(23, 59, 59, 999_000_000)
+                .atZone(ZoneId.systemDefault());
+
+        // convert ZonedDateTime to a Date
+        Date date = Date.from(zonedDateTime.toInstant());
+
+        // create a Firebase Timestamp from Date
+        return new Timestamp(date);
+    }
+
+    /**
+     * Helper to convert LocalDate to Timestamp for the start of that date for database comparison.
+     *
+     * @param localDate to convert
+     * @return Timestamp result
+     */
+    public static Timestamp convertStartLocalDateToTimestamp(LocalDate localDate) {
+        // convert LocalDate to ZonedDateTime using the system's default time zone at midnight
+        ZonedDateTime zonedDateTime = localDate
+                .atStartOfDay(ZoneId.systemDefault());
+
+        // convert ZonedDateTime to a Date
+        Date date = Date.from(zonedDateTime.toInstant());
+
+        // create a Firebase Timestamp from Date
+        return new Timestamp(date);
     }
 }
