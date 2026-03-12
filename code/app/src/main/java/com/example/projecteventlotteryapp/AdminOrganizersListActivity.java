@@ -1,5 +1,6 @@
 package com.example.projecteventlotteryapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -36,14 +37,23 @@ public class AdminOrganizersListActivity extends AppCompatActivity {
         organizerListView = findViewById(R.id.lv_organizer_list);
         organizerDataList = new ArrayList<>();
 
-        organizerAdapter = new OrganizerArrayAdapter(this, organizerDataList, user -> {
-            db.collection("organizers").document(user.getUserId()).delete();
-            organizerDataList.remove(user);
-            organizerAdapter.notifyDataSetChanged();
-        });
+        organizerAdapter = new OrganizerArrayAdapter(this, organizerDataList,
+                user -> { // Delete Listener
+                    db.collection("organizers").document(user.getUserId()).delete();
+                    organizerDataList.remove(user);
+                    organizerAdapter.notifyDataSetChanged();
+                },
+                user -> { // Notify Listener (New)
+                    Intent intent = new Intent(AdminOrganizersListActivity.this, adminNotificationsActivity.class);
+                    // Pass the specific User ID to the next activity
+                    intent.putExtra("sender_id", user.getUserId());
+                    startActivity(intent);
+                }
+        );
         organizerListView.setAdapter(organizerAdapter);
 
         loadOrganizers();
+
     }
 
     private void loadOrganizers() {

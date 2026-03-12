@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <RelativeLayout
+        android:id="@+id/rl_content_wrapper"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="16dp">
+
+        <TextView
+            android:id="@+id/tv_item_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:textColor="@color/primaryAccent"
+            android:textSize="32sp"
+            android:textStyle="bold"
+            android:layout_marginEnd="16dp"
+            android:text="1" />
+
+        <LinearLayout
+            android:id="@+id/ll_item_text_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="15dp"
+            android:layout_marginEnd="1dp"
+            android:layout_toStartOf="@+id/date_container"
+            android:layout_toEndOf="@id/tv_item_number"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_item_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/primaryAccent"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_item_subtext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_date_container"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:orientation="vertical"
+            android:gravity="end">
+
+            <TextView
+                android:id="@+id/tv_date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Day, Month Year"
+                android:textColor="@color/white"
+                android:textSize="12sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_delete"
+                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="35dp"
+                android:layout_marginTop="8dp"
+                android:paddingHorizontal="12dp"
+                android:text="Delete"
+                android:textAllCaps="false"
+                android:textColor="#FF0000"
+                android:textSize="12sp"
+                app:backgroundTint="@color/transparent"
+                app:cornerRadius="20dp"
+                app:strokeColor="#FF0000"
+                app:strokeWidth="2dp" />
+        </LinearLayout>
+    </RelativeLayout>
+
+    <!-- Divider Line -->
+    <View
+        android:id="@+id/v_divider"
+        android:layout_width="300dp"
+        android:layout_height="1dp"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@id/rl_content_wrapper"
+        android:layout_alignParentBottom="true"
+        android:background="#1D1B1B" />
+
+</RelativeLayout>
