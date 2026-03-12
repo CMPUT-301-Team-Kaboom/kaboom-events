@@ -85,6 +85,10 @@
         <item name="android:textSize">12sp</item>
         <item name="android:textAllCaps">false</item>
     </style>
+  
+    <style name="CircleImage">
+        <item name="cornerSize">50%</item>
+    </style>
 
     <!--
     The following two styles are adapted from...

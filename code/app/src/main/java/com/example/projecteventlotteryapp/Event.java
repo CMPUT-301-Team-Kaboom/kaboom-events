@@ -107,101 +107,202 @@ public class Event {
         eventDoc = db.collection("events").document(this.eventId);
     }
 
+    /**
+     * Gets the eventId
+     * @return name
+     */
     public String getEventId() {
         return eventId;
     }
 
+    /**
+     * sets the eventId
+     * @param eventId the unique identifier of the event document in Firestore
+     */
     public void setEventId(String eventId) {
         this.eventId = eventId;
     }
 
+    /**
+     * Gets the name
+     * @return name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * sets the name
+     * @param name the name of the event
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * gets the attendees limit
+     * @return attendeesLimit
+     */
     public int getAttendeesLimit() {
         return attendeesLimit;
     }
 
+    /**
+     * sets the attendees limit
+     * @param attendeesLimit maximum amount of entrants allowed in a event
+     */
     public void setAttendeesLimit(int attendeesLimit) {
         this.attendeesLimit = attendeesLimit;
     }
 
+    /**
+     * gets the waitlist limit
+     * @return waitlistLimit
+     */
     public int getWaitlistLimit() {
         return waitlistLimit;
     }
 
+    /**
+     * sets the waitlist limit
+     * @param waitlistLimit maximum amount of entrants allowed on the waitlist for a event
+     */
     public void setWaitlistLimit(int waitlistLimit) {
         this.waitlistLimit = waitlistLimit;
     }
 
+    /**
+     * gets the geolocationEnabled
+     * @return geolocationEnabled
+     */
     public boolean isGeolocationEnabled() {
         return geolocationEnabled;
     }
 
+    /**
+     * sets the geolocationEnabled
+     * @param geolocationEnabled boolean value of whether geolocation is enabled
+     */
     public void setGeolocationEnabled(boolean geolocationEnabled) {
         this.geolocationEnabled = geolocationEnabled;
     }
 
+    /**
+     * gets the drawDate
+     * @return drawDate
+     */
     public LocalDateTime getDrawDate() {
         return drawDate;
     }
 
+    /**
+     * sets the drawDate
+     * @param drawDate the date and time when the lottery draw occurs
+     */
     public void setDrawDate(LocalDateTime drawDate) {
         this.drawDate = drawDate;
     }
 
+    /**
+     * gets the registrationStartDate
+     * @return registrationStartDate
+     */
     public LocalDate getRegistrationStartDate() {
         return registrationStartDate;
     }
 
+    /**
+     * sets the registrationStartDate
+     * @param registrationStartDate LocalDate which is the date when event registration opens
+     */
     public void setRegistrationStartDate(LocalDate registrationStartDate) {
         this.registrationStartDate = registrationStartDate;
     }
 
+    /**
+     * gets the registrationEndDate
+     * @return registrationEndDate
+     */
     public LocalDate getRegistrationEndDate() {
         return registrationEndDate;
     }
 
+    /**
+     * sets the registrationEndDate
+     * @param registrationEndDate LocalDate which is the date when event registration closes
+     */
     public void setRegistrationEndDate(LocalDate registrationEndDate) {
         this.registrationEndDate = registrationEndDate;
     }
 
+    /**
+     * gets the tagsList
+     * @return tagsList
+     */
     public ArrayList<String> getTagsList() {
         return tagsList;
     }
 
+    /**
+     * sets the tagsList
+     * @param tagsList ArrayList of tags
+     */
     public void setTagsList(ArrayList<String> tagsList) {
         this.tagsList = tagsList;
     }
 
+    /**
+     * gets the description
+     * @return description
+     */
     public String getDescription() {
         return description;
     }
 
+    /**
+     * sets the description
+     * @param description String description of the event
+     */
     public void setDescription(String description) {
         this.description = description;
     }
 
+    /**
+     * gets the organizerId
+     * @return organizerId
+     */
     public String getOrganizerId() {
         return organizerId;
     }
 
+    /**
+     * sets the organizerId
+     * @param organizerId the unique identifier of the organizer document in Firestore
+     */
     public void setOrganizerId(String organizerId) {
         this.organizerId = organizerId;
     }
 
+    /**
+     * gets the organizerName
+     * @return organizerName
+     */
     public String getOrganizerName() {
         return organizerName;
     }
 
+    /**
+     * sets the organizerName
+     * @param organizerName the name of the organizer
+     */
     public void setOrganizerName(String organizerName) {
         this.organizerName = organizerName;
     }
+
+    /**
+     * gets the poster
+     * @param poster the poster of the event
+     */
     public void setPoster(String poster) { this.poster = poster; }
     public String getPoster() { return poster; }
 

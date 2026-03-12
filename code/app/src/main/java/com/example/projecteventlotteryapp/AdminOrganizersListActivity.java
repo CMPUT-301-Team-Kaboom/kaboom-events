@@ -1,5 +1,6 @@
 package com.example.projecteventlotteryapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -11,6 +12,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
+/**
+ * Activity for displaying a list of organizers.
+ * This activity allows administrators to view and manage organizers.
+ * It fetches organizer data from Firebase and displays it in a ListView.
+ * @author Kevin
+ */
 public class AdminOrganizersListActivity extends AppCompatActivity {
     private ListView organizerListView;
     private OrganizerArrayAdapter organizerAdapter;
@@ -30,14 +37,23 @@ public class AdminOrganizersListActivity extends AppCompatActivity {
         organizerListView = findViewById(R.id.lv_organizer_list);
         organizerDataList = new ArrayList<>();
 
-        organizerAdapter = new OrganizerArrayAdapter(this, organizerDataList, user -> {
-            db.collection("organizers").document(user.getUserId()).delete();
-            organizerDataList.remove(user);
-            organizerAdapter.notifyDataSetChanged();
-        });
+        organizerAdapter = new OrganizerArrayAdapter(this, organizerDataList,
+                user -> { // Delete Listener
+                    db.collection("organizers").document(user.getUserId()).delete();
+                    organizerDataList.remove(user);
+                    organizerAdapter.notifyDataSetChanged();
+                },
+                user -> { // Notify Listener (New)
+                    Intent intent = new Intent(AdminOrganizersListActivity.this, adminNotificationsActivity.class);
+                    // Pass the specific User ID to the next activity
+                    intent.putExtra("sender_id", user.getUserId());
+                    startActivity(intent);
+                }
+        );
         organizerListView.setAdapter(organizerAdapter);
 
         loadOrganizers();
+
     }
 
     private void loadOrganizers() {

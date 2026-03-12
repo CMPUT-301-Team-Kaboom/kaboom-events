@@ -9,6 +9,13 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * AdminActivity
+ * Serves as the "profile" page for the Admin, users can
+ * edit their personal information such as Name, Email, and Phone number.
+ * Users can also enable/disable notifications, sign out, and delete their profile
+ * @author Kevin
+ */
 public class AdminActivity extends AppCompatActivity {
 
     @Override
