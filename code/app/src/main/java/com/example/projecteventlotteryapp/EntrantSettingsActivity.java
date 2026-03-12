@@ -41,6 +41,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
     private EditText emailEditText;
     private EditText phoneEditText;
     private Button btnSave;
+    private String collectionName; // This will hold "entrants", "organizers", or "admins"
 
     /**
      * Entry point of the activity
@@ -60,6 +61,12 @@ public class EntrantSettingsActivity extends AppCompatActivity {
 
         // Get the device ID
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        // Get the collection name from the intent. Default to "entrants" if none provided.
+        collectionName = getIntent().getStringExtra("collectionName");
+        if (collectionName == null) {
+            collectionName = "entrants";
+        }
 
         // connects the variables to their UI elements in the xml
         nameEditText = findViewById(R.id.et_name);
@@ -84,7 +91,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
      */
     private void loadProfileFromFirestore() {
         //get profile from firestore
-        DocumentReference userRef = db.collection("entrants").document(deviceID);
+        DocumentReference userRef = db.collection(collectionName).document(deviceID);
 
         //check if profile exists
         userRef.get().addOnSuccessListener(documentSnapshot -> {
@@ -99,7 +106,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
                 if (phone != null) phoneEditText.setText(phone);
             } else {
                 //if profile doesn't exist, show toast message
-                Toast.makeText(this, "No profile found. Please create a profile", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "No profile found for collection: " + collectionName, Toast.LENGTH_SHORT).show();
             }
             //if profile doesn't exist, show toast message
         }).addOnFailureListener(e -> {
@@ -126,7 +133,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
            return;
        }
         //update profile in firestore
-       DocumentReference ref = db.collection("entrants").document(deviceID);
+       DocumentReference ref = db.collection(collectionName).document(deviceID);
 
 
        //create a map of the fields to update

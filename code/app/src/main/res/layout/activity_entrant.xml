@@ -5,7 +5,8 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/primaryBackground"
-    tools:context=".EntrantSettingsActivity">
+    tools:context=".EntrantSettingsActivity"
+    android:paddingTop="32dp">
 
     <TextView
         android:id="@+id/tv_settings_title"

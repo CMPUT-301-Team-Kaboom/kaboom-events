@@ -62,6 +62,9 @@
         <activity
             android:name=".EditEventActivity"
             android:exported="false"/>
+        <activity
+            android:name=".EntrantSettingsActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
