@@ -9,7 +9,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.projecteventlotteryapp"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -40,7 +40,9 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-storage")
-    implementation(fileTree(mapOf<String, Any>(
+    
+    // Use compileOnly for the SDK platform jars to avoid dexing errors while allowing Javadoc generation
+    compileOnly(fileTree(mapOf<String, Any>(
         "dir" to "/Users/kevincao/Library/Android/sdk/platforms/android-36",
         "include" to listOf("*.aar", "*.jar"),
         "exclude" to emptyList<String>()
