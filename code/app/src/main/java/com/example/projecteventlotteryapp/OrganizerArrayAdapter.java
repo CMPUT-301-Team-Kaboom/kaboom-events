@@ -25,7 +25,7 @@ import java.util.ArrayList;
 public class OrganizerArrayAdapter extends ArrayAdapter<User> {
     private ArrayList<User> organizers;
     private Context context;
-    private OnDeleteClickListener deleteListener;
+    OnDeleteClickListener deleteListener;
     private OnNotifyClickListener notifyListener;
 
     public interface OnDeleteClickListener {
