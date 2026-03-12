@@ -15,13 +15,19 @@ import android.widget.ListView;
 
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -43,16 +49,18 @@ public class EventsListFragment extends Fragment {
     private ArrayList<Event> eventsArrayList;
     private ArrayAdapter<Event> eventsArrayAdapter;
 
+    // filters
+    private String filterName;
+    private String filterStatus;
+    private ArrayList<String> filterTags;
+    private LocalDate filterRegStart;
+    private LocalDate filterRegEnd;
+    private LocalDate filterDrawDate;
 
     public EventsListFragment() {
         // required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of this fragment.
-     *
-     * @return A new instance of fragment EventsListFragment.
-     */
     public static EventsListFragment newInstance() {
         return new EventsListFragment();
     }
@@ -103,10 +111,8 @@ public class EventsListFragment extends Fragment {
         // inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_events_list, container, false);
 
-        // get ListView
+        // setup ListView and EventArrayAdapter
         eventsListView = view.findViewById(R.id.lv_events_list);
-
-        // set up arrays
         eventsArrayList = new ArrayList<Event>();
         /*
         The following code is adapted from...
@@ -120,7 +126,7 @@ public class EventsListFragment extends Fragment {
         eventsArrayAdapter = new EventArrayAdapter(getActivity(), eventsArrayList);
         eventsListView.setAdapter(eventsArrayAdapter);
 
-        // clickListener for a ListView item
+        // listener for a ListView event items
         eventsListView.setOnItemClickListener((parent, view1, position, id) -> {
             Event selectedEvent = eventsArrayList.get(position);
 
@@ -130,16 +136,35 @@ public class EventsListFragment extends Fragment {
             startActivity(intent);
         });
 
-        /*
+        // get events for user role
+        getEventsForRole();
+
+        return view;
+    }
+
+    /*
         TODO:
             This works fine. As a stretch goal and if we have time, update so there is separate logic
             for entrant/organizer, and change so that organizer does a query on events instead of
             fetching all events and filtering by looking at the organizerRef for each.
-         */
-        // set listener
-        eventsRef.addSnapshotListener((value, error) -> {
-            if (error != null) {
-                Log.e(EventsListFragment.class.getSimpleName() + " Firestore", error.toString());
+    */
+    private void getEventsForRole() {
+        Query query = eventsRef;
+
+        // filter by role
+        if (globalUser.getRole() == Role.ORGANIZER) {
+            DocumentReference organizerRef = db.collection("organizers")
+                    .document(globalUser.getUserId());
+            query = query.whereEqualTo("organizer", organizerRef);
+        }
+
+        // get events
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            eventsArrayList.clear();
+
+            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                Event event = Event.fetchEventFromSnapshot(snapshot);
+                eventsArrayList.add(event);
             }
             if (value != null && !value.isEmpty()) {
                 eventsArrayList.clear();
@@ -173,21 +198,20 @@ public class EventsListFragment extends Fragment {
                             }
                         });
                     }
+                }
 
-                    DocumentReference posterRef = snapshot.getDocumentReference("poster");
-                    if (posterRef != null){
-                        posterRef.get().addOnSuccessListener(doc -> {
-                            if (doc.exists()){
-                                String imageUrl = doc.getString("url");
-                                event.setPoster(imageUrl);
-                            }
-                        });
+                // filter by draw date
+                if (filterDrawDate != null) {
+                    LocalDate eventDate = event.getDrawDate().toLocalDate();
+                    if (!eventDate.equals(filterDrawDate)) {
+                        continue;  // not on draw date
                     }
                 }
-                eventsArrayAdapter.notifyDataSetChanged(); // maybe redundant
+
+                eventsArrayList.add(event);
             }
+            eventsArrayAdapter.notifyDataSetChanged();
         });
-        return view;
     }
 
     /**
@@ -205,5 +229,46 @@ public class EventsListFragment extends Fragment {
             Log.d("EventList", "User: " + user.getUserId());
             return true;
         }
+    }
+
+    /**
+     * Helper to convert LocalDate to Timestamp for the end of that date for database comparison.
+     * @param localDate to convert
+     * @return Timestamp result
+     */
+    /*
+    The following code is adapted from Google AI Overview...
+    Query: "java convert local date to timestamp firebase"
+    Retrieved: 2026-03-12
+    */
+    public static Timestamp convertEndLocalDateToTimestamp(LocalDate localDate) {
+        // convert LocalDate to ZonedDateTime using the system's default time zone at midnight
+        ZonedDateTime zonedDateTime = localDate
+                .atTime(23, 59, 59, 999_000_000)
+                .atZone(ZoneId.systemDefault());
+
+        // convert ZonedDateTime to a Date
+        Date date = Date.from(zonedDateTime.toInstant());
+
+        // create a Firebase Timestamp from Date
+        return new Timestamp(date);
+    }
+
+    /**
+     * Helper to convert LocalDate to Timestamp for the start of that date for database comparison.
+     *
+     * @param localDate to convert
+     * @return Timestamp result
+     */
+    public static Timestamp convertStartLocalDateToTimestamp(LocalDate localDate) {
+        // convert LocalDate to ZonedDateTime using the system's default time zone at midnight
+        ZonedDateTime zonedDateTime = localDate
+                .atStartOfDay(ZoneId.systemDefault());
+
+        // convert ZonedDateTime to a Date
+        Date date = Date.from(zonedDateTime.toInstant());
+
+        // create a Firebase Timestamp from Date
+        return new Timestamp(date);
     }
 }

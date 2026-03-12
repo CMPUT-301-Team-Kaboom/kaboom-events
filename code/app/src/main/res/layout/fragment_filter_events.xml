@@ -1,0 +1,222 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/rounded_container"
+    android:padding="22dp"
+    tools:context=".FilterEventsDialogFragment">
+
+    <!-- does this really sort or is it just filter? -->
+    <TextView
+        style="@style/MainHeaderTextviewStyle"
+        android:id="@+id/tv_filter_events_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Sort / Filter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:id="@+id/tv_filter_edit_name_header"
+        style="@style/HeaderRoundedEditTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Name"
+        app:layout_constraintHorizontal_bias="0.044"
+        app:layout_constraintBottom_toTopOf="@id/et_filter_name"
+        app:layout_constraintStart_toStartOf="@id/et_filter_name"
+        app:layout_constraintEnd_toEndOf="@id/et_filter_name" />
+
+    <EditText
+        android:id="@+id/et_filter_name"
+        style="@style/BodyRoundedEditTextStyle"
+        android:layout_width="325dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="45dp"
+        android:background="@drawable/rounded_edittext"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tv_filter_events_header" />
+
+    <TextView
+        android:id="@+id/tv_filter_enrollment_status_header"
+        style="@style/HeaderRoundedEditTextStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Enrollment Status"
+        android:layout_marginTop="12dp"
+        app:layout_constraintHorizontal_bias="0.044"
+        app:layout_constraintTop_toBottomOf="@id/et_filter_name"
+        app:layout_constraintStart_toStartOf="@id/et_filter_name"
+        app:layout_constraintEnd_toEndOf="@id/et_filter_name" />
+
+    <!--
+    The following code is adapted from Google AI Overview...
+    Query: "android studio select none, one, or many buttons and change colour and do something for selected buttons java"
+    Retrieved: 2026-03-11
+    -->
+    <Button
+        style="@style/SelectAllButton"
+        android:id="@+id/mbtn_filter_enrolled"
+        android:text="Enrolled"
+        android:backgroundTint="@color/primaryBackground"
+        app:layout_constraintTop_toBottomOf="@id/tv_filter_enrollment_status_header"
+        app:layout_constraintStart_toStartOf="@id/et_filter_name"
+        app:layout_constraintEnd_toStartOf="@id/mbtn_filter_declined" />
+
+    <Button
+        style="@style/SelectAllButton"
+        android:id="@+id/mbtn_filter_declined"
+        android:text="Declined"
+        android:backgroundTint="@color/primaryBackground"
+        app:layout_constraintTop_toTopOf="@id/mbtn_filter_enrolled"
+        app:layout_constraintStart_toEndOf="@id/mbtn_filter_enrolled"
+        app:layout_constraintEnd_toEndOf="@id/mbtn_filter_invited" />
+
+    <Button
+        style="@style/SelectAllButton"
+        android:id="@+id/mbtn_filter_invited"
+        android:text="Invited"
+        android:backgroundTint="@color/primaryBackground"
+        app:layout_constraintTop_toTopOf="@id/mbtn_filter_enrolled"
+        app:layout_constraintStart_toEndOf="@id/mbtn_filter_declined"
+        app:layout_constraintEnd_toEndOf="@id/et_filter_name"  />
+
+    <Button
+        style="@style/SelectAllButton"
+        android:id="@+id/mbtn_filter_on_wait"
+        android:text="On Waitlist"
+        android:backgroundTint="@color/primaryBackground"
+        app:layout_constraintTop_toBottomOf="@id/mbtn_filter_enrolled"
+        app:layout_constraintStart_toStartOf="@id/mbtn_filter_enrolled"
+        app:layout_constraintEnd_toStartOf="@id/mbtn_filter_not_on_wait" />
+
+    <Button
+        style="@style/SelectAllButton"
+        android:id="@+id/mbtn_filter_not_on_wait"
+        android:text="Not On Waitlist"
+        android:backgroundTint="@color/primaryBackground"
+        app:layout_constraintTop_toBottomOf="@id/mbtn_filter_enrolled"
+        app:layout_constraintStart_toEndOf="@id/mbtn_filter_on_wait"
+        app:layout_constraintEnd_toEndOf="@id/et_filter_name" />
+
+    <TextView
+        style="@style/HeaderRoundedEditTextStyle"
+        android:id="@+id/tv_filter_tags_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Tags (Max 5)"
+        android:layout_marginTop="17dp"
+        app:layout_constraintHorizontal_bias="0.044"
+        app:layout_constraintTop_toBottomOf="@id/mbtn_filter_on_wait"
+        app:layout_constraintStart_toStartOf="@id/et_filter_name"
+        app:layout_constraintEnd_toEndOf="@id/et_filter_name" />
+
+    <!-- todo: tags -->
+
+    <TextView
+        style="@style/HeaderRoundedEditTextStyle"
+        android:id="@+id/tv_filter_registration_header"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Registration Period"
+        android:layout_marginTop="12dp"
+        app:layout_constraintHorizontal_bias="0.044"
+        app:layout_constraintTop_toBottomOf="@id/tv_filter_tags_header"
+        app:layout_constraintStart_toStartOf="@id/et_filter_name"
+        app:layout_constraintEnd_toEndOf="@id/et_filter_name" />
+
+    <EditText
+        style="@style/BodyRoundedEditTextStyle"
+        android:id="@+id/et_filter_registration_start"
+        android:layout_width="125dp"
+        android:layout_height="35dp"
+        android:background="@drawable/rounded_edittext"
+        android:hint="Someday, Jan 23"
+        android:inputType="date"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/tv_filter_registration_header"
+        app:layout_constraintStart_toStartOf="@id/et_filter_name" />
+
+    <EditText
+        style="@style/BodyRoundedEditTextStyle"
+        android:id="@+id/et_filter_registration_end"
+        android:layout_width="125dp"
+        android:layout_height="35dp"
+        android:background="@drawable/rounded_edittext"
+        android:hint="Someday, Jan 30"
+        android:inputType="date"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintTop_toTopOf="@id/et_filter_registration_start"
+        app:layout_constraintEnd_toEndOf="@id/et_filter_name" />
+
+    <TextView
+        style="@style/DefaultTextStyle"
+        android:id="@+id/tv_filter_to"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="To"
+        android:textSize="16sp"
+        app:layout_constraintTop_toTopOf="@id/et_filter_registration_end"
+        app:layout_constraintBottom_toBottomOf="@id/et_filter_registration_end"
+        app:layout_constraintStart_toEndOf="@id/et_filter_registration_start"
+        app:layout_constraintEnd_toStartOf="@id/et_filter_registration_end" />
+
+    <TextView
+        style="@style/HeaderRoundedEditTextStyle"
+        android:id="@+id/tv_filter_draw_date"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Draw Date"
+        android:layout_marginTop="12dp"
+        app:layout_constraintHorizontal_bias="0.05"
+        app:layout_constraintTop_toBottomOf="@id/et_filter_registration_start"
+        app:layout_constraintStart_toStartOf="@id/et_filter_name"
+        app:layout_constraintEnd_toEndOf="@id/et_filter_name" />
+
+    <EditText
+        style="@style/BodyRoundedEditTextStyle"
+        android:id="@+id/et_filter_draw_date"
+        android:layout_width="125dp"
+        android:layout_height="35dp"
+        android:layout_marginTop="36dp"
+        android:background="@drawable/rounded_edittext"
+        android:hint="Someday, Jan 31"
+        android:inputType="date"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/et_filter_registration_start"
+        app:layout_constraintStart_toStartOf="@id/et_filter_registration_start" />
+
+    <Button
+        style="@style/RoundedButton"
+        android:id="@+id/btn_clear_filters"
+        android:layout_width="140dp"
+        android:layout_height="40dp"
+        android:layout_marginTop="36dp"
+        android:backgroundTint="@color/grey"
+        android:text="Clear Filters"
+        android:textColor="@color/primaryBackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/et_filter_draw_date" />
+
+    <Button
+        style="@style/RoundedButton"
+        android:id="@+id/btn_filter_confirm"
+        android:layout_width="140dp"
+        android:layout_height="40dp"
+        android:backgroundTint="@color/secondaryAccent"
+        android:text="Confirm"
+        android:textColor="@color/primaryBackground"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/btn_clear_filters" />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>
