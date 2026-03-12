@@ -124,5 +124,13 @@
         <item name="android:scrollHorizontally">true</item>
     </style>
 
+    <style name="TagBoxTextView">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:layout_marginEnd">8dp</item>
+        <item name="android:background">@drawable/squared_container</item>
+    </style>
+
 
 </resources>
