@@ -4,10 +4,14 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
+import java.text.SimpleDateFormat;
+import java.util.Locale;
 
 import androidx.appcompat.app.AppCompatActivity;
 
@@ -48,31 +52,35 @@ public class adminNotificationsActivity extends AppCompatActivity {
 
                             // Store document ID for deletion functionality
                             notification.put("id", document.getId());
+                            notification.put("number", String.valueOf(count));
 
-                            String sender = document.getString("sender");
+                            String recipient = document.getString("recipient");
                             String eventName = document.getString("event");
                             if (eventName == null) eventName = document.getString("title");
 
-                            String displayTitle = count + ". " + (eventName != null ? eventName : "General Notification");
-                            notification.put("event", displayTitle);
+                            notification.put("event", eventName != null ? eventName : "General Notification");
 
                             String message = document.getString("text");
-                            String displaySubtext = "From: " + (sender != null ? sender : "System") + "\n" + (message != null ? message : "");
+                            String displaySubtext = "To: " + (recipient != null ? recipient : "All") + "\n" + (message != null ? message : "No message content") ;
                             notification.put("text", displaySubtext);
+
+                            SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
 
                             Timestamp timestamp = document.getTimestamp("date");
                             if (timestamp != null) {
-                                notification.put("date", timestamp.toDate().toString());
+                                String formattedDate = dateFormat.format(timestamp.toDate());
+                                notification.put("date", formattedDate);
+                            } else {
+                                notification.put("date", "No date");
                             }
 
                             data.add(notification);
                             count++;
                         }
 
-                        String[] from = {"event", "text"};
-                        int[] to = {R.id.item_name, R.id.item_subtext};
+                        String[] from = {"number", "event", "text", "date"};
+                        int[] to = {R.id.item_number, R.id.item_name, R.id.item_subtext, R.id.date};
 
-                        // Custom SimpleAdapter to handle button clicks within items
                         SimpleAdapter adapter = new SimpleAdapter(
                                 this,
                                 data,
@@ -82,15 +90,27 @@ public class adminNotificationsActivity extends AppCompatActivity {
                         ) {
                             @Override
                             public View getView(int position, View convertView, ViewGroup parent) {
+                                // find the views
                                 View view = super.getView(position, convertView, parent);
-                                ImageButton deleteBtn = view.findViewById(R.id.btn_delete_notification);
-                                
+                                Button deleteBtn = view.findViewById(R.id.btn_delete);
+                                View divider = view.findViewById(R.id.divider);
+
+                                // logic to hide divider for the last item
+                                if (divider != null) {
+                                    if (position == getCount() - 1) {
+                                        // It's the last item, hide the line
+                                        divider.setVisibility(View.GONE);
+                                    } else {
+                                        // It's not the last item, make sure the line is visible
+                                        // (Necessary because ListView recycles views)
+                                        divider.setVisibility(View.VISIBLE);
+                                    }
+                                }
                                 deleteBtn.setOnClickListener(v -> {
                                     String docId = data.get(position).get("id");
                                     db.collection("notifications").document(docId).delete()
                                             .addOnSuccessListener(aVoid -> {
                                                 data.remove(position);
-                                                // Re-number remaining items to keep the list consistent
                                                 reNumber(data);
                                                 notifyDataSetChanged();
                                                 Toast.makeText(adminNotificationsActivity.this, "Notification deleted", Toast.LENGTH_SHORT).show();
@@ -105,13 +125,7 @@ public class adminNotificationsActivity extends AppCompatActivity {
 
                             private void reNumber(List<Map<String, String>> list) {
                                 for (int i = 0; i < list.size(); i++) {
-                                    Map<String, String> item = list.get(i);
-                                    String currentTitle = item.get("event");
-                                    if (currentTitle != null && currentTitle.contains(". ")) {
-                                        // Extract original event name and update number
-                                        String nameOnly = currentTitle.substring(currentTitle.indexOf(". ") + 2);
-                                        item.put("event", (i + 1) + ". " + nameOnly);
-                                    }
+                                    list.get(i).put("number", String.valueOf(i + 1));
                                 }
                             }
                         };
