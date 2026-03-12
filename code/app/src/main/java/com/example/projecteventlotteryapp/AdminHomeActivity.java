@@ -12,6 +12,13 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 
+/**
+ * Admin Home Activity
+ * Serves as the landing page for admin users.
+ * users can navigate to other admin activities like viewing events, entrants, organizers, and images.
+ * Users can also navigate to their own profile to edit their details.
+ * @author Kevin
+ */
 public class AdminHomeActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

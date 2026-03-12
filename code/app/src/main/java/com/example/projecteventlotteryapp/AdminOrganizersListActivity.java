@@ -11,6 +11,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
+/**
+ * Activity for displaying a list of organizers.
+ * This activity allows administrators to view and manage organizers.
+ * It fetches organizer data from Firebase and displays it in a ListView.
+ * @author Kevin
+ */
 public class AdminOrganizersListActivity extends AppCompatActivity {
     private ListView organizerListView;
     private OrganizerArrayAdapter organizerAdapter;
