@@ -42,6 +42,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String eventId;
     private Event event;
+    private EventUtils eventUtils;
     private User globalUser;
     private DocumentReference eventDoc;
 
@@ -100,6 +101,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventId = getIntent().getStringExtra("eventId");
         eventDoc = db.collection("events").document(this.eventId);
         setupUi();
+        eventUtils = new EventUtils(db);
 
         MyApp app = (MyApp) getApplication();
         globalUser = app.getCurrentUser();
@@ -113,7 +115,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         Log.d("EventActivity", "DocumentSnapshot data: " + document.getData());
-                        event = Event.fetchEventFromSnapshot(document);
+                        event = eventUtils.fetchEventFromSnapshot(document);
                         updateUi();
                     } else {
                         Log.d("EventActivity", "No such document");
@@ -124,28 +126,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    /**
-     * Helper function that translates EntrantListType enum to the db collection name
-     *
-     * TODO: Consider moving function into the EntrantListType enum class
-     * @param type the EntrantListType
-     * @return String representation of the associated collection name in the db
-     */
-    private String getListField(EntrantListType type) {
-        switch (type) {
-            case WAITLIST:
-                return "waitlist";
-            case INVITED:
-                return "invited";
-            case DECLINED:
-                return "declined";
-            case ENROLLED:
-                return "enrolled";
-            default:
-                throw new IllegalArgumentException("Unknown list type: " + type);
-        }
     }
 
     /**
@@ -165,7 +145,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                 entrant.getUserId())
         );
 
-        return eventDoc.update(getListField(listType), FieldValue.arrayUnion(entrant.getUserId()));
+        return eventDoc.update(eventUtils.getListField(listType), FieldValue.arrayUnion(entrant.getUserId()));
     }
 
     /**
@@ -178,7 +158,7 @@ public class EventDetailsActivity extends AppCompatActivity {
      * @return a {@link Task} representing the asynchronous Firestore update operation
      */
     public Task<Void> removeFromEntrantList(EntrantListType listType, User entrant) {
-        return eventDoc.update(getListField(listType),
+        return eventDoc.update(eventUtils.getListField(listType),
                 FieldValue.arrayRemove(entrant.getUserId()));
     }
 
@@ -259,7 +239,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             editButton.setVisibility(View.GONE);
             mapButton.setVisibility(View.GONE);
 
-            event.entrantListContains(EntrantListType.INVITED, user).addOnSuccessListener(invited -> {
+            eventUtils.entrantListContains(EntrantListType.INVITED, user, event.getEventId()).addOnSuccessListener(invited -> {
                 if (invited) {
                     entrantPrimaryButton.setText("Enroll");
                     // TODO: Setup onclick listener for adding to Enrolled list
@@ -271,7 +251,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     // TODO: Setup onclick listener for adding to Declined list
                     entrantSecondaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Decline"));
                 } else {
-                    event.entrantListContains(EntrantListType.WAITLIST, user).addOnSuccessListener(waitlisted -> {
+                    eventUtils.entrantListContains(EntrantListType.WAITLIST, user, event.getEventId()).addOnSuccessListener(waitlisted -> {
                         if (waitlisted){
                             entrantPrimaryButton.setText("Remove Waitlist");
                             entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));

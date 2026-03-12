@@ -37,10 +37,9 @@ public class EventsListFragment extends Fragment {
     private CollectionReference organizerRef;
     private CollectionReference posterRef;
 
+    private EventUtils eventUtils;
     private User globalUser;
-
     private ListView eventsListView;
-
     private ArrayList<Event> eventsArrayList;
     private ArrayAdapter<Event> eventsArrayAdapter;
 
@@ -72,6 +71,7 @@ public class EventsListFragment extends Fragment {
 
         // setup db
         db = FirebaseFirestore.getInstance();
+        eventUtils = new EventUtils(db);
         eventsRef = db.collection("events");
 
         // get user role
@@ -144,7 +144,7 @@ public class EventsListFragment extends Fragment {
             if (value != null && !value.isEmpty()) {
                 eventsArrayList.clear();
                 for (QueryDocumentSnapshot snapshot : value) {
-                    Event event = Event.fetchEventFromSnapshot(snapshot);
+                    Event event = eventUtils.fetchEventFromSnapshot(snapshot);
                         // fetch organizer and poster from DocumentReferences
                     /*
                     The following code is adapted from...

@@ -17,6 +17,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.Firebase;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -38,6 +39,7 @@ import java.util.HashMap;
  */
 public class CreateEventDialogFragment extends DialogFragment {
 
+    private EventUtils eventUtils;
     /**
      * Entry point of the DialogFragment
      *
@@ -51,6 +53,7 @@ public class CreateEventDialogFragment extends DialogFragment {
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         View view = getLayoutInflater().inflate(R.layout.fragment_create_event, null);
+        eventUtils = new EventUtils(FirebaseFirestore.getInstance());
 
         // grab references to editTexts and confirm button
         EditText editName = view.findViewById(R.id.et_event_edit_name);
@@ -114,7 +117,8 @@ public class CreateEventDialogFragment extends DialogFragment {
             }
 
             Event event = new Event(name, regStart, regEnd, drawDateTime, entrantLimit);
-            createNewEventDbItem(event);
+            MyApp app = (MyApp) requireActivity().getApplication();
+            eventUtils.createNewEventDbItem(event, app.getCurrentUser().getUserId());
             dialog.dismiss();
         });
 
@@ -181,84 +185,5 @@ public class CreateEventDialogFragment extends DialogFragment {
             picker.show();
         });
 
-    }
-
-    /**
-     * Creates and uploads a new Event database object
-     *
-     * <p>Uses an Event instance and uploads it to the database. Only populates the following attributes:
-     * organizer
-     * name
-     * drawDate
-     * registrationEndDate
-     * registrationStartDate
-     * drawDate
-     * entrantsLimit
-     *
-     * All other values are initialized to null or the equivalent default value
-     * Further event refinement is handled by event editing</p>
-     *
-     * @param event the Event that is to be uploaded
-     */
-    private void createNewEventDbItem(Event event) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Inputted values
-        HashMap<String, Object> eventData = new HashMap<>();
-
-        MyApp app = (MyApp) requireActivity().getApplication();
-        DocumentReference organizerRef =
-                db.collection("organizers").document(app.getCurrentUser().getUserId());
-        DocumentReference defaultPoster =
-                db.collection("posters").document("default_poster");
-        eventData.put("organizer", organizerRef);
-        eventData.put("name", event.getName());
-        eventData.put("poster", defaultPoster);
-
-        ZoneId zoneId = ZoneId.systemDefault();
-        // TODO: update to grab system zoneid
-        eventData.put(
-                "drawDate",
-                FirestoreUtils.localDateTimeToTimestamp(
-                        event.getDrawDate(),
-                        zoneId
-                )
-        );
-        eventData.put(
-                "registrationEndDate",
-                FirestoreUtils.localDateToTimestamp(
-                        event.getRegistrationEndDate(),
-                        zoneId
-                )
-        );
-        eventData.put(
-                "registrationStartDate",
-                FirestoreUtils.localDateToTimestamp(
-                        event.getRegistrationStartDate(),
-                        zoneId
-                )
-        );
-        eventData.put("entrantsLimit", event.getAttendeesLimit());
-
-        // setting null values
-        eventData.put("description", null);
-        eventData.put("geoLocationEnabled", false);
-        eventData.put("location", null);
-        eventData.put("qrCodePath", null);
-        eventData.put("tags", null);
-        eventData.put("waitlistLimit", -1);  // -1 indicates no limit
-        eventData.put("waitlist", new ArrayList<>());
-        eventData.put("enrolled", new ArrayList<>());
-        eventData.put("invited", new ArrayList<>());
-        eventData.put("declined", new ArrayList<>());
-
-        db.collection("events")
-            .add(eventData)
-            .addOnSuccessListener(documentReference -> {
-                Log.d("Firestore", "Document added to events with id: " + documentReference.getId());
-            })
-            .addOnFailureListener(e -> {
-                Log.w("Firestore", "Error adding document", e);
-            });
     }
 }
