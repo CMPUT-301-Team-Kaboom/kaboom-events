@@ -55,6 +55,7 @@ public class FilterEventsDialogFragment extends DialogFragment {
 
     private FilterEventsListener listener;
 
+
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -67,7 +68,8 @@ public class FilterEventsDialogFragment extends DialogFragment {
         EditText filterDrawDate = view.findViewById(R.id.et_filter_draw_date);
         Button clearFiltersButton = view.findViewById(R.id.btn_clear_filters);
         Button confirmButton = view.findViewById(R.id.btn_filter_confirm);
-        // todo: implement tags and enrollment status buttons
+        // TODO: implement tags and enrollment status buttons
+        // not sure how to add more tags visually yet as you type them in
 
         // convert EditTexts for dates to be pickers instead of text
         attachDatePicker(filterRegStart);
@@ -87,9 +89,11 @@ public class FilterEventsDialogFragment extends DialogFragment {
             if (name.isEmpty()) {
                 name = null;
             }
-            // todo: implement
+            // TODO: implement status
             String status = null;
             ArrayList<String> tags = null;
+
+            // TODO: implement tags
 
             // initialize date filters to null
             LocalDate regStart = null;
