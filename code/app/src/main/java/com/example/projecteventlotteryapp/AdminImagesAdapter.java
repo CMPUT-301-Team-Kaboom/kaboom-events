@@ -23,10 +23,12 @@ public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.
     the following code is adapted from https://www.geeksforgeeks.org/android/how-to-build-an-image-gallery-android-app-with-recyclerview-and-glide/
      */
     private Context context;
-    ArrayList<Image> imageList;
+    private ArrayList<Image> imageList;
+    private PosterImageHandler posterImageHandler;
     public AdminImagesAdapter(Context context, ArrayList<Image> imageList){
         this.context = context;
         this.imageList = imageList;
+        posterImageHandler = new PosterImageHandler();
     }
 
     @NonNull
@@ -48,7 +50,7 @@ public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.
             if (pos != RecyclerView.NO_POSITION) {
                 Image image = imageList.get(pos);
 
-                PosterImageHandler.deletePoster(image);
+                posterImageHandler.deletePoster(image);
 
                 imageList.remove(position);
                 notifyItemRemoved(position);

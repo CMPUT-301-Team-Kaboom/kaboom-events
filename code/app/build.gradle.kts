@@ -32,6 +32,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    testOptions{
+        unitTests.isReturnDefaultValues = true;
+    }
 }
 
 dependencies {
@@ -48,7 +51,8 @@ dependencies {
     implementation ("com.github.bumptech.glide:glide:4.16.0")
 
     //    Mockito dependencies
-    testImplementation("org.mockito:mockito-core:5.5.0")
+    testImplementation("org.mockito:mockito-core:5.12.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.12.0")
     testImplementation("org.mockito:mockito-inline:5.2.0")
     testImplementation("org.mockito:mockito-android:5.5.0")
 

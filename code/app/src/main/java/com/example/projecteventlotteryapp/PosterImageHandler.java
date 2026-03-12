@@ -22,6 +22,7 @@ import com.google.firebase.storage.UploadTask;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -33,15 +34,22 @@ import java.util.function.Consumer;
  * @author Ashley Kang (akang2)
  */
 public class PosterImageHandler {
-    private static FirebaseFirestore db;
-    private static CollectionReference posterCollectionRef;
-    private static FirebaseStorage storage;
-    private static final String STORAGE_DIR = "posters/";
-    static {
+    private FirebaseFirestore db;
+    private CollectionReference posterCollectionRef;
+    private FirebaseStorage storage;
+    private  final String STORAGE_DIR = "posters/";
+
+    public PosterImageHandler(){
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
 
         posterCollectionRef = db.collection("posters");
+    }
+
+    public PosterImageHandler(FirebaseFirestore db, FirebaseStorage storage, CollectionReference posterCollectionRef){
+        this.db = db;
+        this.storage = storage;
+        this.posterCollectionRef = posterCollectionRef;
     }
 
     /**
@@ -52,33 +60,33 @@ public class PosterImageHandler {
      * @param uri URI of the image as uploaded from the user's phone
      * @see EditEventActivity calls the function after the activity requests an image from the user's image gallery
      */
-    public static Task<Uri> uploadPoster(String eventId, Uri uri){
-        /*
-        the following code is referenced from https://firebase.google.com/docs/storage/android/upload-files
-         */
-        String posterFilepath = STORAGE_DIR + eventId + "_poster.jpg";
-        StorageReference posterRef = storage.getReference().child(posterFilepath);
+    public Task<String> uploadPoster(String eventId, Uri uri) {
+        StorageReference posterRef = storage.getReference().child(STORAGE_DIR + eventId + "_poster.jpg");
 
-        return posterRef.putFile(uri).continueWithTask(task -> {
-            if(!task.isSuccessful()){
-                throw task.getException();
-            }
-            return posterRef.getDownloadUrl();
-        }).continueWithTask(task -> {
-            Uri downloadUrl = task.getResult();
-            String posterId = eventId + "_poster";
+        return posterRef.putFile(uri)
+                .continueWithTask(uploadTask -> handleUploadResult(eventId, posterRef));
+    }
 
-            Map<String, Object> poster = new HashMap<>();
-
-            poster.put("url", downloadUrl.toString());
-            poster.put("path", posterFilepath);
-
-            DocumentReference eventDoc = db.collection("events").document(eventId);
-            eventDoc.update("poster", posterCollectionRef.document(posterId));
-
-            DocumentReference posterDoc = posterCollectionRef.document(posterId);
-            return posterDoc.set(poster).continueWith(t -> downloadUrl);
+    private Task<String> handleUploadResult(String eventId, StorageReference posterRef) throws Exception {
+        return posterRef.getDownloadUrl().continueWithTask(downloadTask -> {
+            Uri downloadUrl = downloadTask.getResult();
+            return updatePosterDocs(eventId, posterRef, downloadUrl);
         });
+    }
+
+    private Task<String> updatePosterDocs(String eventId, StorageReference posterRef, Uri downloadUrl) {
+        String posterId = eventId + "_poster";
+
+        Map<String, Object> poster = new HashMap<>();
+        poster.put("url", downloadUrl.toString());
+        poster.put("path", posterRef.getPath());
+
+        DocumentReference eventDoc = db.collection("events").document(eventId);
+        DocumentReference posterDoc = posterCollectionRef.document(posterId);
+
+        return eventDoc.update("poster", posterCollectionRef.document(posterId))
+                .continueWithTask(updateTask -> posterDoc.set(poster))
+                .continueWith(urlTask -> downloadUrl.toString());
     }
 
     /**
@@ -87,12 +95,12 @@ public class PosterImageHandler {
      * @param callback  callback to make sure that getting all posters happens in order rather than asynchronously
      * @return          An ArrayList of Image objects that represents all the posters in the database
      */
-    public static void getAllPosters(Consumer<ArrayList<Image>> callback){
+    public void getAllPosters(Consumer<ArrayList<Image>> callback){
         posterCollectionRef.get().addOnSuccessListener(snapshot -> {
 
             ArrayList<Image> posters = new ArrayList<>();
 
-            for (DocumentSnapshot doc : snapshot){
+            for (DocumentSnapshot doc : snapshot.getDocuments()){
                 if (doc.getId().equals("default_poster")) { continue; }
                 String url = doc.getString("url");
 
@@ -109,7 +117,7 @@ public class PosterImageHandler {
      *
      * @param image The image being deleted
      */
-    public static void deletePoster(Image image){
+    public void deletePoster(Image image){
         DocumentReference posterRef = posterCollectionRef.document(image.getImageId());
         DocumentReference defaultPosterRef = posterCollectionRef.document("default_poster");
 
