@@ -5,9 +5,13 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.doReturn;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
@@ -23,6 +27,7 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
 /*
  Unit test class that functions to test for all four entrant list types: waitlist, invited, accepted, and declined
@@ -54,13 +59,23 @@ public class EventEntrantListTest {
     }
 
     @Test
-    public void entrantListContainsTest(){
+    public void entrantListContainsTest() throws Exception {
         ArrayList<String> entrantList = new ArrayList<>();
         entrantList.add(user.getUserId());
 
-        when(eventDoc.get()).thenReturn(Tasks.forResult(eventSnapshot));
+        Task<DocumentSnapshot> getTask = mock(Task.class);
+
+        when(eventDoc.get()).thenReturn(getTask);
         when(eventSnapshot.exists()).thenReturn(true);
-        when(eventSnapshot.get(anyString())).thenReturn(entrantList);
+        when(eventSnapshot.get("waitlist")).thenReturn(entrantList);
+        when(getTask.isSuccessful()).thenReturn(true);
+        when(getTask.getResult()).thenReturn(eventSnapshot);
+
+        when(getTask.continueWith(any())).thenAnswer(invocation -> {
+            Continuation<DocumentSnapshot, Boolean> continuation = invocation.getArgument(0);
+            Boolean result = continuation.then(getTask);
+            return Tasks.forResult(result);
+        });
 
         Task<Boolean> result = eventUtils.entrantListContains(type, user, eventId);
 
