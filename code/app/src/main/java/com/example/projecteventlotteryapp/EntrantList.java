@@ -14,6 +14,9 @@ public class EntrantList implements Serializable {
     private ArrayList<User> entrants;
     private int listLength;
 
+    /**
+     * Creates a new EntrantList object
+     */
     public EntrantList() {
         entrants = new ArrayList<User>();
         listLength = 0;
