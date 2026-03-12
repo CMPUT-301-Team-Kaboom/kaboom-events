@@ -16,10 +16,22 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-//this is our edit profile page it:
-// finds user using the device ID and loads their saved profile from Firestore into the
-// text hints. They are allowed to edit these fields and when they hit save it will update the
-// firestore document
+/**
+ * EntrantSettingsActivity
+ *
+ * allows an entrant to view and edit their profile information.
+ *
+ * How it works:
+ * Retrieves the device's unique ANDROID_ID.
+ * Uses that ID as the document key in the "entrants" Firestore collection.
+ * Loads saved profile data (name, email, phone) into editable text fields.
+ * Allows the user to modify their information.
+ * Updates the corresponding Firestore document when the Save button is pressed.
+ *
+ * If no profile exists for the device, a message is displayed prompting
+ * the user to create one.
+ * @author anna
+ */
 public class EntrantSettingsActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
@@ -30,7 +42,14 @@ public class EntrantSettingsActivity extends AppCompatActivity {
     private EditText phoneEditText;
     private Button btnSave;
 
-
+    /**
+     * Entry point of the activity
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,7 +74,14 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         btnSave.setOnClickListener(v -> updateProfileInFirestore());
     }
 
-    // this function reads from the firestore and loads the data into the text hints
+    /**
+     * Loads the users profile from firestore.
+     *retrieves the device's unique ANDROID_ID.
+     * Uses that ID as the document key in the "entrants" Firestore collection.
+     * fills in the text hints with the saved data.
+     * If no profile exists for the device, a message is displayed prompting
+     * the user to create one.
+     */
     private void loadProfileFromFirestore() {
         //get profile from firestore
         DocumentReference userRef = db.collection("entrants").document(deviceID);
@@ -81,7 +107,13 @@ public class EntrantSettingsActivity extends AppCompatActivity {
             Toast.makeText(this, "Failed to load profile", Toast.LENGTH_SHORT).show();
         });
     }
-    //this function updates the firestore with new values from the text hints
+
+    /**
+     * Updates the users profile in firestore.
+     * Gets the values from the edit text fields.
+     * Checks if any of the required fields are empty (phone is not a required field).
+     * Updates the corresponding Firestore document when the Save button is pressed.
+     */
     private void updateProfileInFirestore() {
         //get values from edit text
        String name = nameEditText.getText().toString().trim();
