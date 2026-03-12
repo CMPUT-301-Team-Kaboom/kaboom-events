@@ -15,6 +15,7 @@ import android.widget.ListView;
 
 
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -23,7 +24,10 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.Objects;
 
 /**
@@ -146,7 +150,9 @@ public class EventsListFragment extends Fragment {
 
         // filter by role
         if (globalUser.getRole() == Role.ORGANIZER) {
-            query = query.whereEqualTo("organizer", globalUser.getUserId());
+            DocumentReference organizerRef = db.collection("organizers")
+                    .document(globalUser.getUserId());
+            query = query.whereEqualTo("organizer", organizerRef);
         }
 
         // get events
@@ -161,6 +167,16 @@ public class EventsListFragment extends Fragment {
         });
     }
 
+    /**
+     * Make a call to apply filters to a query for a list of events from the database.
+     *
+     * @param name of event
+     * @param status of user
+     * @param tags for event
+     * @param regStart of event
+     * @param regEnd of event
+     * @param drawDate of event
+     */
     void applyFilters(String name, String status, ArrayList<String> tags, LocalDate regStart, LocalDate regEnd, LocalDate drawDate) {
         // Store filter parameters
         filterName = name;
@@ -174,6 +190,9 @@ public class EventsListFragment extends Fragment {
         getFilteredEvents();
     }
 
+    /**
+     * Perform the filtering of events fetched from the database.
+     */
     /*
     The following code is adapted from...
     Title: "Perform simple and compound queries in Cloud Firestore"
@@ -206,20 +225,27 @@ public class EventsListFragment extends Fragment {
         // check registration date filter
         if (filterRegStart != null && filterRegEnd != null) {
             Log.d("EventsListFragment", "in check registration: " + filterRegStart + "\n" + filterRegEnd);
-            query = query.whereGreaterThanOrEqualTo("registrationStartDate", filterRegStart)
-                    .whereLessThanOrEqualTo("registrationEndDate", filterRegEnd);
+            Timestamp start = convertStartLocalDateToTimestamp(filterRegStart);
+            Timestamp end = convertEndLocalDateToTimestamp(filterRegEnd);
+            query = query.whereLessThanOrEqualTo("registrationStartDate", end)
+                    .whereGreaterThanOrEqualTo("registrationEndDate", start);
         } else if (filterRegStart != null) {
             Log.d("EventsListFragment", "in check registration: " + filterRegStart);
-            query = query.whereGreaterThanOrEqualTo("registrationStartDate", filterRegStart);
+            Timestamp start = convertStartLocalDateToTimestamp(filterRegStart);
+            query = query.whereGreaterThanOrEqualTo("registrationStartDate", start);
         } else if (filterRegEnd != null) {
             Log.d("EventsListFragment", "in check registration: " + filterRegEnd);
-            query = query.whereLessThanOrEqualTo("registrationEndDate", filterRegEnd);
+            Timestamp end = convertEndLocalDateToTimestamp(filterRegEnd);
+            query = query.whereLessThanOrEqualTo("registrationEndDate", end);
         }
 
         // check draw date filter
         if (filterDrawDate != null) {
             Log.d("EventsListFragment", "in check draw: " + filterDrawDate);
-            query = query.whereEqualTo("drawDate", filterDrawDate);
+            Timestamp start = convertStartLocalDateToTimestamp(filterDrawDate);
+            Timestamp end = convertEndLocalDateToTimestamp(filterDrawDate);
+            query = query.whereGreaterThanOrEqualTo("drawDate", start)
+                    .whereLessThanOrEqualTo("drawDate", end);
         }
 
         // do filtered query
@@ -250,5 +276,46 @@ public class EventsListFragment extends Fragment {
             Log.d("EventList", "User: " + user.getUserId());
             return true;
         }
+    }
+
+    /**
+     * Helper to convert LocalDate to Timestamp for the end of that date for database comparison.
+     * @param localDate to convert
+     * @return Timestamp result
+     */
+    /*
+    The following code is adapted from Google AI Overview...
+    Query: "java convert local date to timestamp firebase"
+    Retrieved: 2026-03-12
+    */
+    public static Timestamp convertEndLocalDateToTimestamp(LocalDate localDate) {
+        // convert LocalDate to ZonedDateTime using the system's default time zone at midnight
+        ZonedDateTime zonedDateTime = localDate
+                .atTime(23, 59, 59, 999_000_000)
+                .atZone(ZoneId.systemDefault());
+
+        // convert ZonedDateTime to a Date
+        Date date = Date.from(zonedDateTime.toInstant());
+
+        // create a Firebase Timestamp from Date
+        return new Timestamp(date);
+    }
+
+    /**
+     * Helper to convert LocalDate to Timestamp for the start of that date for database comparison.
+     *
+     * @param localDate to convert
+     * @return Timestamp result
+     */
+    public static Timestamp convertStartLocalDateToTimestamp(LocalDate localDate) {
+        // convert LocalDate to ZonedDateTime using the system's default time zone at midnight
+        ZonedDateTime zonedDateTime = localDate
+                .atStartOfDay(ZoneId.systemDefault());
+
+        // convert ZonedDateTime to a Date
+        Date date = Date.from(zonedDateTime.toInstant());
+
+        // create a Firebase Timestamp from Date
+        return new Timestamp(date);
     }
 }
