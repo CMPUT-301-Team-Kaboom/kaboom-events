@@ -32,6 +32,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
+/**
+ * This class handles the logic and UI support for displaying Event details for both Entrants and Organizers
+ *
+ *
+ */
 public class EventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String eventId;
@@ -68,6 +74,17 @@ public class EventDetailsActivity extends AppCompatActivity {
     private TextView descriptionTV;
     private ImageView posterIV;
 
+    /**
+     * Entry point of the activity
+     *
+     * <p>This function is the entry point of the Activity. It sets up the db instance and UI for
+     * the event.</p>
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,6 +126,13 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Helper function that translates EntrantListType enum to the db collection name
+     *
+     * TODO: Consider moving function into the EntrantListType enum class
+     * @param type the EntrantListType
+     * @return String representation of the associated collection name in the db
+     */
     private String getListField(EntrantListType type) {
         switch (type) {
             case WAITLIST:
@@ -124,6 +148,17 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Adds an entrant to a specified entrant list for this event.
+     *
+     * <p>This method updates the Firestore event document by adding the entrant's
+     * user ID to the corresponding list field using {@code FieldValue.arrayUnion}.
+     * If the user ID already exists in the list, Firestore will not add a duplicate.</p>
+     *
+     * @param listType the entrant list to which the user should be added
+     * @param entrant the user being added to the list
+     * @return a {@link Task} representing the asynchronous Firestore update operation
+     */
     private Task<Void> addToEntrantList(EntrantListType listType, User entrant) {
         Log.d("AddToEntrantList", String.format("Type: %s | userId: %s",
                 listType.toString(),
@@ -133,11 +168,23 @@ public class EventDetailsActivity extends AppCompatActivity {
         return eventDoc.update(getListField(listType), FieldValue.arrayUnion(entrant.getUserId()));
     }
 
+    /**
+     * Removes an entrant from a specified entrant list for this event.
+     *
+     * <p>This function updates the Firestore event document by removing an entrant's userID from
+     * the corresponding list field using {@code FieldValue.arrayRemove}.</p>
+     * @param listType the list to remove the entrant from
+     * @param entrant the entrant to add to the list
+     * @return a {@link Task} representing the asynchronous Firestore update operation
+     */
     public Task<Void> removeFromEntrantList(EntrantListType listType, User entrant) {
         return eventDoc.update(getListField(listType),
                 FieldValue.arrayRemove(entrant.getUserId()));
     }
 
+    /**
+     * Helps setup the UI of the activity by defining local variables.
+     */
     private void setupUi() {
         waitlistButton  = findViewById(R.id.btn_eventDetails_organizer_waitlist);
         invitedButton   = findViewById(R.id.btn_eventDetails_organizer_invited);
@@ -165,6 +212,22 @@ public class EventDetailsActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> finish());
     }
 
+    /**
+     * Configures the UI for a given user depending on their role as well as firestore actions
+     *
+     * <p>If the user is an organizer, organizer-specific controls are displayed such as
+     *  editing the event, viewing entrant lists, and accessing the map. Entrant controls
+     *  are hidden.</p>
+     *
+     * <p>If the user is an entrant, entrant-specific controls are displayed and organizer
+     *  controls are hidden. The method queries Firestore to determine the entrant's
+     *  current status in the event (invited or waitlisted) and updates the available
+     *  actions accordingly.</p>
+     *
+     *  TODO: simplify this function by creating sub functions and separating firestore actions
+     *
+     * @param user the User interacting with the app
+     */
     private void configureUIForRole(User user) {
         if (user.getRole() == Role.ORGANIZER) {
             entrantController.setVisibility(View.GONE);
@@ -240,6 +303,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Helper function that updates the UI elements using the local event variable and fetches
+     * the poster image associated with the event.
+     */
     private void updateUi() {
         nameHeaderTextView.setText(event.getName());
         attendeesTV.setText(String.valueOf(event.getAttendeesLimit()));
@@ -275,6 +342,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         configureUIForRole(globalUser);
     }
 
+    /**
+     * Helper function that sets up the tags
+     */
     private void setupTags() {
         ArrayList<String> tags = event.getTagsList();
         int numTags = tags.size();
