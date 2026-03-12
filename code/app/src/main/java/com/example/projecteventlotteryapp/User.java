@@ -42,34 +42,67 @@ public class User implements Serializable {
         this.email = email;
         this.phoneNumber = phoneNumber;
     }
+
+    /**
+     * Gets the role of the user
+     * @return role
+     */
     public Role getRole() {
         return role;
     }
 
+    /**
+     * Gets the userId
+     * @return userId
+     */
     public String getUserId() {
         return userId;
     }
 
+    /**
+     * gets the users name
+     * @return name
+     */
     public String getName() {
         return name;
     }
 
+    /**
+     * sets the users name
+     * @param name
+     */
     public void setName(String name) {
         this.name = name;
     }
 
+    /**
+     * gets the users email
+     * @return email
+     */
     public String getEmail() {
         return email;
     }
 
+    /**
+     * sets the users email
+     * @param email
+     */
     public void setEmail(String email) {
         this.email = email;
     }
 
+    /**
+     * gets the users phone number
+     * @return phoneNumber
+     */
     public String getPhoneNumber() {
         return phoneNumber;
     }
-
+    
+    /**
+     * sets the users phone number
+     * @param phoneNumber
+     */
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }

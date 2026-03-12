@@ -83,7 +83,6 @@ public class PosterImageHandler {
      * Retrieves all poster documents from the posters collection in the database
      *
      * @param callback  callback to make sure that getting all posters happens in order rather than asynchronously
-     * @return          An ArrayList of Image objects that represents all the posters in the database
      */
     public static void getAllPosters(Consumer<ArrayList<Image>> callback){
         posterCollectionRef.get().addOnSuccessListener(snapshot -> {
