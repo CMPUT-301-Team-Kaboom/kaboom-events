@@ -16,6 +16,8 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.firebase.Timestamp;
@@ -54,6 +56,7 @@ public class FilterEventsDialogFragment extends DialogFragment {
     }
 
     private FilterEventsListener listener;
+    private LinearLayout tagContainerLinearLayout;
 
 
     @NonNull
@@ -70,6 +73,8 @@ public class FilterEventsDialogFragment extends DialogFragment {
         Button confirmButton = view.findViewById(R.id.btn_filter_confirm);
         // TODO: implement tags and enrollment status buttons
         // not sure how to add more tags visually yet as you type them in
+        Button addTagButton = view.findViewById(R.id.btn_add_tag);
+        tagContainerLinearLayout = view.findViewById(R.id.ll_filter_tags);
 
         // convert EditTexts for dates to be pickers instead of text
         attachDatePicker(filterRegStart);
@@ -139,6 +144,26 @@ public class FilterEventsDialogFragment extends DialogFragment {
             dialog.dismiss();
         });
 
+        addTagButton.setOnClickListener(v -> {
+            EditText input = new EditText(requireContext());
+            input.setHint("Enter Tag");
+
+            new AlertDialog.Builder(requireContext())
+                .setTitle("Enter value")
+                .setView(input)
+                .setPositiveButton("Add", (nestedDialog, which) -> {
+
+                    String tagText = input.getText().toString().trim().toUpperCase();
+
+                    if (!tagText.isEmpty()) {
+                        addNewTagBox(tagText);
+                    }
+
+                })
+                .setNegativeButton("Cancel", null)
+                .show();
+        });
+
         clearFiltersButton.setOnClickListener(v -> {
             listener.clearFilters();
             dialog.dismiss();
@@ -179,4 +204,23 @@ public class FilterEventsDialogFragment extends DialogFragment {
         });
     }
 
+    /**
+     * Adds a new textbox to the fragment_filter_events tags linear layout
+     * code adapted from AI prompt:
+     * "How can I add a textview to a LinearLayout using Java code instead of XML"
+     *
+     * @param tagText
+     */
+    private void addNewTagBox(String tagText) {
+        Log.d("FilterEventsDialogFragment", "new Tag filer: " + tagText);
+
+        int currentBoxes = tagContainerLinearLayout.getChildCount() - 1;    // -1 to remove the '+' button
+        if (currentBoxes >= 3) return;
+
+        TextView newBox = new TextView(requireContext(), null, 0, R.style.TagBoxTextView);
+        newBox.setText(tagText);
+
+        int insertIndex = tagContainerLinearLayout.getChildCount() - 1;
+        tagContainerLinearLayout.addView(newBox, insertIndex);
+    }
 }
