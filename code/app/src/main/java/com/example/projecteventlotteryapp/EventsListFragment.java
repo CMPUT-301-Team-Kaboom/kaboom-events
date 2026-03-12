@@ -214,6 +214,8 @@ public class EventsListFragment extends Fragment {
 
     /**
      * Perform the filtering of events fetched from the database.
+     *
+     * TODO: filter based on entrant status and chosen tags
      */
     /*
     The following code is adapted from...
