@@ -5,6 +5,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -41,6 +42,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
     private EditText emailEditText;
     private EditText phoneEditText;
     private Button btnSave;
+    private ImageButton btnBack;
     private String collectionName; // This will hold "entrants", "organizers", or "admins"
 
     /**
@@ -73,12 +75,16 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         emailEditText = findViewById(R.id.et_edit_email);
         phoneEditText = findViewById(R.id.et_edit_phone);
         btnSave = findViewById(R.id.btn_save_profile);
+        btnBack = findViewById(R.id.btn_entrant_settings_back);
 
         //puts the saved data into the text hints
         loadProfileFromFirestore();
 
         //save when save button is clicked
         btnSave.setOnClickListener(v -> updateProfileInFirestore());
+
+        //back when back button is clicked
+        btnBack.setOnClickListener(v -> finish());
     }
 
     /**

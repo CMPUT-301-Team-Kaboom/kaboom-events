@@ -8,6 +8,15 @@
     tools:context=".EntrantSettingsActivity"
     android:paddingTop="32dp">
 
+    <ImageButton
+        android:id="@+id/btn_entrant_settings_back"
+        android:layout_width="51dp"
+        android:layout_height="48dp"
+        android:background="@null"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/left_arrow" />
+
     <TextView
         android:id="@+id/tv_settings_title"
         style="@style/MainHeaderTextviewStyle"
