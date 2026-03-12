@@ -40,10 +40,12 @@ import java.util.Objects;
 public class EventsListFragment extends Fragment {
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
+    private CollectionReference organizerRef;
+    private CollectionReference posterRef;
+
+    private EventUtils eventUtils;
     private User globalUser;
-
     private ListView eventsListView;
-
     private ArrayList<Event> eventsArrayList;
     private ArrayAdapter<Event> eventsArrayAdapter;
 
@@ -77,6 +79,7 @@ public class EventsListFragment extends Fragment {
 
         // setup db
         db = FirebaseFirestore.getInstance();
+        eventUtils = new EventUtils(db);
         eventsRef = db.collection("events");
 
         // get user role
@@ -160,106 +163,40 @@ public class EventsListFragment extends Fragment {
             eventsArrayList.clear();
 
             for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
-                Event event = Event.fetchEventFromSnapshot(snapshot);
+                Event event = eventUtils.fetchEventFromSnapshot(snapshot);
                 eventsArrayList.add(event);
             }
-            eventsArrayAdapter.notifyDataSetChanged();
-        });
-    }
+            if (value != null && !value.isEmpty()) {
+                eventsArrayList.clear();
+                for (QueryDocumentSnapshot snapshot : value) {
+                    Event event = eventUtils.fetchEventFromSnapshot(snapshot);
+                        // fetch organizer and poster from DocumentReferences
+                    /*
+                    The following code is adapted from...
+                    Source: https://firebase.google.com/docs/firestore/query-data/get-data
+                    Title: "Get data with Cloud Firestore"
+                    Retrieved: 2026-03-03
+                    */
+                    DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
+                    if (organizerRef != null) {
+                        organizerRef.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                            @Override
+                            public void onSuccess(DocumentSnapshot documentSnapshot) {
+                                if (documentSnapshot.exists()) {
+                                    String organizerId = documentSnapshot.getId();
+                                    String organizerName = documentSnapshot.getString("name");
+                                    event.setOrganizerId(organizerId);
+                                    event.setOrganizerName(organizerName);
 
-    /**
-     * Make a call to apply filters to a query for a list of events from the database.
-     *
-     * @param name of event
-     * @param status of user
-     * @param tags for event
-     * @param regStart of event
-     * @param regEnd of event
-     * @param drawDate of event
-     */
-    void applyFilters(String name, String status, ArrayList<String> tags, LocalDate regStart, LocalDate regEnd, LocalDate drawDate) {
-        // Store filter parameters
-        filterName = name;
-        filterStatus = status;
-        filterTags = tags;
-        if (tags != null) {
-            filterTags = new ArrayList<>(tags);
-        }
-        filterRegStart = regStart;
-        filterRegEnd = regEnd;
-        filterDrawDate = drawDate;
-
-        // get filtered events
-        getFilteredEvents();
-    }
-
-    /**
-     *  Get all events again without filters.
-     */
-    void clearFilters() {
-        getEventsForRole();
-    }
-
-    /**
-     * Perform the filtering of events fetched from the database.
-     */
-    /*
-    The following code is adapted from...
-    Title: "Perform simple and compound queries in Cloud Firestore"
-    Source: https://firebase.google.com/docs/firestore/query-data/
-    Retrieved: 2026-03-11
-    */
-    private void getFilteredEvents() {
-        Query query = eventsRef;
-
-        // filter by role
-        if (globalUser.getRole() == Role.ORGANIZER) {
-            Log.d("EventsListFragment", "filter organizer: " + globalUser.getUserId());
-            DocumentReference organizerRef = db.collection("organizers")
-                    .document(globalUser.getUserId());
-            query = query.whereEqualTo("organizer", organizerRef);
-        }
-
-        // filter by name
-        if (filterName != null) {
-            Log.d("EventsListFragment", "filter name: " + filterName);
-            query = query.whereEqualTo("name", filterName);
-        }
-
-        /*
-        todo: status not sure how this works yet
-        if (filterStatus != null) {
-            query = query.whereEqualTo("name", filterStatus);
-        }
-        */
-
-        // filter by tags
-        if (filterTags != null) {
-            Log.d("EventsListFragment", "filter tags: " + filterTags);
-            query = query.whereArrayContainsAny("tags", filterTags);
-        }
-
-        // filter by registration date (one-sided)
-        if (filterRegStart != null && filterRegEnd == null) {
-            Log.d("EventsListFragment", "filter registration start: " + filterRegStart);
-            Timestamp start = convertStartLocalDateToTimestamp(filterRegStart);
-            query = query.whereGreaterThanOrEqualTo("registrationStartDate", start);
-        } else if (filterRegEnd != null && filterRegStart == null) {
-            Log.d("EventsListFragment", "filter registration end: " + filterRegEnd);
-            Timestamp end = convertEndLocalDateToTimestamp(filterRegEnd);
-            query = query.whereLessThanOrEqualTo("registrationEndDate", end);
-        }
-
-        // do filtered query
-        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
-            eventsArrayList.clear();
-            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
-                Event event = Event.fetchEventFromSnapshot(snapshot);
-
-                // filter by registration date range
-                if (filterRegStart != null && filterRegEnd != null) {
-                    if (event.getRegistrationEndDate().compareTo(filterRegStart) < 0 || event.getRegistrationStartDate().compareTo(filterRegEnd) > 0) {
-                        continue;  // not in range
+                                    // filter (maybe add the above code to Event via fetchEventFromSnapshot later)
+                                    if (displayEventForRole(event, globalUser)) {
+                                        Log.d("EventList", "Added event: " + event.getEventId() + " for user: " + globalUser.getUserId());
+                                        eventsArrayList.add(event);
+                                        eventsArrayAdapter.notifyDataSetChanged();
+                                    }
+                                }
+                            }
+                        });
                     }
                 }
 
