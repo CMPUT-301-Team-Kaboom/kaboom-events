@@ -3,6 +3,7 @@ package com.example.projecteventlotteryapp;
 import android.util.Log;
 
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -125,6 +126,32 @@ public class EventUtils {
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
         return eventDoc.update(getListField(listType), FieldValue.arrayRemove(entrant.getUserId()));
+    }
+
+    /**
+     * Fetches the organizer document from Firestore and updates the given Event with organizer info.
+     *
+     * @param event the Event to update
+     * @param organizerRef the DocumentReference to the organizer
+     * @return a {@link Task} representing the asynchronous Firestore update operation
+     */
+    public Task<Void> fetchOrganizerForEvent(Event event, DocumentReference organizerRef) {
+        if (organizerRef == null) return Tasks.forResult(null);
+
+        return organizerRef.get().continueWith(task -> {
+            if (task.isSuccessful() && task.getResult().exists()) {
+                /*
+                The following code is adapted from...
+                Source: https://firebase.google.com/docs/firestore/query-data/get-data
+                Title: "Get data with Cloud Firestore"
+                Retrieved: 2026-03-03
+                */
+                DocumentSnapshot organizerDoc = task.getResult();
+                event.setOrganizerId(organizerDoc.getId());
+                event.setOrganizerName(organizerDoc.getString("name"));
+            }
+            return null;
+        });
     }
 
     /**
