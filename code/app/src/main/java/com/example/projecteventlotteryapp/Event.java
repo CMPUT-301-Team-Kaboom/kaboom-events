@@ -3,6 +3,7 @@ package com.example.projecteventlotteryapp;
 import android.net.Uri;
 import android.util.Log;
 
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Timestamp;
@@ -407,6 +408,30 @@ public class Event {
         event.setGeolocationEnabled(geolocationEnabled);
         event.setTagsList(tagsList);
         event.setWaitlistLimit(waitlistLimit);
+
+        if (organizer != null) {
+            organizer.get().addOnSuccessListener(new OnSuccessListener<DocumentSnapshot>() {
+                @Override
+                public void onSuccess(DocumentSnapshot documentSnapshot) {
+                    if (documentSnapshot.exists()) {
+                        String organizerId = documentSnapshot.getId();
+                        String organizerName = documentSnapshot.getString("name");
+                        event.setOrganizerId(organizerId);
+                        event.setOrganizerName(organizerName);
+                    }
+                }
+            });
+        }
+
+        DocumentReference posterRef = snapshot.getDocumentReference("poster");
+        if (posterRef != null){
+            posterRef.get().addOnSuccessListener(doc -> {
+                if (doc.exists()){
+                    String imageUrl = doc.getString("url");
+                    event.setPoster(imageUrl);
+                }
+            });
+        }
 
         Log.d("Event", "Fetched event.\nEventId: " + eventId + "\nname: " + name);
         return event;

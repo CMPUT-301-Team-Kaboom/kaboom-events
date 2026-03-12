@@ -1,0 +1,178 @@
+package com.example.projecteventlotteryapp;
+
+import android.app.AlertDialog;
+import android.app.DatePickerDialog;
+import android.app.Dialog;
+import android.app.TimePickerDialog;
+import android.content.Context;
+import android.graphics.Color;
+import android.os.Bundle;
+
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.fragment.app.DialogFragment;
+
+import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.Toast;
+
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firestore.v1.FirestoreGrpc;
+
+import java.lang.reflect.Array;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.HashMap;
+
+/**
+ * A simple {@link DialogFragment} subclass.
+ * Use the {@link FilterEventsDialogFragment#newInstance} factory method to
+ * create an instance of this fragment.
+ */
+public class FilterEventsDialogFragment extends DialogFragment {
+
+    /*
+    The following code and related OnAttach code is adapted from...
+    Author: Kalyaganov Alexey https://stackoverflow.com/users/1979290/kalyaganov-alexey
+    Title: "Passing Data Between Fragments to Activity"
+    Answer: https://stackoverflow.com/a/14440095
+    Date: 2013-01-21
+    Retrieved: 2026-03-11
+    License: CC-BY-SA 3.0
+    */
+    interface FilterEventsListener {
+        void filterEvents(String name, String status, ArrayList<String> tags, LocalDate startDate, LocalDate endDate, LocalDate drawDate);
+
+        void clearFilters();
+    }
+
+    private FilterEventsListener listener;
+
+    @NonNull
+    @Override
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        View view = getLayoutInflater().inflate(R.layout.fragment_filter_events, null);
+
+        // grab references to EditTexts and Buttons
+        EditText filterName = view.findViewById(R.id.et_filter_name);
+        EditText filterRegStart = view.findViewById(R.id.et_filter_registration_start);
+        EditText filterRegEnd = view.findViewById(R.id.et_filter_registration_end);
+        EditText filterDrawDate = view.findViewById(R.id.et_filter_draw_date);
+        Button clearFiltersButton = view.findViewById(R.id.btn_clear_filters);
+        Button confirmButton = view.findViewById(R.id.btn_filter_confirm);
+        // todo: implement tags and enrollment status buttons
+
+        // convert EditTexts for dates to be pickers instead of text
+        attachDatePicker(filterRegStart);
+        attachDatePicker(filterRegEnd);
+        attachDatePicker(filterDrawDate);
+
+        AlertDialog dialog = new AlertDialog.Builder(getContext())
+                .setView(view)
+                .create();
+        dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);;
+
+        confirmButton.setOnClickListener(v -> {
+            // validation
+            boolean isValid = true;
+
+            String name = filterName.getText().toString().trim();
+            if (name.isEmpty()) {
+                name = null;
+            }
+            // todo: implement
+            String status = null;
+            ArrayList<String> tags = null;
+
+            // initialize date filters to null
+            LocalDate regStart = null;
+            LocalDate regEnd = null;
+            LocalDate drawDate = null;
+
+            // only parse if date not null
+            if (!filterRegStart.getText().toString().isEmpty()) {
+                regStart = LocalDate.parse(filterRegStart.getText().toString().trim());
+            }
+
+            if (!filterRegEnd.getText().toString().isEmpty()) {
+                regEnd = LocalDate.parse(filterRegEnd.getText().toString().trim());
+            }
+
+            if (!filterDrawDate.getText().toString().isEmpty()) {
+                drawDate = LocalDate.parse(filterDrawDate.getText().toString().trim());
+            }
+            if (regStart != null && regEnd != null && !regEnd.isAfter(regStart)) {
+                filterRegEnd.setError("Must be after start date");
+                isValid = false;
+            }
+
+            if (drawDate != null && regEnd != null && !drawDate.isAfter(regEnd)) {
+                filterDrawDate.setError("Must be after registration end date");
+                isValid = false;
+            }
+
+            // make sure at least one filter is set before filtering
+            if (name == null && status == null && tags == null && regStart == null && regEnd == null && drawDate == null) {
+                isValid = false;
+            }
+
+            if (!isValid) {
+                return;
+            }
+
+            // give some filter info to EventListFragment
+            if (listener != null) {
+                listener.filterEvents(name, status, tags, regStart, regEnd, drawDate);
+            }
+
+            dialog.dismiss();
+        });
+
+        clearFiltersButton.setOnClickListener(v -> {
+            listener.clearFilters();
+            dialog.dismiss();
+        });
+
+        return dialog;
+    }
+
+    // make EventsListActivity implement the interface
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        try {
+            listener = (FilterEventsListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement FilterEventsListener");
+        }
+
+    }
+
+    private void attachDatePicker(EditText editText) {
+        editText.setFocusable(false);
+
+        editText.setOnClickListener(v -> {
+            LocalDate today = LocalDate.now();
+            DatePickerDialog picker = new DatePickerDialog(
+                    requireContext(),
+                    (view, year, month, dayOfMonth) -> {
+                        LocalDate selectedDate = LocalDate.of(year, month + 1, dayOfMonth);
+                        editText.setText(selectedDate.toString());
+                    },
+                    today.getYear(),
+                    today.getMonthValue() - 1,
+                    today.getDayOfMonth()
+            );
+
+            picker.show();
+        });
+    }
+
+}
