@@ -30,6 +30,9 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+    testOptions{
+        unitTests.isReturnDefaultValues = true;
+    }
 }
 
 dependencies {
@@ -46,12 +49,14 @@ dependencies {
     // JUnit5 unit testing
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
+    testImplementation("com.google.android.gms:play-services-tasks:18.0.2")
 
     //    Glide dependency (image loading)
     implementation ("com.github.bumptech.glide:glide:4.16.0")
 
     //    Mockito dependencies
-    testImplementation("org.mockito:mockito-core:5.5.0")
+    testImplementation("org.mockito:mockito-core:5.12.0")
+    testImplementation("org.mockito:mockito-junit-jupiter:5.12.0")
     testImplementation("org.mockito:mockito-inline:5.2.0")
     testImplementation("org.mockito:mockito-android:5.5.0")
 

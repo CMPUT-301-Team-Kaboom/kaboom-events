@@ -32,6 +32,7 @@ import java.time.LocalTime;
 public class EditEventActivity extends AppCompatActivity {
     private String eventId;
     private FirebaseFirestore db;
+    private PosterImageHandler posterImageHandler;
     private EditText editName, editRegStart, editRegEnd, editDrawDate, editDrawTime;
     private EditText editEntrantLimit, editWaitlistLimit, editLocation, editDescription;
     private SwitchCompat switchGeolocation;
@@ -51,6 +52,7 @@ public class EditEventActivity extends AppCompatActivity {
         // getting eventId from intent
         eventId = getIntent().getStringExtra("eventId");
         db = FirebaseFirestore.getInstance();
+        posterImageHandler = new PosterImageHandler();
 
         // initialize ui components
         editName = findViewById(R.id.et_event_edit_name);
@@ -145,7 +147,7 @@ public class EditEventActivity extends AppCompatActivity {
 
         // TODO: update the event object and database
         // TODO: figure out image and QR code, as well as location
-        PosterImageHandler.uploadPoster(eventId, eventPosterFilepath);
+        posterImageHandler.uploadPoster(eventId, eventPosterFilepath);
 
         finish(); // close activity
     }

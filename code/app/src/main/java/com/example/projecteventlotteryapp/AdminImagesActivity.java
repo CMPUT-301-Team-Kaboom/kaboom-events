@@ -27,6 +27,7 @@ public class AdminImagesActivity extends AppCompatActivity {
     private AdminImagesAdapter adapter;
     private GridLayoutManager manager;
     private ArrayList<Image> imageList;
+    private PosterImageHandler posterImageHandler;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -34,6 +35,7 @@ public class AdminImagesActivity extends AppCompatActivity {
         setContentView(R.layout.activity_admin_images);
 
         imageList = new ArrayList<>();
+        posterImageHandler = new PosterImageHandler();
         recyclerView = findViewById(R.id.rv_admin_images_list);
         adapter = new AdminImagesAdapter(this,imageList);
         manager = new GridLayoutManager(this, 2);
@@ -41,7 +43,7 @@ public class AdminImagesActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(manager);
 
-        PosterImageHandler.getAllPosters(posters -> {
+        posterImageHandler.getAllPosters(posters -> {
             imageList.clear();
             imageList.addAll(posters);
 
