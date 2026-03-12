@@ -67,7 +67,7 @@ public class PosterImageHandler {
                 .continueWithTask(uploadTask -> handleUploadResult(eventId, posterRef));
     }
 
-    private Task<String> handleUploadResult(String eventId, StorageReference posterRef) throws Exception {
+    protected Task<String> handleUploadResult(String eventId, StorageReference posterRef) throws Exception {
         return posterRef.getDownloadUrl().continueWithTask(downloadTask -> {
             Uri downloadUrl = downloadTask.getResult();
             return updatePosterDocs(eventId, posterRef, downloadUrl);

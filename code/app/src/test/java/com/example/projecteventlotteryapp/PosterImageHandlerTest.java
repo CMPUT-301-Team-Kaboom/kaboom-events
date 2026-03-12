@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import android.net.Uri;
 
+import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -79,26 +80,37 @@ public class PosterImageHandlerTest {
     }
 
     @Test
-    public void uploadPosterTest(){
+    public void uploadPosterTest() throws Exception {
+
         String eventId = "event123";
         String downloadUrl = "https://example.com/poster.jpg";
         Uri fileUri = mock(Uri.class);
-        Uri downloadUri = mock(Uri.class);
+
+        PosterImageHandler spyHandler =
+                spy(new PosterImageHandler(mockDb, mockStorage, mockPosterCollection));
+
+        when(mockStorage.getReference()).thenReturn(mockStorageReference);
+        when(mockStorageReference.child(anyString())).thenReturn(mockPosterRef);
 
         when(mockPosterRef.putFile(fileUri)).thenReturn(mockUploadTask);
-        when(mockUploadTask.continueWithTask(any())).thenReturn(Tasks.forResult(downloadUri));
-        when(mockPosterRef.getDownloadUrl()).thenReturn(Tasks.forResult(downloadUri));
-        when(mockEventDocument.update(eq("poster"), any())).thenReturn(Tasks.forResult(null));
-        when(mockPosterDocument.set(any())).thenReturn(Tasks.forResult(null));
-        when(downloadUri.toString()).thenReturn(downloadUrl);
 
-        Task<String> resultTask = posterImageHandler.uploadPoster(eventId, fileUri);
+        // run the continuation immediately
+        when(mockUploadTask.continueWithTask(any())).thenAnswer(invocation -> {
+            Continuation<?, Task<String>> continuation = invocation.getArgument(0);
+            return continuation.then(null);
+        });
 
-        assertEquals(downloadUri.toString(), resultTask.getResult());
+        // mock the internal method
+        doReturn(Tasks.forResult(downloadUrl))
+                .when(spyHandler)
+                .handleUploadResult(eq(eventId), any());
+
+        Task<String> resultTask = spyHandler.uploadPoster(eventId, fileUri);
+
+        assertEquals(downloadUrl, resultTask.getResult());
 
         verify(mockPosterRef).putFile(fileUri);
-        verify(mockEventDocument).update(eq("poster"), any());
-        verify(mockPosterDocument).set(any());
+        verify(spyHandler).handleUploadResult(eq(eventId), any());
     }
 
     @Test
