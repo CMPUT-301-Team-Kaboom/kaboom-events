@@ -25,9 +25,11 @@ import java.util.ArrayList;
 import java.util.Objects;
 
 /**
- * A simple {@link Fragment} subclass.
- * Use the {@link EventsListFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * A simple {@link Fragment} subclass used to display a list of events based off certain conditions.
+ *
+ * <p>This Fragment class is hosted by the EventsListActivity to display a list of events from the
+ * database based on certain conditions (user role and filtering). It is the main menu of entrants
+ * and organizers. </p>
  */
 public class EventsListFragment extends Fragment {
     private FirebaseFirestore db;
@@ -56,6 +58,14 @@ public class EventsListFragment extends Fragment {
         return new EventsListFragment();
     }
 
+    /**
+     * Entry point of the Fragment.
+     *
+     * <p>This function is the entry point of the Fragment. It sets up the db instance and gets the
+     * user role.</p>
+     * @param savedInstanceState If the fragment is being re-created from
+     * a previous saved state, this is the state.
+     */
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -69,6 +79,25 @@ public class EventsListFragment extends Fragment {
         globalUser = app.getCurrentUser();
     }
 
+    /**
+     * Fetches events from the database and configures the display for a given user depending on
+     * their role.
+     *
+     * <p>If the user is an organizer, events specific to this organizer are displayed. Other events
+     * are not retrieved</p>
+     *
+     * <p>If the user is an entrant, all events are displayed.</p>
+     *
+     * @param inflater The LayoutInflater object that can be used to inflate
+     * any views in the fragment,
+     * @param container If non-null, this is the parent view that the fragment's
+     * UI should be attached to.  The fragment should not add the view itself,
+     * but this can be used to generate the LayoutParams of the view.
+     * @param savedInstanceState If non-null, this fragment is being re-constructed
+     * from a previous saved state as given here.
+     *
+     * @return View to be displayed
+     */
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // inflate the layout for this fragment
@@ -161,6 +190,13 @@ public class EventsListFragment extends Fragment {
         return view;
     }
 
+    /**
+     * Helper to determine whether or not display an event based on user role and ID.
+     *
+     * @param event to check
+     * @param user to get role and ID of
+     * @return boolean of whether or not this event should be displayed in the context
+     */
     private boolean displayEventForRole(Event event, User user) {
         if (user.getRole() == Role.ORGANIZER) {
             Log.d("EventList", "Organizer: " + user.getUserId());
