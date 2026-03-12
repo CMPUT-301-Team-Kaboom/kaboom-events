@@ -19,6 +19,7 @@ import android.widget.Toast;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firestore.v1.FirestoreGrpc;
 
@@ -30,12 +31,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * A simple {@link DialogFragment} subclass.
- * Use the {@link CreateEventDialogFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * A simple {@link DialogFragment} subclass organizers use to create a new Event.
+ *
+ * <p>This DialogFragment class is used by organizers to create a new Event and store it in
+ * the database. It is invoked from the Organizers main menu</p>
  */
 public class CreateEventDialogFragment extends DialogFragment {
 
+    /**
+     * Entry point of the DialogFragment
+     *
+     * <p>Sets up UI, handles input validation and creates a new Event db object on success </p>
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return Dialog
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -110,6 +121,11 @@ public class CreateEventDialogFragment extends DialogFragment {
         return dialog;
     }
 
+    /**
+     * Helper function to validate if an EditText field is not empty
+     * @param field the EditText
+     * @return boolean
+     */
     private boolean fieldNotEmpty(EditText field) {
         String value = field.getText().toString().trim();
         if (value.isEmpty()) {
@@ -119,6 +135,10 @@ public class CreateEventDialogFragment extends DialogFragment {
         return true;
     }
 
+    /**
+     * Attaches a date picker to an EditText to ease date selection
+     * @param editText the editText
+     */
     private void attachDatePicker(EditText editText) {
         editText.setFocusable(false);
 
@@ -139,6 +159,10 @@ public class CreateEventDialogFragment extends DialogFragment {
         });
     }
 
+    /**
+     * Attaches a time picker to an EditText to ease date selection
+     * @param editText the editText
+     */
     private void attachTimePicker(EditText editText) {
         editText.setFocusable(false);
 
@@ -159,6 +183,23 @@ public class CreateEventDialogFragment extends DialogFragment {
 
     }
 
+    /**
+     * Creates and uploads a new Event database object
+     *
+     * <p>Uses an Event instance and uploads it to the database. Only populates the following attributes:
+     * organizer
+     * name
+     * drawDate
+     * registrationEndDate
+     * registrationStartDate
+     * drawDate
+     * entrantsLimit
+     *
+     * All other values are initialized to null or the equivalent default value
+     * Further event refinement is handled by event editing</p>
+     *
+     * @param event the Event that is to be uploaded
+     */
     private void createNewEventDbItem(Event event) {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
@@ -168,9 +209,11 @@ public class CreateEventDialogFragment extends DialogFragment {
         MyApp app = (MyApp) requireActivity().getApplication();
         DocumentReference organizerRef =
                 db.collection("organizers").document(app.getCurrentUser().getUserId());
+        DocumentReference defaultPoster =
+                db.collection("posters").document("default_poster");
         eventData.put("organizer", organizerRef);
         eventData.put("name", event.getName());
-
+        eventData.put("poster", defaultPoster);
 
         ZoneId zoneId = ZoneId.systemDefault();
         // TODO: update to grab system zoneid

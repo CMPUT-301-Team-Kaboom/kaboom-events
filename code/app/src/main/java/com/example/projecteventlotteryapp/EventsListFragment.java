@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 
 
@@ -23,6 +24,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Objects;
 
 
 public class EventsListFragment extends Fragment {
@@ -203,11 +205,11 @@ public class EventsListFragment extends Fragment {
 
     private boolean displayEventForRole(Event event, User user) {
         if (user.getRole() == Role.ORGANIZER) {
+            Log.d("EventList", "Organizer: " + user.getUserId());
             return (user.getUserId().equals(event.getOrganizerId()));
         } else {
+            Log.d("EventList", "User: " + user.getUserId());
             return true;
         }
     }
-
-
 }
