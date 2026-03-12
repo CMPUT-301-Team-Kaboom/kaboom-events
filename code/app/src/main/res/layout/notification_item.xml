@@ -5,13 +5,13 @@
     xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <RelativeLayout
-        android:id="@+id/content_wrapper"
+        android:id="@+id/rl_content_wrapper"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp">
 
         <TextView
-            android:id="@+id/item_number"
+            android:id="@+id/tv_item_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
@@ -23,18 +23,18 @@
             android:text="1" />
 
         <LinearLayout
-            android:id="@+id/item_text_container"
+            android:id="@+id/ll_item_text_container"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="15dp"
             android:layout_marginEnd="1dp"
             android:layout_toStartOf="@+id/date_container"
-            android:layout_toEndOf="@id/item_number"
+            android:layout_toEndOf="@id/tv_item_number"
             android:orientation="vertical">
 
             <TextView
-                android:id="@+id/item_name"
+                android:id="@+id/tv_item_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/primaryAccent"
@@ -42,7 +42,7 @@
                 android:textStyle="bold" />
 
             <TextView
-                android:id="@+id/item_subtext"
+                android:id="@+id/tv_item_subtext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="@color/white"
@@ -51,7 +51,7 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/date_container"
+            android:id="@+id/ll_date_container"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentEnd="true"
@@ -60,7 +60,7 @@
             android:gravity="end">
 
             <TextView
-                android:id="@+id/date"
+                android:id="@+id/tv_date"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Day, Month Year"
@@ -87,11 +87,11 @@
 
     <!-- Divider Line -->
     <View
-        android:id="@+id/divider"
+        android:id="@+id/v_divider"
         android:layout_width="300dp"
         android:layout_height="1dp"
         android:layout_centerHorizontal="true"
-        android:layout_below="@id/content_wrapper"
+        android:layout_below="@id/rl_content_wrapper"
         android:layout_alignParentBottom="true"
         android:background="#1D1B1B" />
 

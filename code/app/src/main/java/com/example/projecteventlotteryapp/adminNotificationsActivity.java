@@ -32,8 +32,8 @@ public class adminNotificationsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_notifications_list);
         
-        ListView listView = findViewById(R.id.notificationsListView);
-        ImageButton btnBack = findViewById(R.id.BackButton);
+        ListView listView = findViewById(R.id.lv_notificationsListView);
+        ImageButton btnBack = findViewById(R.id.btn_admin_notifications_back);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
         String senderID = getIntent().getStringExtra("sender_id");
@@ -89,7 +89,7 @@ public class adminNotificationsActivity extends AppCompatActivity {
                         }
 
                         String[] from = {"number", "event", "text", "date"};
-                        int[] to = {R.id.item_number, R.id.item_name, R.id.item_subtext, R.id.date};
+                        int[] to = {R.id.tv_item_number, R.id.tv_item_name, R.id.tv_item_subtext, R.id.tv_date};
 
                         SimpleAdapter adapter = new SimpleAdapter(
                                 this,
@@ -103,7 +103,7 @@ public class adminNotificationsActivity extends AppCompatActivity {
                                 // find the views
                                 View view = super.getView(position, convertView, parent);
                                 Button deleteBtn = view.findViewById(R.id.btn_delete);
-                                View divider = view.findViewById(R.id.divider);
+                                View divider = view.findViewById(R.id.v_divider);
 
                                 // logic to hide divider for the last item
                                 if (divider != null) {
