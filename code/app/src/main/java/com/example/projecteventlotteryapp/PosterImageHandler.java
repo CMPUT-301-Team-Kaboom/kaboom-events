@@ -10,6 +10,7 @@ import android.widget.Toast;
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -51,31 +52,32 @@ public class PosterImageHandler {
      * @param uri URI of the image as uploaded from the user's phone
      * @see EditEventActivity calls the function after the activity requests an image from the user's image gallery
      */
-    public static void uploadPoster(String eventId, Uri uri){
+    public static Task<Uri> uploadPoster(String eventId, Uri uri){
         /*
         the following code is referenced from https://firebase.google.com/docs/storage/android/upload-files
          */
         String posterFilepath = STORAGE_DIR + eventId + "_poster.jpg";
         StorageReference posterRef = storage.getReference().child(posterFilepath);
 
-        posterRef.putFile(uri).continueWithTask(task -> {
+        return posterRef.putFile(uri).continueWithTask(task -> {
             if(!task.isSuccessful()){
                 throw task.getException();
             }
             return posterRef.getDownloadUrl();
-        }).addOnSuccessListener(downloadUri -> {
-            String downloadUrl = downloadUri.toString();
+        }).continueWithTask(task -> {
+            Uri downloadUrl = task.getResult();
             String posterId = eventId + "_poster";
 
             Map<String, Object> poster = new HashMap<>();
 
-            poster.put("url", downloadUrl);
+            poster.put("url", downloadUrl.toString());
             poster.put("path", posterFilepath);
-
-            posterCollectionRef.document(posterId).set(poster);
 
             DocumentReference eventDoc = db.collection("events").document(eventId);
             eventDoc.update("poster", posterCollectionRef.document(posterId));
+
+            DocumentReference posterDoc = posterCollectionRef.document(posterId);
+            return posterDoc.set(poster).continueWith(t -> downloadUrl);
         });
     }
 
