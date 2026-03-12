@@ -62,17 +62,6 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/btn_view_organizers" />
 
-    <Button
-        android:id="@+id/btn_view_notifications"
-        style="@style/SecondaryRoundedButton"
-        android:layout_width="300dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="16dp"
-        android:text="View Notifications"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/btn_view_images" />
-
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bn_events_list_menu"
         android:layout_width="match_parent"

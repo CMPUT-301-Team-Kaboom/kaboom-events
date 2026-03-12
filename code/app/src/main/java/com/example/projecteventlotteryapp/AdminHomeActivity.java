@@ -19,17 +19,27 @@ public class AdminHomeActivity extends AppCompatActivity {
         Button viewEvents = findViewById(R.id.btn_view_events);
         Button viewOrganizers = findViewById(R.id.btn_view_organizers);
         Button viewImages = findViewById(R.id.btn_view_images);
-        Button viewNotifications = findViewById(R.id.btn_view_notifications);
 
         // set on click listeners
+
+        viewEntrants.setOnClickListener(v -> {
+            // navigate to entrants list activity
+            startActivity(new Intent(AdminHomeActivity.this, AdminProfilesListActivity.class));
+        });
+
+        viewEvents.setOnClickListener(v -> {
+            // navigate to events list activity
+            startActivity(new Intent(AdminHomeActivity.this, AdminEventsActivity.class));
+        });
+
+        viewOrganizers.setOnClickListener(v -> {
+            // navigate to organizers list activity
+            startActivity(new Intent(AdminHomeActivity.this, AdminOrganizersListActivity.class));
+        });
+
         viewImages.setOnClickListener(v -> {
             // navigate to view images activity
             startActivity(new Intent(AdminHomeActivity.this, AdminImagesActivity.class));
-        });
-
-        viewNotifications.setOnClickListener(v -> {
-            // navigate to admin notifications list activity
-            startActivity(new Intent(AdminHomeActivity.this, adminNotificationsActivity.class));
         });
 
         // Setup Bottom Navigation

@@ -36,11 +36,19 @@ public class adminNotificationsActivity extends AppCompatActivity {
         ImageButton btnBack = findViewById(R.id.BackButton);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        String senderID = getIntent().getStringExtra("sender_id");
+
         btnBack.setOnClickListener(v -> finish());
 
+        Query notificationQuery = db.collection("notifications");
+
+        if (senderID != null) {
+            notificationQuery = notificationQuery.whereEqualTo("sender", senderID);
+        }
+
         // Use .get() to fetch notifications once
-        db.collection("notifications")
-                .orderBy("date", Query.Direction.DESCENDING)
+        notificationQuery
+                //.orderBy("date", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
                     if (queryDocumentSnapshots != null) {
@@ -73,6 +81,8 @@ public class adminNotificationsActivity extends AppCompatActivity {
                             } else {
                                 notification.put("date", "No date");
                             }
+
+
 
                             data.add(notification);
                             count++;
@@ -138,4 +148,5 @@ public class adminNotificationsActivity extends AppCompatActivity {
                     Toast.makeText(this, "Failed to load notifications", Toast.LENGTH_SHORT).show();
                 });
     }
+
 }
