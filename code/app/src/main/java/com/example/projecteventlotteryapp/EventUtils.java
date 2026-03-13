@@ -411,48 +411,13 @@ public class EventUtils {
      * waitlist
      * invited
      * enrolled
-     * declined</p>
+     * declined
+     * organizer</p>
      *
-     * @param event An Event that contains all the updates to put into the database
-     * @param organizerId User Id of the organizer who is editting the event
+     * @param updates contains a map of all the edits being made to the event
+     * @param eventId ID of the event being updated
      */
-    public void updateEventInDB(Event event, String organizerId){
-        Map<String, Object> eventData = new HashMap<>();
-
-        DocumentReference organizerRef =
-                db.collection("organizers").document(organizerId);
-        eventData.put("organizer", organizerRef);
-        eventData.put("name", event.getName());
-
-        ZoneId zoneId = ZoneId.systemDefault();
-        // TODO: update to grab system zoneid
-        eventData.put(
-                "drawDate",
-                FirestoreUtils.localDateTimeToTimestamp(
-                        event.getDrawDate(),
-                        zoneId
-                )
-        );
-        eventData.put(
-                "registrationEndDate",
-                FirestoreUtils.localDateToTimestamp(
-                        event.getRegistrationEndDate(),
-                        zoneId
-                )
-        );
-        eventData.put(
-                "registrationStartDate",
-                FirestoreUtils.localDateToTimestamp(
-                        event.getRegistrationStartDate(),
-                        zoneId
-                )
-        );
-        eventData.put("entrantsLimit", event.getAttendeesLimit());
-        eventData.put("description", event.getDescription());
-        eventData.put("geoLocationEnabled", event.isGeolocationEnabled());
-        eventData.put("tags", event.getTagsList());
-        eventData.put("waitlistLimit", event.getWaitlistLimit());
-
-        db.collection("events").document(event.getEventId()).update(eventData);
+    public void updateEventInDB(Map<String, Object> updates, String eventId){
+        db.collection("events").document(eventId).update(updates);
     }
 }
