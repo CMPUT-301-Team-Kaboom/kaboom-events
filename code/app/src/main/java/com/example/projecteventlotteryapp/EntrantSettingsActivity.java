@@ -86,6 +86,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
     }
     //this function updates the firestore with new values from the text hints
     private void updateProfileInFirestore() {
+        // TODO: decouple DB operation
         //get values from edit text
        String name = nameEditText.getText().toString().trim();
        String email = emailEditText.getText().toString().trim();
@@ -119,6 +120,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
     private void deleteProfileFromFirestore() {
         DocumentReference userRef = db.collection("entrants").document(deviceID);
         // TODO: Delete profile from everywhere in database (inside waitlists etc.)
+        // TODO: decouple DB operation
 
         userRef.delete().addOnSuccessListener(unused -> {
             Toast.makeText(this, "Profile deleted successfully", Toast.LENGTH_SHORT).show();
