@@ -188,9 +188,24 @@ public class EventDetailsActivity extends AppCompatActivity {
                 intent.putExtra("eventID", eventId);
                 startActivity(intent);
             });
-            invitedButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open invited list"));
-            enrolledButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open enrolled List"));
-            declinedButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open declined list"));
+            invitedButton.setOnClickListener(v -> {
+                Log.d("EventDetails", "[TEMP] Open invited list");
+                Intent intent = new Intent(EventDetailsActivity.this, OrganizerInvitedActivity.class);
+                intent.putExtra("eventID", eventId);
+                startActivity(intent);
+            });
+            enrolledButton.setOnClickListener(v -> {
+                Log.d("EventDetails", "[TEMP] Open enrolled List");
+                Intent intent = new Intent(EventDetailsActivity.this, OrganizerEnrolledActivity.class);
+                intent.putExtra("eventID", eventId);
+                startActivity(intent);
+            });
+            declinedButton.setOnClickListener(v -> {
+                Log.d("EventDetails", "[TEMP] Open declined list");
+                Intent intent = new Intent(EventDetailsActivity.this, OrganizerDeclinedActivity.class);
+                intent.putExtra("eventID", eventId);
+                startActivity(intent);
+            });
 
             editButton.setOnClickListener(v -> {
                 Intent intent = new Intent(this, EditEventActivity.class);
@@ -225,6 +240,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                 eventUtils.removeFromEntrantList(EntrantListType.WAITLIST, user, eventId)
                                         .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully Left Waitlist");
                                             entrantPrimaryButton.setText("Join Waitlist");
+                                            //TODO make this non recursive
                                             configureUIForRole(user);
                                         })
                                         .addOnFailureListener(e -> {Log.d("EventDetails", "Failed to join Waitlist");
@@ -236,8 +252,9 @@ public class EventDetailsActivity extends AppCompatActivity {
                             entrantPrimaryButton.setOnClickListener(v -> {
                                 eventUtils.addToEntrantList(EntrantListType.WAITLIST, user, eventId)
                                         .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully joined Waitlist");
-                                        entrantPrimaryButton.setText("Remove Waitlist");
-                                        configureUIForRole(user);
+                                            entrantPrimaryButton.setText("Remove Waitlist");
+                                            // TODO: make this non recursive
+                                            configureUIForRole(user);
                                         })
                                         .addOnFailureListener(e -> {Log.d("EventDetails", "Failed to join Waitlist");
                                         });
@@ -256,7 +273,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void updateUi() {
         nameHeaderTextView.setText(event.getName());
         attendeesTV.setText(String.valueOf(event.getAttendeesLimit()));
-        waitListTV.setText(String.valueOf(event.getWaitlistLimit()));
+        waitListTV.setText(String.valueOf(event.getWaitlistSize()));
         descriptionTV.setText(event.getDescription());
         setupTags();
 

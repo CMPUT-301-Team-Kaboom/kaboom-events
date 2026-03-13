@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -61,6 +62,9 @@ public class PosterImageHandler {
      * @see EditEventActivity calls the function after the activity requests an image from the user's image gallery
      */
     public Task<String> uploadPoster(String eventId, Uri uri) {
+        // TODO: make this fix better
+        if (uri == null) {return Tasks.forResult("empty poster"); }
+
         StorageReference posterRef = storage.getReference().child(STORAGE_DIR + eventId + "_poster.jpg");
 
         return posterRef.putFile(uri)

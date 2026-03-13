@@ -16,22 +16,20 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
-/**
- * Provides an organizer with the waitlist of entrants that have entered to join their event
- */
-public class OrganizerWaitlistActivity extends AppCompatActivity {
+public class OrganizerDeclinedActivity extends AppCompatActivity {
     private String eventId;
     private OrganizerEntrantListAdapter adapter;
-    private ListView waitlistView;
+    private ListView declinedListView;
     private ImageButton backBtn;
-    private ArrayList<String> waitlist;
+    private ArrayList<String> declined;
     private FirebaseFirestore db;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_organizer_waitlist);
+        setContentView(R.layout.activity_organizer_declined);
 
-        waitlistView = findViewById(R.id.lv_organizer_waitlist_list);
+        declinedListView = findViewById(R.id.lv_organizer_declined_list);
         Intent intent  = getIntent();
         eventId = intent.getStringExtra("eventID");
 
@@ -42,20 +40,20 @@ public class OrganizerWaitlistActivity extends AppCompatActivity {
             if (task.isSuccessful()){
                 DocumentSnapshot doc = task.getResult();
                 if(doc.exists()){
-                    waitlist = (ArrayList<String>) doc.get("waitlist");
+                    declined = (ArrayList<String>) doc.get("declined");
 
-                    adapter = new OrganizerEntrantListAdapter(this, waitlist);
-                    waitlistView.setAdapter(adapter);
+                    adapter = new OrganizerEntrantListAdapter(this, declined);
+                    declinedListView.setAdapter(adapter);
 
-                    TextView waitlistSize = findViewById(R.id.tv_organizer_waitlist_size);
-                    waitlistSize.setText(waitlist.size() + "/" + doc.get("waitlistLimit"));
+                    TextView declinedSize = findViewById(R.id.tv_organizer_declined_size);
+                    declinedSize.setText(String.valueOf(declined.size()));
                 }
             } else {
-                Log.d("OrganizerWaitlist", "Document retrieval failed", task.getException());
+                Log.d("OrganizerInvited", "Document retrieval failed", task.getException());
             }
         });
 
-        backBtn = findViewById(R.id.btn_organizer_waitlist_back);
+        backBtn = findViewById(R.id.btn_organizer_declined_back);
         backBtn.setOnClickListener(v -> finish());
     }
 }
