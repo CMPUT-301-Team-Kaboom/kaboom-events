@@ -1,5 +1,6 @@
 package com.example.projecteventlotteryapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -42,6 +43,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
     private EditText phoneEditText;
     private Button btnSave;
     private Button btnDelete;
+    private User globalUser;
 
     /**
      * Entry point of the activity
@@ -68,6 +70,9 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btn_save_profile);
         btnDelete = findViewById(R.id.btn_delete_profile);
 
+        MyApp app = (MyApp) getApplication();
+        globalUser = app.getCurrentUser();
+
         //puts the saved data into the text hints
         loadProfileFromFirestore();
 
@@ -87,7 +92,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
      */
     private void loadProfileFromFirestore() {
         //check if profile exists
-        db.loadUserProfile(deviceID, Role.ENTRANT).addOnSuccessListener(documentSnapshot -> {
+        db.loadUserProfile(deviceID, globalUser.getRole()).addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 String name = documentSnapshot.getString("name");
                 String email = documentSnapshot.getString("email");
@@ -133,7 +138,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         updates.put("phone", phone);
 
         //update the profile
-        db.updateUserProfile(deviceID, updates, Role.ENTRANT).addOnSuccessListener(unused ->
+        db.updateUserProfile(deviceID, updates, globalUser.getRole()).addOnSuccessListener(unused ->
                 Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show()
         ).addOnFailureListener(e ->{
             Log.e("PROFILE", "Failed to update profile", e);
@@ -144,9 +149,8 @@ public class EntrantSettingsActivity extends AppCompatActivity {
 
     private void deleteProfileFromFirestore() {
         // TODO: Delete profile from everywhere in database (inside waitlists etc.)
-        // TODO: Deleting a profile should probably return the user to the login screen
 
-        db.deleteUserProfile(deviceID, Role.ENTRANT).addOnSuccessListener(unused -> {
+        db.deleteUserProfile(deviceID, globalUser.getRole()).addOnSuccessListener(unused -> {
             Toast.makeText(this, "Profile deleted successfully", Toast.LENGTH_SHORT).show();
 
             //clear text fields
@@ -154,7 +158,10 @@ public class EntrantSettingsActivity extends AppCompatActivity {
             emailEditText.setText("");
             phoneEditText.setText("");
 
-            //close activity and return to previous screen
+            //close activity and return to the registration screen
+            Intent intent = new Intent(this, RegistrationActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
             finish();
         }).addOnFailureListener(e -> {
             Log.e("PROFILE", "Failed to delete profile", e);
