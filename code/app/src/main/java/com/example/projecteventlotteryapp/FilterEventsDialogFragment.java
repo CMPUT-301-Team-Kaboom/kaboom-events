@@ -86,6 +86,15 @@ public class FilterEventsDialogFragment extends DialogFragment {
         invitedToggleButton = view.findViewById(R.id.mbtn_filter_invited);
         onWaitListToggleButton = view.findViewById(R.id.mbtn_filter_on_wait);
         notOnWaitListToggleButton = view.findViewById(R.id.mbtn_filter_not_on_wait);
+        List<ToggleButton> toggleButtons = List.of(
+                enrolledToggleButton,
+                declinedToggleButton,
+                invitedToggleButton,
+                onWaitListToggleButton,
+                notOnWaitListToggleButton
+        );
+
+        setupToggleButtons(toggleButtons);
 
         // convert EditTexts for dates to be pickers instead of text
         attachDatePicker(filterRegStart);
@@ -117,6 +126,7 @@ public class FilterEventsDialogFragment extends DialogFragment {
                     .setNegativeButton("Cancel", null)
                     .show();
         });
+
 
         // clear Filter logic
         clearFiltersButton.setOnClickListener(v -> {
@@ -153,7 +163,7 @@ public class FilterEventsDialogFragment extends DialogFragment {
                 isValid = false;
             }
 
-            ArrayList<EnrollmentStatus> enrollmentStatuses = getToggleStatus();
+            String enrollmentStatuses = getToggleStatus();
 
             if (!isValid) {
                 return;
@@ -202,23 +212,25 @@ public class FilterEventsDialogFragment extends DialogFragment {
         });
     }
 
-    private ArrayList<EnrollmentStatus> getToggleStatus() {
-        ArrayList<EnrollmentStatus> enrollmentStatuses = new ArrayList<EnrollmentStatus>();
+    /**
+     * TODO: Find a more elegant solution than returning strings. This was a band aid
+     * @return
+     */
+    private String getToggleStatus() {
+        Map<ToggleButton, String> toggleMap = new HashMap<>();
+        toggleMap.put(enrolledToggleButton, "enrolled");
+        toggleMap.put(declinedToggleButton, "declined");
+        toggleMap.put(invitedToggleButton, "invited");
+        toggleMap.put(onWaitListToggleButton, "waitlist");
+        toggleMap.put(notOnWaitListToggleButton, "notOnWaitlist");
 
-        Map<ToggleButton, EnrollmentStatus> toggleMap = new HashMap<>();
-        toggleMap.put(enrolledToggleButton, EnrollmentStatus.ENROLLED);
-        toggleMap.put(declinedToggleButton, EnrollmentStatus.DECLINED);
-        toggleMap.put(invitedToggleButton, EnrollmentStatus.INVITED);
-        toggleMap.put(onWaitListToggleButton, EnrollmentStatus.ON_WAITLIST);
-        toggleMap.put(notOnWaitListToggleButton, EnrollmentStatus.NOT_ON_WAITLIST);
-
-        for (Map.Entry<ToggleButton, EnrollmentStatus> entry : toggleMap.entrySet()) {
+        for (Map.Entry<ToggleButton, String> entry : toggleMap.entrySet()) {
             if (entry.getKey().isChecked()) {
-                enrollmentStatuses.add(entry.getValue());
+                return entry.getValue();
             }
         }
 
-        return enrollmentStatuses;
+        return null;
     }
 
     private void setupToggleButtons(List<ToggleButton> buttons) {

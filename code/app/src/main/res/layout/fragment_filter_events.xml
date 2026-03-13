@@ -64,7 +64,7 @@
         android:id="@+id/mbtn_filter_enrolled"
         android:textOn="Enrolled"
         android:textOff="Enrolled"
-        android:backgroundTint="@color/primaryBackground"
+        android:background="@drawable/button_background_selector"
         app:layout_constraintTop_toBottomOf="@id/tv_filter_enrollment_status_header"
         app:layout_constraintStart_toStartOf="@id/et_filter_name"
         app:layout_constraintEnd_toStartOf="@id/mbtn_filter_declined" />
@@ -74,7 +74,7 @@
         android:id="@+id/mbtn_filter_declined"
         android:textOn="Declined"
         android:textOff="Declined"
-        android:backgroundTint="@color/primaryBackground"
+        android:background="@drawable/button_background_selector"
         app:layout_constraintTop_toTopOf="@id/mbtn_filter_enrolled"
         app:layout_constraintStart_toEndOf="@id/mbtn_filter_enrolled"
         app:layout_constraintEnd_toEndOf="@id/mbtn_filter_invited" />
@@ -84,7 +84,7 @@
         android:id="@+id/mbtn_filter_invited"
         android:textOn="Invited"
         android:textOff="Invited"
-        android:backgroundTint="@color/primaryBackground"
+        android:background="@drawable/button_background_selector"
         app:layout_constraintTop_toTopOf="@id/mbtn_filter_enrolled"
         app:layout_constraintStart_toEndOf="@id/mbtn_filter_declined"
         app:layout_constraintEnd_toEndOf="@id/et_filter_name"  />
@@ -94,7 +94,7 @@
         android:id="@+id/mbtn_filter_on_wait"
         android:textOn="On Waitlist"
         android:textOff="On Waitlist"
-        android:backgroundTint="@color/primaryBackground"
+        android:background="@drawable/button_background_selector"
         app:layout_constraintTop_toBottomOf="@id/mbtn_filter_enrolled"
         app:layout_constraintStart_toStartOf="@id/mbtn_filter_enrolled"
         app:layout_constraintEnd_toStartOf="@id/mbtn_filter_not_on_wait" />
@@ -106,7 +106,7 @@
         android:textOff="Not On Waitlist"
         android:layout_width="wrap_content"
         android:paddingHorizontal="6dp"
-        android:backgroundTint="@color/primaryBackground"
+        android:background="@drawable/button_background_selector"
         app:layout_constraintTop_toBottomOf="@id/mbtn_filter_enrolled"
         app:layout_constraintStart_toEndOf="@id/mbtn_filter_on_wait"
         app:layout_constraintEnd_toEndOf="@id/et_filter_name" />
