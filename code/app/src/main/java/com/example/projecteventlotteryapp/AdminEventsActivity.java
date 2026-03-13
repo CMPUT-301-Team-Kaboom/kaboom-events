@@ -1,7 +1,9 @@
 package com.example.projecteventlotteryapp;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageButton;
+import android.widget.ListView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -9,10 +11,20 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+
+import java.util.ArrayList;
+
 /**
- * Displays a list of all events for the admin to see.
+ * Displays a list of all events for the admin to see and manage.
  */
 public class AdminEventsActivity extends AppCompatActivity {
+    private ListView eventListView;
+    private AdminEventArrayAdapter eventAdapter;
+    private ArrayList<Event> eventDataList;
+    private FirebaseFirestore db;
+    private EventUtils eventUtils;
 
     /**
      * Entry point of the activity.
@@ -35,22 +47,38 @@ public class AdminEventsActivity extends AppCompatActivity {
             return insets;
         });
 
-        // create EventListFragment
-        /*
-        The following code is adapted from...
-        Title: "Create a fragment | App architecture | Android Developers"
-        Source: https://developer.android.com/guide/fragments/create#java
-        Date: 2026-02-26
-        Retrieved: 2026-02-28
-        */
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .setReorderingAllowed(true)
-                    .add(R.id.fl_admin_events_list, EventsListFragment.class, null)
-                    .commit();
-        }
+        db = FirebaseFirestore.getInstance();
+        eventUtils = new EventUtils(db);
 
         ImageButton backButton = findViewById(R.id.btn_admin_events_back);
         backButton.setOnClickListener(v -> finish());
+
+        eventListView = findViewById(R.id.lv_admin_events_list);
+        eventDataList = new ArrayList<>();
+
+        eventAdapter = new AdminEventArrayAdapter(this, eventDataList, event -> {
+            db.collection("events").document(event.getEventId()).delete()
+                    .addOnSuccessListener(aVoid -> {
+                        eventDataList.remove(event);
+                        eventAdapter.notifyDataSetChanged();
+                    })
+                    .addOnFailureListener(e -> Log.e("AdminEvents", "Error deleting event", e));
+        });
+        eventListView.setAdapter(eventAdapter);
+
+        loadEvents();
+    }
+
+    private void loadEvents() {
+        db.collection("events").get().addOnCompleteListener(task -> {
+            if (task.isSuccessful() && task.getResult() != null) {
+                eventDataList.clear();
+                for (DocumentSnapshot doc : task.getResult().getDocuments()) {
+                    Event event = eventUtils.fetchEventFromSnapshot(doc);
+                    eventDataList.add(event);
+                }
+                eventAdapter.notifyDataSetChanged();
+            }
+        });
     }
 }

@@ -6,8 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primaryBackground"
-    tools:context=".AdminEventsActivity"
-    android:paddingTop="32dp">
+    tools:context=".AdminEventsActivity">
 
     <ImageButton
         android:id="@+id/btn_admin_events_back"
