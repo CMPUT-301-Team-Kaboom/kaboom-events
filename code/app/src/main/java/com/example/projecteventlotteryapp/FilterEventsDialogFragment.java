@@ -223,7 +223,7 @@ public class FilterEventsDialogFragment extends DialogFragment {
         Log.d("FilterEventsDialogFragment", "new Tag filer: " + tagText);
 
         int currentBoxes = tagContainerLinearLayout.getChildCount() - 1;    // -1 to remove the '+' button
-        if (currentBoxes >= 3) return;
+        if (currentBoxes >= 5) return;
 
         TextView newBox = new TextView(requireContext(), null, 0, R.style.TagBoxTextView);
         newBox.setText(tagText);
