@@ -13,6 +13,7 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.fragment.app.DialogFragment;
 
+import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 
 import java.time.LocalDate;
@@ -30,7 +31,6 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
     private Button organizerController;
     private TabLayout entrantController;
     private User globalUser;
-
     private EventsListFragment eventsListFragment;
 
     /**
@@ -101,6 +101,30 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
         filterButton.setOnClickListener(view -> {
             FilterEventsDialogFragment filterEventsDialogFragment = new FilterEventsDialogFragment();
             filterEventsDialogFragment.show(getSupportFragmentManager(), "Filter Events");
+        });
+
+        /*
+        Ashley Kang
+        finding bottom navigation and setting on click for tabs
+         */
+
+        BottomNavigationView bottomNavigation = findViewById(R.id.bn_events_list_menu);
+
+        /*
+        the following is adapter from https://www.geeksforgeeks.org/android/how-to-implement-bottom-navigation-with-activities-in-android/
+         */
+        bottomNavigation.setOnItemSelectedListener(item -> {
+            int id = item.getItemId();
+
+            if (id == R.id.profile){
+                startActivity(new Intent(this, EntrantSettingsActivity.class));
+                return true;
+            } else if (id == R.id.scan_qrcode){
+                return true;
+            } else if (id == R.id.notification){
+                return true;
+            }
+            return false;
         });
     }
 

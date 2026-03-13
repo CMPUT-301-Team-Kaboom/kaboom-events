@@ -144,6 +144,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
 
     private void deleteProfileFromFirestore() {
         // TODO: Delete profile from everywhere in database (inside waitlists etc.)
+        // TODO: Deleting a profile should probably return the user to the login screen
 
         db.deleteUserProfile(deviceID, Role.ENTRANT).addOnSuccessListener(unused -> {
             Toast.makeText(this, "Profile deleted successfully", Toast.LENGTH_SHORT).show();
