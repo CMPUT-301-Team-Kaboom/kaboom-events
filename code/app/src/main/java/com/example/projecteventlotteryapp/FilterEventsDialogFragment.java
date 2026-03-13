@@ -190,23 +190,6 @@ public class FilterEventsDialogFragment extends DialogFragment {
         });
     }
 
-//    private boolean validateDates( LocalDate regStart, LocalDate regEnd,LocalDate drawDate) {
-//        boolean isValid = true;
-//
-//        if (regStart != null && regEnd != null && !regEnd.isAfter(regStart)) {
-//            filterRegEnd.setError("Must be after start date");
-//            isValid = false;
-//        }
-//
-//        if (drawDate != null && regEnd != null && !drawDate.isAfter(regEnd)) {
-//            filterDrawDate.setError("Must be after registration end date");
-//            isValid = false;
-//        }
-//
-//        return isValid;
-//    }
-
-
     private String getTextOrNull(EditText editText) {
         String text = editText.getText().toString().trim();
         if (text.isEmpty()) {
