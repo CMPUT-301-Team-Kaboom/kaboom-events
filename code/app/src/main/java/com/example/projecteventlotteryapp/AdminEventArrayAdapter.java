@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class AdminEventArrayAdapter extends ArrayAdapter<Event> {
     private ArrayList<Event> events;
     private Context context;
-    private OnDeleteClickListener deleteListener;
+    OnDeleteClickListener deleteListener;
 
     public interface OnDeleteClickListener {
         void onDeleteClick(Event event);
