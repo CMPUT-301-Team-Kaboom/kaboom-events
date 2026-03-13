@@ -34,7 +34,7 @@ import java.util.Map;
  */
 public class EntrantSettingsActivity extends AppCompatActivity {
 
-    private FirebaseFirestore db;
+    private FirebaseDB db;
     private String deviceID;
 
     private EditText nameEditText;
@@ -57,7 +57,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_entrant);
 
         // Initialize Firebase Firestore
-        db = FirebaseFirestore.getInstance();
+        db = new FirebaseDB(FirebaseFirestore.getInstance());
 
         // Get the device ID
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -86,11 +86,8 @@ public class EntrantSettingsActivity extends AppCompatActivity {
      * the user to create one.
      */
     private void loadProfileFromFirestore() {
-        //get profile from firestore
-        DocumentReference userRef = db.collection("entrants").document(deviceID);
-
         //check if profile exists
-        userRef.get().addOnSuccessListener(documentSnapshot -> {
+        db.loadUserProfile(deviceID, Role.ENTRANT).addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 String name = documentSnapshot.getString("name");
                 String email = documentSnapshot.getString("email");
@@ -118,7 +115,6 @@ public class EntrantSettingsActivity extends AppCompatActivity {
      * Updates the corresponding Firestore document when the Save button is pressed.
      */
     private void updateProfileInFirestore() {
-        // TODO: decouple DB operation
         //get values from edit text
        String name = nameEditText.getText().toString().trim();
        String email = emailEditText.getText().toString().trim();
@@ -129,9 +125,6 @@ public class EntrantSettingsActivity extends AppCompatActivity {
            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
            return;
        }
-        //update profile in firestore
-       DocumentReference ref = db.collection("entrants").document(deviceID);
-
 
        //create a map of the fields to update
         Map<String, Object> updates = new HashMap<>();
@@ -140,7 +133,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         updates.put("phone", phone);
 
         //update the profile
-        ref.update(updates).addOnSuccessListener(unused ->
+        db.updateUserProfile(deviceID, updates, Role.ENTRANT).addOnSuccessListener(unused ->
                 Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show()
         ).addOnFailureListener(e ->{
             Log.e("PROFILE", "Failed to update profile", e);
@@ -150,11 +143,9 @@ public class EntrantSettingsActivity extends AppCompatActivity {
     }
 
     private void deleteProfileFromFirestore() {
-        DocumentReference userRef = db.collection("entrants").document(deviceID);
         // TODO: Delete profile from everywhere in database (inside waitlists etc.)
-        // TODO: decouple DB operation
 
-        userRef.delete().addOnSuccessListener(unused -> {
+        db.deleteUserProfile(deviceID, Role.ENTRANT).addOnSuccessListener(unused -> {
             Toast.makeText(this, "Profile deleted successfully", Toast.LENGTH_SHORT).show();
 
             //clear text fields
