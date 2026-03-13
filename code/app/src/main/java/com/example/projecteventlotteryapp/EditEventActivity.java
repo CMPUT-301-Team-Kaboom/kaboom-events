@@ -175,7 +175,7 @@ public class EditEventActivity extends AppCompatActivity {
         event.put("registrationStartDate", FirestoreUtils.localDateToTimestamp(regStart, zoneId));
         event.put("registrationEndDate", FirestoreUtils.localDateToTimestamp(regEnd, zoneId));
         event.put("drawDate", FirestoreUtils.localDateTimeToTimestamp(drawDateTime, zoneId));
-        event.put("entrantLimit", entrantLimit);
+        event.put("entrantsLimit", entrantLimit);
         event.put("waitlistLimit", waitlistLimit);
         //event.put("location", location);
         event.put("description", description);
