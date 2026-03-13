@@ -129,6 +129,11 @@ public class EventsListFragment extends Fragment {
 
         // listener for a ListView event items
         eventsListView.setOnItemClickListener((parent, view1, position, id) -> {
+            // don't allow clicking for empty event list
+            if (position < 0 || position >= eventsArrayList.size()) {
+                return;
+            }
+
             Event selectedEvent = eventsArrayList.get(position);
 
             Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
@@ -149,6 +154,19 @@ public class EventsListFragment extends Fragment {
             for entrant/organizer, and change so that organizer does a query on events instead of
             fetching all events and filtering by looking at the organizerRef for each.
     */
+
+    /**
+     * Fetches events from the database according to user role.
+     *
+     * Code Citation:
+     *     [1] The following code is adapted from...
+     *         Author: Alex Mamo https://stackoverflow.com/users/5246885/alex-mamo
+     *         Title: "Check if Firestore query is empty"
+     *         Answer: https://stackoverflow.com/a/56847476
+     *         Date: 2019-07-02
+     *         Retrieved: 2026-03-12
+     *         License: CC-BY-SA 4.0
+     */
     private void getEventsForRole() {
         Query query = eventsRef;
 
@@ -162,6 +180,13 @@ public class EventsListFragment extends Fragment {
         // get events
         query.get().addOnSuccessListener(queryDocumentSnapshots -> {
             eventsArrayList.clear();
+
+            // [1] see code citation
+            // try to handle empty query
+            if (queryDocumentSnapshots.isEmpty()) {
+                eventsArrayAdapter.notifyDataSetChanged();
+                return;
+            }
 
             for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
                 Event event = eventUtils.fetchEventFromSnapshot(snapshot);
@@ -224,17 +249,25 @@ public class EventsListFragment extends Fragment {
     /**
      * Perform the filtering of events fetched from the database.
      *
-     * TODO: filter based on entrant status and chosen tags
+     * Code Citation:
+     *     [1] The following code is adapted from...
+     *         Title: "Perform simple and compound queries in Cloud Firestore"
+     *         Source: https://firebase.google.com/docs/firestore/query-data/
+     *         Retrieved: 2026-03-11
+     *
+     *     [2] The following code is adapted from...
+     *         Author: Alex Mamo https://stackoverflow.com/users/5246885/alex-mamo
+     *         Title: "Check if Firestore query is empty"
+     *         Answer: https://stackoverflow.com/a/56847476
+     *         Date: 2019-07-02
+     *         Retrieved: 2026-03-12
+     *         License: CC-BY-SA 4.0
+     *
      */
-    /*
-    The following code is adapted from...
-    Title: "Perform simple and compound queries in Cloud Firestore"
-    Source: https://firebase.google.com/docs/firestore/query-data/
-    Retrieved: 2026-03-11
-    */
     private void getFilteredEvents() {
         Query query = eventsRef;
 
+        // [1] see code citation
         // filter by role
         if (globalUser.getRole() == Role.ORGANIZER) {
             Log.d("EventsListFragment", "filter organizer: " + globalUser.getUserId());
@@ -249,12 +282,6 @@ public class EventsListFragment extends Fragment {
             query = query.whereEqualTo("name", filterName);
         }
 
-        /*
-        todo: status not sure how this works yet
-        if (filterStatus != null) {
-            query = query.whereEqualTo("name", filterStatus);
-        }
-        */
         query = filterByEnrollmentStatus(query, filterStatus);
 
         // filter by tags
@@ -277,12 +304,20 @@ public class EventsListFragment extends Fragment {
         // do filtered query
         query.get().addOnSuccessListener(queryDocumentSnapshots -> {
             eventsArrayList.clear();
+
+            // [2] see code citation
+            // try to handle empty query
+            if (queryDocumentSnapshots.isEmpty()) {
+                eventsArrayAdapter.notifyDataSetChanged();
+                return;
+            }
+
             for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
                 Event event = eventUtils.fetchEventFromSnapshot(snapshot);
                     // filter by registration date range
                     if (filterRegStart != null && filterRegEnd != null) {
                         if (event.getRegistrationEndDate().isBefore(filterRegStart) || event.getRegistrationStartDate().isAfter(filterRegEnd)) {
-                            return;  // not in range
+                            continue;  // not in range
                         }
                     }
 
@@ -290,7 +325,7 @@ public class EventsListFragment extends Fragment {
                     if (filterDrawDate != null) {
                         LocalDate eventDate = event.getDrawDate().toLocalDate();
                         if (!eventDate.equals(filterDrawDate)) {
-                            return;  // not on draw date
+                            continue;  // not on draw date
                         }
                     }
 
@@ -312,14 +347,15 @@ public class EventsListFragment extends Fragment {
 
     /**
      * Helper to convert LocalDate to Timestamp for the end of that date for database comparison.
+     *
+     * Code Citation:
+     *          The following code is adapted from Google AI Overview...
+     *          Query: "java convert local date to timestamp firebase"
+     *          Retrieved: 2026-03-12
+     *
      * @param localDate to convert
      * @return Timestamp result
      */
-    /*
-    The following code is adapted from Google AI Overview...
-    Query: "java convert local date to timestamp firebase"
-    Retrieved: 2026-03-12
-    */
     public static Timestamp convertEndLocalDateToTimestamp(LocalDate localDate) {
         // convert LocalDate to ZonedDateTime using the system's default time zone at midnight
         ZonedDateTime zonedDateTime = localDate
@@ -335,6 +371,11 @@ public class EventsListFragment extends Fragment {
 
     /**
      * Helper to convert LocalDate to Timestamp for the start of that date for database comparison.
+     *
+     * Code Citation:
+     *          The following code is adapted from Google AI Overview...
+     *          Query: "java convert local date to timestamp firebase"
+     *          Retrieved: 2026-03-12
      *
      * @param localDate to convert
      * @return Timestamp result
