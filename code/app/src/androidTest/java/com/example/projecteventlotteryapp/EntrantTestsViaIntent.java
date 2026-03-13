@@ -1,11 +1,15 @@
 // reference: https://developer.android.com/training/testing/espresso/intents
 package com.example.projecteventlotteryapp;
 
+import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.intent.Intents.intended;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtraWithKey;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.anything;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
@@ -49,6 +53,22 @@ public class EntrantTestsViaIntent {
         try (ActivityScenario<EventsListActivity> scenario = ActivityScenario.launch(EventsListActivity.class)) {
             onView(withId(R.id.profile)).perform(click());
             intended(hasComponent(EntrantSettingsActivity.class.getName()));
+        }
+    }
+
+    @Test
+    public void testNavigateToDetailedEvent() {
+        try (ActivityScenario<EventsListActivity> scenario = ActivityScenario.launch(EventsListActivity.class)) {
+
+            onData(anything())
+                    .inAdapterView(withId(R.id.lv_events_list))
+                    .atPosition(0)
+                    .perform(click());
+
+            intended(allOf(
+                    hasComponent(EventDetailsActivity.class.getName()),
+                    hasExtraWithKey("eventId")
+            ));
         }
     }
 }
