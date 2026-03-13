@@ -17,6 +17,7 @@ import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utility class to provide database operations on the Event class
@@ -398,5 +399,60 @@ public class EventUtils {
                 .addOnFailureListener(e -> {
                     Log.w("Firestore", "Error adding document", e);
                 });
+    }
+
+    /**
+     * Takes an existing event and updates its fields in the database
+     *
+     * <p>The method assumes that the event already exists, it populates everything except for:
+     * location
+     * qr-code
+     * poster
+     * waitlist
+     * invited
+     * enrolled
+     * declined</p>
+     *
+     * @param event An Event that contains all the updates to put into the database
+     * @param organizerId User Id of the organizer who is editting the event
+     */
+    public void updateEventInDB(Event event, String organizerId){
+        Map<String, Object> eventData = new HashMap<>();
+
+        DocumentReference organizerRef =
+                db.collection("organizers").document(organizerId);
+        eventData.put("organizer", organizerRef);
+        eventData.put("name", event.getName());
+
+        ZoneId zoneId = ZoneId.systemDefault();
+        // TODO: update to grab system zoneid
+        eventData.put(
+                "drawDate",
+                FirestoreUtils.localDateTimeToTimestamp(
+                        event.getDrawDate(),
+                        zoneId
+                )
+        );
+        eventData.put(
+                "registrationEndDate",
+                FirestoreUtils.localDateToTimestamp(
+                        event.getRegistrationEndDate(),
+                        zoneId
+                )
+        );
+        eventData.put(
+                "registrationStartDate",
+                FirestoreUtils.localDateToTimestamp(
+                        event.getRegistrationStartDate(),
+                        zoneId
+                )
+        );
+        eventData.put("entrantsLimit", event.getAttendeesLimit());
+        eventData.put("description", event.getDescription());
+        eventData.put("geoLocationEnabled", event.isGeolocationEnabled());
+        eventData.put("tags", event.getTagsList());
+        eventData.put("waitlistLimit", event.getWaitlistLimit());
+
+        db.collection("events").document(event.getEventId()).update(eventData);
     }
 }

@@ -275,9 +275,10 @@
                 style="@style/RoundedButton"
                 android:layout_width="0dp"
                 android:layout_height="35dp"
-                android:layout_weight="1"
                 android:layout_margin="3dp"
+                android:layout_weight="1"
                 android:background="@drawable/rounded_button_transparent"
+                android:padding="2dp"
                 android:text="Declined"
                 android:textSize="12sp"
                 app:backgroundTint="@color/white" />
