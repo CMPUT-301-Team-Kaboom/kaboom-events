@@ -100,6 +100,7 @@ public class DatabaseTestsViaUI {
                 .addOnFailureListener(e -> latch.countDown());
 
         latch.await(5, TimeUnit.SECONDS);
+        Thread.sleep(3000);
         assertTrue(userExists[0]);
         createdEntrantIds.add(newEntrantId[0]);
     }
@@ -129,6 +130,7 @@ public class DatabaseTestsViaUI {
                 .addOnFailureListener(e -> latch.countDown());
 
         latch.await(5, TimeUnit.SECONDS);
+        Thread.sleep(3000);
         assertTrue(userExists[0]);
         createdOrganizerIds.add(newOrganizerId[0]);
     }
@@ -158,6 +160,7 @@ public class DatabaseTestsViaUI {
                 .addOnFailureListener(e -> latch.countDown());
 
         latch.await(5, TimeUnit.SECONDS);
+        Thread.sleep(3000);
         assertTrue(userExists[0]);
         createdAdminIds.add(newAdminId[0]);
     }
@@ -196,6 +199,7 @@ public class DatabaseTestsViaUI {
                 .addOnFailureListener(e -> verifyLatch.countDown());
 
         verifyLatch.await(5, TimeUnit.SECONDS);
+        Thread.sleep(3000);
         assertTrue(stillExists[0]);
     }
 }
