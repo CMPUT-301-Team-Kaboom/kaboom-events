@@ -59,50 +59,46 @@
     Query: "android studio select none, one, or many buttons and change colour and do something for selected buttons java"
     Retrieved: 2026-03-11
     -->
-    <Button
-        style="@style/SelectAllButton"
+    <ToggleButton
+        style="@style/ToggleRoundedButton"
         android:id="@+id/mbtn_filter_enrolled"
-        android:text="Enrolled"
-        android:backgroundTint="@color/primaryBackground"
+        android:textOn="Enrolled"
+        android:textOff="Enrolled"
+        android:background="@drawable/button_background_selector"
         app:layout_constraintTop_toBottomOf="@id/tv_filter_enrollment_status_header"
         app:layout_constraintStart_toStartOf="@id/et_filter_name"
         app:layout_constraintEnd_toStartOf="@id/mbtn_filter_declined" />
 
-    <Button
-        style="@style/SelectAllButton"
+    <ToggleButton
+        style="@style/ToggleRoundedButton"
         android:id="@+id/mbtn_filter_declined"
-        android:text="Declined"
-        android:backgroundTint="@color/primaryBackground"
+        android:textOn="Declined"
+        android:textOff="Declined"
+        android:background="@drawable/button_background_selector"
         app:layout_constraintTop_toTopOf="@id/mbtn_filter_enrolled"
         app:layout_constraintStart_toEndOf="@id/mbtn_filter_enrolled"
         app:layout_constraintEnd_toEndOf="@id/mbtn_filter_invited" />
 
-    <Button
-        style="@style/SelectAllButton"
+    <ToggleButton
+        style="@style/ToggleRoundedButton"
         android:id="@+id/mbtn_filter_invited"
-        android:text="Invited"
-        android:backgroundTint="@color/primaryBackground"
+        android:textOn="Invited"
+        android:textOff="Invited"
+        android:background="@drawable/button_background_selector"
         app:layout_constraintTop_toTopOf="@id/mbtn_filter_enrolled"
         app:layout_constraintStart_toEndOf="@id/mbtn_filter_declined"
         app:layout_constraintEnd_toEndOf="@id/et_filter_name"  />
 
-    <Button
-        style="@style/SelectAllButton"
+    <ToggleButton
         android:id="@+id/mbtn_filter_on_wait"
-        android:text="On Waitlist"
-        android:backgroundTint="@color/primaryBackground"
-        app:layout_constraintTop_toBottomOf="@id/mbtn_filter_enrolled"
+        style="@style/ToggleRoundedButton"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/button_background_selector"
+        android:textOff="On Waitlist"
+        android:textOn="On Waitlist"
+        app:layout_constraintEnd_toEndOf="@+id/mbtn_filter_invited"
         app:layout_constraintStart_toStartOf="@id/mbtn_filter_enrolled"
-        app:layout_constraintEnd_toStartOf="@id/mbtn_filter_not_on_wait" />
-
-    <Button
-        style="@style/SelectAllButton"
-        android:id="@+id/mbtn_filter_not_on_wait"
-        android:text="Not On Waitlist"
-        android:backgroundTint="@color/primaryBackground"
-        app:layout_constraintTop_toBottomOf="@id/mbtn_filter_enrolled"
-        app:layout_constraintStart_toEndOf="@id/mbtn_filter_on_wait"
-        app:layout_constraintEnd_toEndOf="@id/et_filter_name" />
+        app:layout_constraintTop_toBottomOf="@id/mbtn_filter_enrolled" />
 
     <TextView
         style="@style/HeaderRoundedEditTextStyle"

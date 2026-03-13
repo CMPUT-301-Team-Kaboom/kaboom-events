@@ -28,6 +28,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -254,6 +255,7 @@ public class EventsListFragment extends Fragment {
             query = query.whereEqualTo("name", filterStatus);
         }
         */
+        query = filterByEnrollmentStatus(query, filterStatus);
 
         // filter by tags
         if (filterTags != null && !filterTags.isEmpty()) {
@@ -347,5 +349,28 @@ public class EventsListFragment extends Fragment {
 
         // create a Firebase Timestamp from Date
         return new Timestamp(date);
+    }
+
+    /**
+     * Edits the Query based on enrollment status
+     *
+     * @param query
+     * @param enrollmentStatus
+     * @return
+     */
+    private Query filterByEnrollmentStatus(Query query, String enrollmentStatus) {
+        if (enrollmentStatus == null) {
+            return query;   // return unchanged query
+        }
+        String userId = globalUser.getUserId();
+
+        List<String> enrollmentTypes = List.of("waitlist", "invited", "declined", "enrolled");
+
+        for (String enrollmentType : enrollmentTypes) {
+            if (enrollmentStatus.equals(enrollmentType)) {
+                query = query.whereArrayContains(enrollmentType, userId);
+            }
+        }
+        return query;
     }
 }
