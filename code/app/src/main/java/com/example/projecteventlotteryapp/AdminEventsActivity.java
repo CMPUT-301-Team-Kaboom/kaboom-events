@@ -1,5 +1,6 @@
 package com.example.projecteventlotteryapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.ImageButton;
@@ -65,6 +66,14 @@ public class AdminEventsActivity extends AppCompatActivity {
                     .addOnFailureListener(e -> Log.e("AdminEvents", "Error deleting event", e));
         });
         eventListView.setAdapter(eventAdapter);
+
+        // Set click listener to navigate to event details
+        eventListView.setOnItemClickListener((parent, view, position, id) -> {
+            Event selectedEvent = eventDataList.get(position);
+            Intent intent = new Intent(AdminEventsActivity.this, EventDetailsActivity.class);
+            intent.putExtra("eventId", selectedEvent.getEventId());
+            startActivity(intent);
+        });
 
         loadEvents();
     }
