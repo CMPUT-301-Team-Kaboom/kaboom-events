@@ -52,8 +52,8 @@ public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.
 
                 posterImageHandler.deletePoster(image);
 
-                imageList.remove(position);
-                notifyItemRemoved(position);
+                imageList.remove(pos);
+                notifyItemRemoved(pos);
             }
         });
     }
