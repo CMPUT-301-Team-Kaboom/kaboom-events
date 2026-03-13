@@ -6,6 +6,11 @@ import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+/**
+ * Lottery criteria guide for the user.
+ * Displays rules and criteria for the lottery.
+ * @author Kevin
+ */
 public class CriteriaAppGuideActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {

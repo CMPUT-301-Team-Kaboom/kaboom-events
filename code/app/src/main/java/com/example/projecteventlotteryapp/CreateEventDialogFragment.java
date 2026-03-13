@@ -17,10 +17,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.firebase.Firebase;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firestore.v1.FirestoreGrpc;
+
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -30,16 +33,28 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
- * A simple {@link DialogFragment} subclass.
- * Use the {@link CreateEventDialogFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * A simple {@link DialogFragment} subclass organizers use to create a new Event.
+ *
+ * <p>This DialogFragment class is used by organizers to create a new Event and store it in
+ * the database. It is invoked from the Organizers main menu</p>
  */
 public class CreateEventDialogFragment extends DialogFragment {
 
+    private EventUtils eventUtils;
+    /**
+     * Entry point of the DialogFragment
+     *
+     * <p>Sets up UI, handles input validation and creates a new Event db object on success </p>
+     * @param savedInstanceState The last saved instance state of the Fragment,
+     * or null if this is a freshly created Fragment.
+     *
+     * @return Dialog
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         View view = getLayoutInflater().inflate(R.layout.fragment_create_event, null);
+        eventUtils = new EventUtils(FirebaseFirestore.getInstance());
 
         // grab references to editTexts and confirm button
         EditText editName = view.findViewById(R.id.et_event_edit_name);
@@ -103,13 +118,19 @@ public class CreateEventDialogFragment extends DialogFragment {
             }
 
             Event event = new Event(name, regStart, regEnd, drawDateTime, entrantLimit);
-            createNewEventDbItem(event);
+            MyApp app = (MyApp) requireActivity().getApplication();
+            eventUtils.createNewEventDbItem(event, app.getCurrentUser().getUserId());
             dialog.dismiss();
         });
 
         return dialog;
     }
 
+    /**
+     * Helper function to validate if an EditText field is not empty
+     * @param field the EditText
+     * @return boolean
+     */
     private boolean fieldNotEmpty(EditText field) {
         String value = field.getText().toString().trim();
         if (value.isEmpty()) {
@@ -119,6 +140,10 @@ public class CreateEventDialogFragment extends DialogFragment {
         return true;
     }
 
+    /**
+     * Attaches a date picker to an EditText to ease date selection
+     * @param editText the editText
+     */
     private void attachDatePicker(EditText editText) {
         editText.setFocusable(false);
 
@@ -139,6 +164,10 @@ public class CreateEventDialogFragment extends DialogFragment {
         });
     }
 
+    /**
+     * Attaches a time picker to an EditText to ease date selection
+     * @param editText the editText
+     */
     private void attachTimePicker(EditText editText) {
         editText.setFocusable(false);
 
@@ -157,65 +186,5 @@ public class CreateEventDialogFragment extends DialogFragment {
             picker.show();
         });
 
-    }
-
-    private void createNewEventDbItem(Event event) {
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-
-        // Inputted values
-        HashMap<String, Object> eventData = new HashMap<>();
-
-        MyApp app = (MyApp) requireActivity().getApplication();
-        DocumentReference organizerRef =
-                db.collection("organizers").document(app.getCurrentUser().getUserId());
-        eventData.put("organizer", organizerRef);
-        eventData.put("name", event.getName());
-
-
-        ZoneId zoneId = ZoneId.systemDefault();
-        // TODO: update to grab system zoneid
-        eventData.put(
-                "drawDate",
-                FirestoreUtils.localDateTimeToTimestamp(
-                        event.getDrawDate(),
-                        zoneId
-                )
-        );
-        eventData.put(
-                "registrationEndDate",
-                FirestoreUtils.localDateToTimestamp(
-                        event.getRegistrationEndDate(),
-                        zoneId
-                )
-        );
-        eventData.put(
-                "registrationStartDate",
-                FirestoreUtils.localDateToTimestamp(
-                        event.getRegistrationStartDate(),
-                        zoneId
-                )
-        );
-        eventData.put("entrantsLimit", event.getAttendeesLimit());
-
-        // setting null values
-        eventData.put("description", null);
-        eventData.put("geoLocationEnabled", false);
-        eventData.put("location", null);
-        eventData.put("qrCodePath", null);
-        eventData.put("tags", null);
-        eventData.put("waitlistLimit", -1);  // -1 indicates no limit
-        eventData.put("waitlist", new ArrayList<>());
-        eventData.put("enrolled", new ArrayList<>());
-        eventData.put("invited", new ArrayList<>());
-        eventData.put("declined", new ArrayList<>());
-
-        db.collection("events")
-            .add(eventData)
-            .addOnSuccessListener(documentReference -> {
-                Log.d("Firestore", "Document added to events with id: " + documentReference.getId());
-            })
-            .addOnFailureListener(e -> {
-                Log.w("Firestore", "Error adding document", e);
-            });
     }
 }

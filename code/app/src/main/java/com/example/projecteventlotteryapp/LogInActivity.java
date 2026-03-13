@@ -14,6 +14,19 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.firestore.FirebaseFirestore;
 
+/**
+ * Activity responsible for authenticating users based on their device's unique ID
+ *
+ * This activity allows users to toggle between different roles (Entrant, Organizer, Admin)
+ * and log in based on the selected role.
+ * It verifies if the device's ID exists within the corresponding Firestore collection before
+ * granting access to specific areas of the application.
+ *
+ * Upon successful sign up, the user's information is written to the database, and they are
+ * then directed to the corresponding activity
+ *
+ * Upon successful log in, the user is directed to the corresponding activity to their role.
+ */
 public class LogInActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String deviceID;
@@ -45,6 +58,10 @@ public class LogInActivity extends AppCompatActivity {
         btnLogIn.setOnClickListener(v -> checkExistingUser());
     }
 
+    /**
+     * Configures the mutually exclusive toggle logic for the role selection buttons.
+     * Ensures that only one role (Entrant, Organizer, or Admin) can be selected at a time.
+     */
     private void setupToggleLogic() {
         btnEntrant.setOnCheckedChangeListener((view, isChecked) -> {
             if (isChecked) {
@@ -68,6 +85,11 @@ public class LogInActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     *
+     * Retrieves the selected role from the toggle buttons
+     * @return The selected role (Entrant, Organizer, or Admin) or null if no role is selected.
+     */
     private Role getSelectedRole() {
         if (btnEntrant.isChecked()) return Role.ENTRANT;
         if (btnOrganizer.isChecked()) return Role.ORGANIZER;
@@ -75,6 +97,11 @@ public class LogInActivity extends AppCompatActivity {
         return null;
     }
 
+    /**
+     * Generates the Firestore collection name based on the selected role.
+     * @param role
+     * @return The corresponding Firestore collection name as a string
+     */
     private String getCollectionName(Role role) {
         switch (role) {
             case ENTRANT:
@@ -88,6 +115,11 @@ public class LogInActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Checks if a user with the device's ID exists in the Firestore database.
+     * If the user exists, they are directed to the corresponding activity.
+     * If the user does not exist, a toast message is displayed indicating that they need to sign up.
+     */
     private void checkExistingUser() {
         Role role = getSelectedRole();
 
