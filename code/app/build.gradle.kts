@@ -74,4 +74,7 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
+    
+    // espresso intents
+    androidTestImplementation("androidx.test.espresso:espresso-intents:3.6.1")
 }
