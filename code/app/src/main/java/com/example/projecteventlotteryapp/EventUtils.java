@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -111,7 +112,14 @@ public class EventUtils {
 
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
-        return eventDoc.update(getListField(listType), FieldValue.arrayUnion(entrant.getUserId()));
+        HashMap<String, Object> updates = new HashMap<>();
+        String listField = getListField(listType);
+        updates.put(listField, FieldValue.arrayUnion(entrant.getUserId()));
+
+        if (listField.equals("waitlist")) {
+            updates.put("waitlistSize", FieldValue.increment(1));
+        }
+        return eventDoc.update(updates);
     }
 
     /**
@@ -126,7 +134,14 @@ public class EventUtils {
     public Task<Void> removeFromEntrantList(EntrantListType listType, User entrant, String eventId) {
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
-        return eventDoc.update(getListField(listType), FieldValue.arrayRemove(entrant.getUserId()));
+        HashMap<String, Object> updates = new HashMap<>();
+        String listField = getListField(listType);
+        updates.put(listField, FieldValue.arrayRemove(entrant.getUserId()));
+        if (listField.equals("waitlist")) {
+            updates.put("waitlistSize", FieldValue.increment(-1));
+        }
+
+        return eventDoc.update(updates);
     }
 
     /**
@@ -175,6 +190,7 @@ public class EventUtils {
         // get number fields
         int attendeesLimit = fetchInt(snapshot, "entrantsLimit");
         int waitlistLimit = fetchInt(snapshot, "waitlistLimit");
+        int waitlistSize = fetchInt(snapshot, "waitlistSize");
 
         // get boolean field
         boolean geolocationEnabled = fetchBoolean(snapshot, "geoLocationEnabled");
@@ -199,6 +215,7 @@ public class EventUtils {
         );
 
         event.setDescription(description);
+        event.setWaitlistSize(waitlistSize);
         // event.setLocation(location);
         event.setGeolocationEnabled(geolocationEnabled);
         event.setTagsList(tagsList);
@@ -362,6 +379,7 @@ public class EventUtils {
         eventData.put("entrantsLimit", event.getAttendeesLimit());
 
         // setting null values
+        eventData.put("waitlistSize", 0);
         eventData.put("description", null);
         eventData.put("geoLocationEnabled", false);
         eventData.put("location", null);
