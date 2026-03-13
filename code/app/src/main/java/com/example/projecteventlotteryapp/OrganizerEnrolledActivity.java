@@ -16,22 +16,20 @@ import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
-/**
- * Provides an organizer with the waitlist of entrants that have entered to join their event
- */
-public class OrganizerWaitlistActivity extends AppCompatActivity {
+public class OrganizerEnrolledActivity extends AppCompatActivity {
     private String eventId;
     private OrganizerEntrantListAdapter adapter;
-    private ListView waitlistView;
+    private ListView enrolledListView;
     private ImageButton backBtn;
-    private ArrayList<String> waitlist;
+    private ArrayList<String> enrolled;
     private FirebaseFirestore db;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_organizer_waitlist);
+        setContentView(R.layout.activity_organizer_enrolled);
 
-        waitlistView = findViewById(R.id.lv_organizer_waitlist_list);
+        enrolledListView = findViewById(R.id.lv_organizer_enrolled_list);
         Intent intent  = getIntent();
         eventId = intent.getStringExtra("eventID");
 
@@ -42,20 +40,20 @@ public class OrganizerWaitlistActivity extends AppCompatActivity {
             if (task.isSuccessful()){
                 DocumentSnapshot doc = task.getResult();
                 if(doc.exists()){
-                    waitlist = (ArrayList<String>) doc.get("waitlist");
+                    enrolled = (ArrayList<String>) doc.get("enrolled");
 
-                    adapter = new OrganizerEntrantListAdapter(this, waitlist);
-                    waitlistView.setAdapter(adapter);
+                    adapter = new OrganizerEntrantListAdapter(this, enrolled);
+                    enrolledListView.setAdapter(adapter);
 
-                    TextView waitlistSize = findViewById(R.id.tv_organizer_waitlist_size);
-                    waitlistSize.setText(waitlist.size() + "/" + doc.get("waitlistLimit"));
+                    TextView enrolledSize = findViewById(R.id.tv_organizer_enrolled_size);
+                    enrolledSize.setText(enrolled.size() + "/" + doc.get("entrantsLimit"));
                 }
             } else {
-                Log.d("OrganizerWaitlist", "Document retrieval failed", task.getException());
+                Log.d("OrganizerEnrolled", "Document retrieval failed", task.getException());
             }
         });
 
-        backBtn = findViewById(R.id.btn_organizer_waitlist_back);
+        backBtn = findViewById(R.id.btn_organizer_enrolled_back);
         backBtn.setOnClickListener(v -> finish());
     }
 }
