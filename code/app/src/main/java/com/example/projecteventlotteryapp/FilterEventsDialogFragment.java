@@ -57,12 +57,14 @@ public class FilterEventsDialogFragment extends DialogFragment {
 
     private FilterEventsListener listener;
     private LinearLayout tagContainerLinearLayout;
+    private ArrayList<String> tags;
 
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
         View view = getLayoutInflater().inflate(R.layout.fragment_filter_events, null);
+        tags = new ArrayList<String>();
 
         // grab references to EditTexts and Buttons
         EditText filterName = view.findViewById(R.id.et_filter_name);
@@ -96,7 +98,6 @@ public class FilterEventsDialogFragment extends DialogFragment {
             }
             // TODO: implement status
             String status = null;
-            ArrayList<String> tags = null;
 
             // TODO: implement tags
 
@@ -204,6 +205,7 @@ public class FilterEventsDialogFragment extends DialogFragment {
         });
     }
 
+
     /**
      * Adds a new textbox to the fragment_filter_events tags linear layout
      * code adapted from AI prompt:
@@ -220,6 +222,7 @@ public class FilterEventsDialogFragment extends DialogFragment {
         TextView newBox = new TextView(requireContext(), null, 0, R.style.TagBoxTextView);
         newBox.setText(tagText);
 
+        tags.add(tagText);
         int insertIndex = tagContainerLinearLayout.getChildCount() - 1;
         tagContainerLinearLayout.addView(newBox, insertIndex);
     }
