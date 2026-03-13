@@ -27,7 +27,7 @@ import java.util.ArrayList;
  * (entrant) or a button to create an event (organizer). A list of events takes up most of the UI containing
  * either all events (entrant) or specific Events (organizer). </p>
  */
-public class EventsListActivity extends AppCompatActivity implements FilterEventsDialogFragment.FilterEventsListener {
+public class EventsListActivity extends AppCompatActivity implements FilterEventsDialogFragment.FilterEventsListener, CreateEventDialogFragment.OnEventCreatedListener {
     private Button organizerController;
     private TabLayout entrantController;
     private User globalUser;
@@ -175,4 +175,7 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
     public void clearFilters() {
         eventsListFragment.clearFilters();
     }
+
+    @Override
+    public void OnEventCreated() { eventsListFragment.refreshEventList(); }
 }
