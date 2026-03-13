@@ -63,6 +63,7 @@ public class FilterEventsDialogFragment extends DialogFragment {
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        listener.clearFilters();    // band aid fix for subsequent filter button presses leaving dirty values
         View view = getLayoutInflater().inflate(R.layout.fragment_filter_events, null);
         tags = new ArrayList<String>();
 
