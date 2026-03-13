@@ -383,6 +383,21 @@ public class EventUtils {
                 });
     }
 
+    /**
+     * Takes an existing event and updates its fields in the database
+     *
+     * <p>The method assumes that the event already exists, it populates everything except for:
+     * location
+     * qr-code
+     * poster
+     * waitlist
+     * invited
+     * enrolled
+     * declined</p>
+     *
+     * @param event An Event that contains all the updates to put into the database
+     * @param organizerId User Id of the organizer who is editting the event
+     */
     public void updateEventInDB(Event event, String organizerId){
         Map<String, Object> eventData = new HashMap<>();
 
