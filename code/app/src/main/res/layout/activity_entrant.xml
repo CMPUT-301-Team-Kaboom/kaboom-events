@@ -5,7 +5,20 @@
     android:layout_height="match_parent"
     xmlns:tools="http://schemas.android.com/tools"
     android:background="@color/primaryBackground"
-    tools:context=".EntrantSettingsActivity">
+    tools:context=".EntrantSettingsActivity"
+    android:paddingTop="32dp">
+
+    <!-- Back Button -->
+    <ImageButton
+        android:id="@+id/btn_entrant_back"
+        android:layout_width="51dp"
+        android:layout_height="48dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        android:background="@null"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:srcCompat="@drawable/left_arrow" />
 
     <TextView
         android:id="@+id/tv_settings_title"

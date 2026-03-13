@@ -6,6 +6,7 @@ import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -69,6 +70,9 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         phoneEditText = findViewById(R.id.et_edit_phone);
         btnSave = findViewById(R.id.btn_save_profile);
         btnDelete = findViewById(R.id.btn_delete_profile);
+        ImageButton btnBack = findViewById(R.id.btn_entrant_back);
+
+        btnBack.setOnClickListener(v -> finish());
 
         MyApp app = (MyApp) getApplication();
         globalUser = app.getCurrentUser();
