@@ -111,7 +111,14 @@ public class EventUtils {
 
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
-        return eventDoc.update(getListField(listType), FieldValue.arrayUnion(entrant.getUserId()));
+        HashMap<String, Object> updates = new HashMap<>();
+        String listField = getListField(listType);
+        updates.put(listField, FieldValue.arrayUnion(entrant.getUserId()));
+
+        if (listField.equals("waitlist")) {
+            updates.put("waitlistSize", FieldValue.increment(1));
+        }
+        return eventDoc.update(updates);
     }
 
     /**
@@ -126,7 +133,14 @@ public class EventUtils {
     public Task<Void> removeFromEntrantList(EntrantListType listType, User entrant, String eventId) {
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
-        return eventDoc.update(getListField(listType), FieldValue.arrayRemove(entrant.getUserId()));
+        HashMap<String, Object> updates = new HashMap<>();
+        String listField = getListField(listType);
+        updates.put(listField, FieldValue.arrayRemove(entrant.getUserId()));
+        if (listField.equals("waitlist")) {
+            updates.put("waitlistSize", FieldValue.increment(-1));
+        }
+
+        return eventDoc.update(updates);
     }
 
     /**
@@ -155,25 +169,6 @@ public class EventUtils {
         });
     }
 
-    public Task<Integer> getWaitlistForEvent(String eventId) {
-        DocumentReference eventDoc = db.collection("events").document(eventId);
-
-        return eventDoc.get().continueWith(task -> {
-            if (!task.isSuccessful()) {
-                return 0;
-            }
-
-            DocumentSnapshot doc = task.getResult();
-            if (!doc.exists()) {
-                return 0;
-            }
-
-            List<String> waitlist = (List<String>) doc.get("waitlist");
-
-            return waitlist != null ? waitlist.size() : 0;
-        });
-    }
-
     /**
      * Creates an Event object from a Firestore document snapshot.
      *
@@ -194,6 +189,7 @@ public class EventUtils {
         // get number fields
         int attendeesLimit = fetchInt(snapshot, "entrantsLimit");
         int waitlistLimit = fetchInt(snapshot, "waitlistLimit");
+        int waitlistSize = fetchInt(snapshot, "waitlistSize");
 
         // get boolean field
         boolean geolocationEnabled = fetchBoolean(snapshot, "geoLocationEnabled");
@@ -218,6 +214,7 @@ public class EventUtils {
         );
 
         event.setDescription(description);
+        event.setWaitlistSize(waitlistSize);
         // event.setLocation(location);
         event.setGeolocationEnabled(geolocationEnabled);
         event.setTagsList(tagsList);
