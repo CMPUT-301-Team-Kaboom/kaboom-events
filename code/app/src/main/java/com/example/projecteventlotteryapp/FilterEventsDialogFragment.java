@@ -62,7 +62,7 @@ public class FilterEventsDialogFragment extends DialogFragment {
     private FilterEventsListener listener;
     private LinearLayout tagContainerLinearLayout;
     private ArrayList<String> tags;
-    private ToggleButton enrolledToggleButton, declinedToggleButton, invitedToggleButton, onWaitListToggleButton, notOnWaitListToggleButton;
+    private ToggleButton enrolledToggleButton, declinedToggleButton, invitedToggleButton, onWaitListToggleButton;
 
     @NonNull
     @Override
@@ -85,13 +85,11 @@ public class FilterEventsDialogFragment extends DialogFragment {
         declinedToggleButton = view.findViewById(R.id.mbtn_filter_declined);
         invitedToggleButton = view.findViewById(R.id.mbtn_filter_invited);
         onWaitListToggleButton = view.findViewById(R.id.mbtn_filter_on_wait);
-        notOnWaitListToggleButton = view.findViewById(R.id.mbtn_filter_not_on_wait);
         List<ToggleButton> toggleButtons = List.of(
                 enrolledToggleButton,
                 declinedToggleButton,
                 invitedToggleButton,
-                onWaitListToggleButton,
-                notOnWaitListToggleButton
+                onWaitListToggleButton
         );
 
         setupToggleButtons(toggleButtons);
@@ -222,7 +220,6 @@ public class FilterEventsDialogFragment extends DialogFragment {
         toggleMap.put(declinedToggleButton, "declined");
         toggleMap.put(invitedToggleButton, "invited");
         toggleMap.put(onWaitListToggleButton, "waitlist");
-        toggleMap.put(notOnWaitListToggleButton, "notOnWaitlist");
 
         for (Map.Entry<ToggleButton, String> entry : toggleMap.entrySet()) {
             if (entry.getKey().isChecked()) {

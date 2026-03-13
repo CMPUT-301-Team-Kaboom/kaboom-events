@@ -351,6 +351,13 @@ public class EventsListFragment extends Fragment {
         return new Timestamp(date);
     }
 
+    /**
+     * Edits the Query based on enrollment status
+     *
+     * @param query
+     * @param enrollmentStatus
+     * @return
+     */
     private Query filterByEnrollmentStatus(Query query, String enrollmentStatus) {
         if (enrollmentStatus == null) {
             return query;   // return unchanged query
