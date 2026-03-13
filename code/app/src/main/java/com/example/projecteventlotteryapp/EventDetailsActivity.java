@@ -275,13 +275,17 @@ public class EventDetailsActivity extends AppCompatActivity {
             if (doc.exists()){
                 DocumentReference posterRef = doc.getDocumentReference("poster");
 
-                posterRef.get().addOnSuccessListener(posterDoc -> {
-                    if (posterDoc.exists()){
-                        Glide.with(this).load(posterDoc.getString("url")).into(posterIV);
-                    } else {
-                        Glide.with(this).load(R.drawable.default_poster).into(posterIV);
-                    }
-                });
+                if (posterRef != null) {
+                    posterRef.get().addOnSuccessListener(posterDoc -> {
+                        if (posterDoc.exists()){
+                            Glide.with(this).load(posterDoc.getString("url")).into(posterIV);
+                        } else {
+                            Glide.with(this).load(R.drawable.default_poster).into(posterIV);
+                        }
+                    });
+                } else {
+                    Glide.with(this).load(R.drawable.default_poster).into(posterIV);
+                }
             }
         });
 

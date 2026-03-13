@@ -37,6 +37,7 @@ public class EditEventActivity extends AppCompatActivity {
     private EditText editEntrantLimit, editWaitlistLimit, editLocation, editDescription;
     private SwitchCompat switchGeolocation;
     private Button saveButton;
+    private ImageButton backButton;
     /////////////////////////////////////////////////////
     /// IMAGE UPLOAD VARIABLES
     ////////////////////////////////////////////////////
@@ -68,6 +69,11 @@ public class EditEventActivity extends AppCompatActivity {
         saveButton = findViewById(R.id.btn_event_edit_save);
         bannerEditButton = findViewById(R.id.btn_edit_event_edit_banner);
         editBanner = findViewById(R.id.iv_edit_banner);
+        backButton = findViewById(R.id.btn_edit_event_back);
+
+
+        // set up back button listner
+        backButton.setOnClickListener(v -> finish());
 
         // attach date and time pickers to their respective fields
         attachDatePicker(editRegStart);
