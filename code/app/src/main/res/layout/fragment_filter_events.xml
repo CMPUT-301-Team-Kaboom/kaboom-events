@@ -59,46 +59,53 @@
     Query: "android studio select none, one, or many buttons and change colour and do something for selected buttons java"
     Retrieved: 2026-03-11
     -->
-    <Button
-        style="@style/SelectAllButton"
+    <ToggleButton
+        style="@style/ToggleRoundedButton"
         android:id="@+id/mbtn_filter_enrolled"
-        android:text="Enrolled"
+        android:textOn="Enrolled"
+        android:textOff="Enrolled"
         android:backgroundTint="@color/primaryBackground"
         app:layout_constraintTop_toBottomOf="@id/tv_filter_enrollment_status_header"
         app:layout_constraintStart_toStartOf="@id/et_filter_name"
         app:layout_constraintEnd_toStartOf="@id/mbtn_filter_declined" />
 
-    <Button
-        style="@style/SelectAllButton"
+    <ToggleButton
+        style="@style/ToggleRoundedButton"
         android:id="@+id/mbtn_filter_declined"
-        android:text="Declined"
+        android:textOn="Declined"
+        android:textOff="Declined"
         android:backgroundTint="@color/primaryBackground"
         app:layout_constraintTop_toTopOf="@id/mbtn_filter_enrolled"
         app:layout_constraintStart_toEndOf="@id/mbtn_filter_enrolled"
         app:layout_constraintEnd_toEndOf="@id/mbtn_filter_invited" />
 
-    <Button
-        style="@style/SelectAllButton"
+    <ToggleButton
+        style="@style/ToggleRoundedButton"
         android:id="@+id/mbtn_filter_invited"
-        android:text="Invited"
+        android:textOn="Invited"
+        android:textOff="Invited"
         android:backgroundTint="@color/primaryBackground"
         app:layout_constraintTop_toTopOf="@id/mbtn_filter_enrolled"
         app:layout_constraintStart_toEndOf="@id/mbtn_filter_declined"
         app:layout_constraintEnd_toEndOf="@id/et_filter_name"  />
 
-    <Button
-        style="@style/SelectAllButton"
+    <ToggleButton
+        style="@style/ToggleRoundedButton"
         android:id="@+id/mbtn_filter_on_wait"
-        android:text="On Waitlist"
+        android:textOn="On Waitlist"
+        android:textOff="On Waitlist"
         android:backgroundTint="@color/primaryBackground"
         app:layout_constraintTop_toBottomOf="@id/mbtn_filter_enrolled"
         app:layout_constraintStart_toStartOf="@id/mbtn_filter_enrolled"
         app:layout_constraintEnd_toStartOf="@id/mbtn_filter_not_on_wait" />
 
-    <Button
-        style="@style/SelectAllButton"
+    <ToggleButton
+        style="@style/ToggleRoundedButton"
         android:id="@+id/mbtn_filter_not_on_wait"
-        android:text="Not On Waitlist"
+        android:textOn="Not On Waitlist"
+        android:textOff="Not On Waitlist"
+        android:layout_width="wrap_content"
+        android:paddingHorizontal="6dp"
         android:backgroundTint="@color/primaryBackground"
         app:layout_constraintTop_toBottomOf="@id/mbtn_filter_enrolled"
         app:layout_constraintStart_toEndOf="@id/mbtn_filter_on_wait"

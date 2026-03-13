@@ -19,6 +19,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
@@ -31,7 +32,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link DialogFragment} subclass.
@@ -58,7 +62,7 @@ public class FilterEventsDialogFragment extends DialogFragment {
     private FilterEventsListener listener;
     private LinearLayout tagContainerLinearLayout;
     private ArrayList<String> tags;
-
+    private ToggleButton enrolledToggleButton, declinedToggleButton, invitedToggleButton, onWaitListToggleButton, notOnWaitListToggleButton;
 
     @NonNull
     @Override
@@ -76,6 +80,12 @@ public class FilterEventsDialogFragment extends DialogFragment {
         Button confirmButton = view.findViewById(R.id.btn_filter_confirm);
         Button addTagButton = view.findViewById(R.id.btn_add_tag);
         tagContainerLinearLayout = view.findViewById(R.id.ll_filter_tags);
+
+        enrolledToggleButton = view.findViewById(R.id.mbtn_filter_enrolled);
+        declinedToggleButton = view.findViewById(R.id.mbtn_filter_declined);
+        invitedToggleButton = view.findViewById(R.id.mbtn_filter_invited);
+        onWaitListToggleButton = view.findViewById(R.id.mbtn_filter_on_wait);
+        notOnWaitListToggleButton = view.findViewById(R.id.mbtn_filter_not_on_wait);
 
         // convert EditTexts for dates to be pickers instead of text
         attachDatePicker(filterRegStart);
@@ -143,13 +153,15 @@ public class FilterEventsDialogFragment extends DialogFragment {
                 isValid = false;
             }
 
+            ArrayList<EnrollmentStatus> enrollmentStatuses = getToggleStatus();
+
             if (!isValid) {
                 return;
             }
 
             // give some filter info to EventListFragment
             if (listener != null) {
-                listener.filterEvents(name, status, tags, regStart, regEnd, drawDate);
+                listener.filterEvents(name, enrollmentStatuses, tags, regStart, regEnd, drawDate);
             }
 
             dialog.dismiss();
@@ -188,6 +200,41 @@ public class FilterEventsDialogFragment extends DialogFragment {
 
             picker.show();
         });
+    }
+
+    private ArrayList<EnrollmentStatus> getToggleStatus() {
+        ArrayList<EnrollmentStatus> enrollmentStatuses = new ArrayList<EnrollmentStatus>();
+
+        Map<ToggleButton, EnrollmentStatus> toggleMap = new HashMap<>();
+        toggleMap.put(enrolledToggleButton, EnrollmentStatus.ENROLLED);
+        toggleMap.put(declinedToggleButton, EnrollmentStatus.DECLINED);
+        toggleMap.put(invitedToggleButton, EnrollmentStatus.INVITED);
+        toggleMap.put(onWaitListToggleButton, EnrollmentStatus.ON_WAITLIST);
+        toggleMap.put(notOnWaitListToggleButton, EnrollmentStatus.NOT_ON_WAITLIST);
+
+        for (Map.Entry<ToggleButton, EnrollmentStatus> entry : toggleMap.entrySet()) {
+            if (entry.getKey().isChecked()) {
+                enrollmentStatuses.add(entry.getValue());
+            }
+        }
+
+        return enrollmentStatuses;
+    }
+
+    private void setupToggleButtons(List<ToggleButton> buttons) {
+        for (ToggleButton tb : buttons) {
+            tb.setOnCheckedChangeListener(((buttonView, isChecked) -> {
+                if (!isChecked) {
+                    return;
+                }
+
+                for (ToggleButton other : buttons) {
+                    if (other != buttonView) {
+                        other.setChecked(false);
+                    }
+                }
+            }));
+        }
     }
 
     private String getTextOrNull(EditText editText) {
