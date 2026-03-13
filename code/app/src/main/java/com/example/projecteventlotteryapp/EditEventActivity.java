@@ -4,13 +4,22 @@ package com.example.projecteventlotteryapp;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
+
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -21,16 +30,29 @@ import java.time.LocalTime;
  * Provides fields for name, registration dates, draw date/time, entrant limits, location, and description.
  */
 public class EditEventActivity extends AppCompatActivity {
-
+    private String eventId;
+    private FirebaseFirestore db;
+    private PosterImageHandler posterImageHandler;
     private EditText editName, editRegStart, editRegEnd, editDrawDate, editDrawTime;
     private EditText editEntrantLimit, editWaitlistLimit, editLocation, editDescription;
     private SwitchCompat switchGeolocation;
     private Button saveButton;
+    /////////////////////////////////////////////////////
+    /// IMAGE UPLOAD VARIABLES
+    ////////////////////////////////////////////////////
+    private ImageButton bannerEditButton;
+    private ImageView editBanner;
+    private ActivityResultLauncher<String> posterImageLauncher;
+    private Uri eventPosterFilepath;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_edit_event);
+        // getting eventId from intent
+        eventId = getIntent().getStringExtra("eventId");
+        db = FirebaseFirestore.getInstance();
+        posterImageHandler = new PosterImageHandler();
 
         // initialize ui components
         editName = findViewById(R.id.et_event_edit_name);
@@ -44,6 +66,8 @@ public class EditEventActivity extends AppCompatActivity {
         editDescription = findViewById(R.id.et_edit_description);
         switchGeolocation = findViewById(R.id.switch_geolocation);
         saveButton = findViewById(R.id.btn_event_edit_save);
+        bannerEditButton = findViewById(R.id.btn_edit_event_edit_banner);
+        editBanner = findViewById(R.id.iv_edit_banner);
 
         // attach date and time pickers to their respective fields
         attachDatePicker(editRegStart);
@@ -51,8 +75,26 @@ public class EditEventActivity extends AppCompatActivity {
         attachDatePicker(editDrawDate);
         attachTimePicker(editDrawTime);
 
+        posterImageLauncher = registerForActivityResult(
+                new ActivityResultContracts.GetContent(),
+                uri -> {
+                    if (uri != null){
+                        eventPosterFilepath = uri;
+                        try {
+                            editBanner.setImageURI(uri);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                            Toast.makeText(this, "Failed to upload image!", Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+        );
+
         // set up save button listener
         saveButton.setOnClickListener(v -> saveEventDetails());
+        bannerEditButton.setOnClickListener(v -> {
+            posterImageLauncher.launch("image/*");
+        });
     }
 
     private void saveEventDetails() {
@@ -105,10 +147,10 @@ public class EditEventActivity extends AppCompatActivity {
 
         // TODO: update the event object and database
         // TODO: figure out image and QR code, as well as location
+        posterImageHandler.uploadPoster(eventId, eventPosterFilepath);
 
         finish(); // close activity
     }
-
 
     private boolean fieldNotEmpty(EditText field) {
         String value = field.getText().toString().trim();

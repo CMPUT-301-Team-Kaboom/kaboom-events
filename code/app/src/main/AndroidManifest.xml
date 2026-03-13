@@ -17,10 +17,10 @@
         android:theme="@style/Theme.ProjectEventLotteryApp">
         <activity
             android:name=".RegistrationActivity"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -35,7 +35,7 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="true"></activity>
+            android:exported="true"/>
         <activity
             android:name=".CriteriaAppGuideActivity"
             android:exported="false" />
@@ -60,6 +60,15 @@
         <activity
             android:name=".AdminEventsActivity"
             android:exported="false" />
+        <activity
+            android:name=".adminNotificationsActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditEventActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".EntrantSettingsActivity"
+            android:exported="false"/>
     </application>
 
 </manifest>

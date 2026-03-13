@@ -1,7 +1,6 @@
 package com.example.projecteventlotteryapp;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,8 +14,9 @@ import androidx.annotation.Nullable;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
-// todo: create javadocs and add error handling
-
+/**
+ * Custom adapter class that handles displaying events as list items.
+ */
 public class EventArrayAdapter extends ArrayAdapter<Event>  {
     private ArrayList<Event> events;
     private Context context;
@@ -27,6 +27,20 @@ public class EventArrayAdapter extends ArrayAdapter<Event>  {
         this.context = context;
     }
 
+    /**
+     * Handles the layout display of a list of events.
+     *
+     * @param position The position of the item within the adapter's data set of the item whose view
+     *        we want.
+     * @param convertView The old view to reuse, if possible. Note: You should check that this view
+     *        is non-null and of an appropriate type before using. If it is not possible to convert
+     *        this view to display the correct data, this method can create a new view.
+     *        Heterogeneous lists can specify their number of view types, so that this View is
+     *        always of the right type (see {@link #getViewTypeCount()} and
+     *        {@link #getItemViewType(int)}).
+     * @param parent The parent that this view will eventually be attached to
+     * @return View to be displayed
+     */
     @NonNull
     @Override
     public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent){

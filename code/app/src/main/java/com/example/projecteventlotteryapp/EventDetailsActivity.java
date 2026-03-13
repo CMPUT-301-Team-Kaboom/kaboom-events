@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -13,14 +14,17 @@ import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.format.DateTimeFormatter;
@@ -28,11 +32,19 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
+/**
+ * This class handles the logic and UI support for displaying Event details for both Entrants and Organizers
+ *
+ *
+ */
 public class EventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String eventId;
     private Event event;
+    private EventUtils eventUtils;
     private User globalUser;
+    private DocumentReference eventDoc;
 
     //=============================
     // UI Elements
@@ -54,7 +66,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     private ImageButton backButton;
     private LinearLayout organizerController;
     private ConstraintLayout entrantController;
-
     private TextView nameHeaderTextView;
     private TextView organizerHeaderTextview;
     private TextView drawDateTV;
@@ -62,7 +73,19 @@ public class EventDetailsActivity extends AppCompatActivity {
     private TextView attendeesTV;
     private TextView waitListTV;
     private TextView descriptionTV;
+    private ImageView posterIV;
 
+    /**
+     * Entry point of the activity
+     *
+     * <p>This function is the entry point of the Activity. It sets up the db instance and UI for
+     * the event.</p>
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,7 +99,9 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         db = FirebaseFirestore.getInstance();
         eventId = getIntent().getStringExtra("eventId");
+        eventDoc = db.collection("events").document(this.eventId);
         setupUi();
+        eventUtils = new EventUtils(db);
 
         MyApp app = (MyApp) getApplication();
         globalUser = app.getCurrentUser();
@@ -90,7 +115,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         Log.d("EventActivity", "DocumentSnapshot data: " + document.getData());
-                        event = Event.fetchEventFromSnapshot(document);
+                        event = eventUtils.fetchEventFromSnapshot(document);
                         updateUi();
                     } else {
                         Log.d("EventActivity", "No such document");
@@ -101,9 +126,11 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
+    /**
+     * Helps setup the UI of the activity by defining local variables.
+     */
     private void setupUi() {
         waitlistButton  = findViewById(R.id.btn_eventDetails_organizer_waitlist);
         invitedButton   = findViewById(R.id.btn_eventDetails_organizer_invited);
@@ -121,6 +148,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         attendeesTV             = findViewById(R.id.tv_eventDetails_attendees);
         waitListTV              = findViewById(R.id.tv_eventDetails_waitlist_count);
         descriptionTV           = findViewById(R.id.tv_eventDetails_description);
+        posterIV                = findViewById(R.id.img_eventDetails_poster);
 
         organizerController = findViewById(R.id.ll_eventDetails_organizer_button_controls);
         entrantController   = findViewById(R.id.cl_eventDetails_entrant_button_controls);
@@ -130,6 +158,22 @@ public class EventDetailsActivity extends AppCompatActivity {
         backButton.setOnClickListener(v -> finish());
     }
 
+    /**
+     * Configures the UI for a given user depending on their role as well as firestore actions
+     *
+     * <p>If the user is an organizer, organizer-specific controls are displayed such as
+     *  editing the event, viewing entrant lists, and accessing the map. Entrant controls
+     *  are hidden.</p>
+     *
+     * <p>If the user is an entrant, entrant-specific controls are displayed and organizer
+     *  controls are hidden. The method queries Firestore to determine the entrant's
+     *  current status in the event (invited or waitlisted) and updates the available
+     *  actions accordingly.</p>
+     *
+     *  TODO: simplify this function by creating sub functions and separating firestore actions
+     *
+     * @param user the User interacting with the app
+     */
     private void configureUIForRole(User user) {
         if (user.getRole() == Role.ORGANIZER) {
             entrantController.setVisibility(View.GONE);
@@ -148,7 +192,11 @@ public class EventDetailsActivity extends AppCompatActivity {
             enrolledButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open enrolled List"));
             declinedButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Open declined list"));
 
-            editButton.setOnClickListener(v -> Log.d("EventDetails", "Clicked Edit Button"));
+            editButton.setOnClickListener(v -> {
+                Intent intent = new Intent(this, EditEventActivity.class);
+                intent.putExtra("eventId", eventId);
+                startActivity(intent);
+            });
             mapButton.setOnClickListener(v -> Log.d("EventDetails", "Clicked Map Button"));
         } else if (user.getRole() == Role.ENTRANT) {
             entrantController.setVisibility(View.VISIBLE);
@@ -157,7 +205,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             editButton.setVisibility(View.GONE);
             mapButton.setVisibility(View.GONE);
 
-            event.entrantListContains(EntrantListType.INVITED, user).addOnSuccessListener(invited -> {
+            eventUtils.entrantListContains(EntrantListType.INVITED, user, event.getEventId()).addOnSuccessListener(invited -> {
                 if (invited) {
                     entrantPrimaryButton.setText("Enroll");
                     // TODO: Setup onclick listener for adding to Enrolled list
@@ -169,15 +217,31 @@ public class EventDetailsActivity extends AppCompatActivity {
                     // TODO: Setup onclick listener for adding to Declined list
                     entrantSecondaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Decline"));
                 } else {
-                    event.entrantListContains(EntrantListType.WAITLIST, user).addOnSuccessListener(waitlisted -> {
+                    eventUtils.entrantListContains(EntrantListType.WAITLIST, user, eventId).addOnSuccessListener(waitlisted -> {
                         if (waitlisted){
                             entrantPrimaryButton.setText("Remove Waitlist");
-                            // TODO: Setup onclick listener for removing from wait list
-                            entrantPrimaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Remove waitlist"));
+                            entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
+                            entrantPrimaryButton.setOnClickListener(v -> {
+                                eventUtils.removeFromEntrantList(EntrantListType.WAITLIST, user, eventId)
+                                        .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully Left Waitlist");
+                                            entrantPrimaryButton.setText("Join Waitlist");
+                                            configureUIForRole(user);
+                                        })
+                                        .addOnFailureListener(e -> {Log.d("EventDetails", "Failed to join Waitlist");
+                                        });
+                            });
                         } else {
                             entrantPrimaryButton.setText("Join Waitlist");
-                            // TODO: Setup onclick listener for adding to Waitlist list
-                            entrantPrimaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Join waitlist"));
+                            entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.secondaryAccent));
+                            entrantPrimaryButton.setOnClickListener(v -> {
+                                eventUtils.addToEntrantList(EntrantListType.WAITLIST, user, eventId)
+                                        .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully joined Waitlist");
+                                        entrantPrimaryButton.setText("Remove Waitlist");
+                                        configureUIForRole(user);
+                                        })
+                                        .addOnFailureListener(e -> {Log.d("EventDetails", "Failed to join Waitlist");
+                                        });
+                            });
                         }
                     });
                 }
@@ -185,6 +249,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Helper function that updates the UI elements using the local event variable and fetches
+     * the poster image associated with the event.
+     */
     private void updateUi() {
         nameHeaderTextView.setText(event.getName());
         attendeesTV.setText(String.valueOf(event.getAttendeesLimit()));
@@ -203,9 +271,26 @@ public class EventDetailsActivity extends AppCompatActivity {
         );
         registrationPeriodTV.setText(registrationPeriodText);
 
+        db.collection("events").document(eventId).get().addOnSuccessListener(doc->{
+            if (doc.exists()){
+                DocumentReference posterRef = doc.getDocumentReference("poster");
+
+                posterRef.get().addOnSuccessListener(posterDoc -> {
+                    if (posterDoc.exists()){
+                        Glide.with(this).load(posterDoc.getString("url")).into(posterIV);
+                    } else {
+                        Glide.with(this).load(R.drawable.default_poster).into(posterIV);
+                    }
+                });
+            }
+        });
+
         configureUIForRole(globalUser);
     }
 
+    /**
+     * Helper function that sets up the tags
+     */
     private void setupTags() {
         ArrayList<String> tags = event.getTagsList();
         int numTags = tags.size();
