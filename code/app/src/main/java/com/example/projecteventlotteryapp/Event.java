@@ -1,28 +1,11 @@
 package com.example.projecteventlotteryapp;
 
-import android.net.Uri;
-import android.util.Log;
-
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.storage.FirebaseStorage;
 
-import org.checkerframework.common.returnsreceiver.qual.This;
-import org.w3c.dom.Document;
-
-import java.lang.reflect.Array;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.function.Consumer;
 
 /**
  * Model for an Event
@@ -39,6 +22,7 @@ public class Event {
     private String name;
     private int attendeesLimit;
     private int waitlistLimit;
+    private int waitlistSize;   // number of users on the waitlist
     private boolean geolocationEnabled;
     private LocalDateTime drawDate;
     private LocalDate registrationStartDate;
@@ -176,6 +160,14 @@ public class Event {
      */
     public boolean isGeolocationEnabled() {
         return geolocationEnabled;
+    }
+
+    public int getWaitlistSize() {
+        return waitlistSize;
+    }
+
+    public void setWaitlistSize(int waitlistSize) {
+        this.waitlistSize = waitlistSize;
     }
 
     /**

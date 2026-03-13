@@ -256,7 +256,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void updateUi() {
         nameHeaderTextView.setText(event.getName());
         attendeesTV.setText(String.valueOf(event.getAttendeesLimit()));
-        waitListTV.setText(String.valueOf(event.getWaitlistLimit()));
+        waitListTV.setText(String.valueOf(event.getWaitlistSize()));
         descriptionTV.setText(event.getDescription());
         setupTags();
 

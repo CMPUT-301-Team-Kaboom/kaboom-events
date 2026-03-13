@@ -16,6 +16,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Utility class to provide database operations on the Event class
@@ -151,6 +152,25 @@ public class EventUtils {
                 event.setOrganizerName(organizerDoc.getString("name"));
             }
             return null;
+        });
+    }
+
+    public Task<Integer> getWaitlistForEvent(String eventId) {
+        DocumentReference eventDoc = db.collection("events").document(eventId);
+
+        return eventDoc.get().continueWith(task -> {
+            if (!task.isSuccessful()) {
+                return 0;
+            }
+
+            DocumentSnapshot doc = task.getResult();
+            if (!doc.exists()) {
+                return 0;
+            }
+
+            List<String> waitlist = (List<String>) doc.get("waitlist");
+
+            return waitlist != null ? waitlist.size() : 0;
         });
     }
 
@@ -361,6 +381,7 @@ public class EventUtils {
         eventData.put("entrantsLimit", event.getAttendeesLimit());
 
         // setting null values
+        eventData.put("waitlistSize", 0);
         eventData.put("description", null);
         eventData.put("geoLocationEnabled", false);
         eventData.put("location", null);
