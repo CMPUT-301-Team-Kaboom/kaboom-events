@@ -129,6 +129,45 @@ public class OrganizerTestsViaIntent {
     }
 
     @Test
+    public void testNavigateToInvited() {
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventDetailsActivity.class)
+                .putExtra("eventId", testEventId);
+        try (ActivityScenario<EventDetailsActivity> scenario = ActivityScenario.launch(intent)) {
+            onView(withId(R.id.btn_eventDetails_organizer_invited)).perform(click());
+            intended(allOf(
+                    hasComponent(OrganizerInvitedActivity.class.getName()),
+                    hasExtra("eventID", testEventId)
+            ));
+        }
+    }
+
+    @Test
+    public void testNavigateToEnrolled() {
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventDetailsActivity.class)
+                .putExtra("eventId", testEventId);
+        try (ActivityScenario<EventDetailsActivity> scenario = ActivityScenario.launch(intent)) {
+            onView(withId(R.id.btn_eventDetails_organizer_enrolled)).perform(click());
+            intended(allOf(
+                    hasComponent(OrganizerEnrolledActivity.class.getName()),
+                    hasExtra("eventID", testEventId)
+            ));
+        }
+    }
+
+    @Test
+    public void testNavigateToDeclined() {
+        Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventDetailsActivity.class)
+                .putExtra("eventId", testEventId);
+        try (ActivityScenario<EventDetailsActivity> scenario = ActivityScenario.launch(intent)) {
+            onView(withId(R.id.btn_eventDetails_organizer_declined)).perform(click());
+            intended(allOf(
+                    hasComponent(OrganizerDeclinedActivity.class.getName()),
+                    hasExtra("eventID", testEventId)
+            ));
+        }
+    }
+
+    @Test
     public void testNavigateToEditEvent() {
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventDetailsActivity.class)
                 .putExtra("eventId", testEventId);
