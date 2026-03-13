@@ -39,8 +39,18 @@ import java.util.HashMap;
  * the database. It is invoked from the Organizers main menu</p>
  */
 public class CreateEventDialogFragment extends DialogFragment {
-
+    public interface OnEventCreatedListener {
+        void OnEventCreated();
+    }
+    private OnEventCreatedListener listener;
     private EventUtils eventUtils;
+
+    @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+        listener = (OnEventCreatedListener) context;
+    }
+
     /**
      * Entry point of the DialogFragment
      *
@@ -120,6 +130,7 @@ public class CreateEventDialogFragment extends DialogFragment {
             Event event = new Event(name, regStart, regEnd, drawDateTime, entrantLimit);
             MyApp app = (MyApp) requireActivity().getApplication();
             eventUtils.createNewEventDbItem(event, app.getCurrentUser().getUserId());
+            listener.OnEventCreated();
             dialog.dismiss();
         });
 

@@ -19,11 +19,17 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
+import com.bumptech.glide.Glide;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Activity for organizers to edit event details.
@@ -31,6 +37,7 @@ import java.time.LocalTime;
  */
 public class EditEventActivity extends AppCompatActivity {
     private String eventId;
+    private Event event;
     private EventUtils eventUtils;
     private PosterImageHandler posterImageHandler;
     private EditText editName, editRegStart, editRegEnd, editDrawDate, editDrawTime;
@@ -71,8 +78,14 @@ public class EditEventActivity extends AppCompatActivity {
         editBanner = findViewById(R.id.iv_edit_banner);
         backButton = findViewById(R.id.btn_edit_event_back);
 
+        // fill in event info
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        db.collection("events").document(eventId).get().addOnSuccessListener(doc -> {
+            event = eventUtils.fetchEventFromSnapshot(doc);
+            setUI(event);
+        });
 
-        // set up back button listner
+        // set up back button listener
         backButton.setOnClickListener(v -> finish());
 
         // attach date and time pickers to their respective fields
@@ -155,15 +168,20 @@ public class EditEventActivity extends AppCompatActivity {
         // TODO: figure out image and QR code, as well as location
         posterImageHandler.uploadPoster(eventId, eventPosterFilepath);
 
-        Event event = new Event(eventId, name, regStart, regEnd, drawDateTime, entrantLimit);
-        event.setWaitlistLimit(waitlistLimit);
-        event.setDescription(description);
-        event.setGeolocationEnabled(isGeolocationEnabled);
+        ZoneId zoneId = ZoneId.systemDefault();
 
-        MyApp app = (MyApp) getApplication();
-        User organizer = app.getCurrentUser();
+        Map<String, Object> event = new HashMap<>();
+        event.put("name", name);
+        event.put("registrationStartDate", FirestoreUtils.localDateToTimestamp(regStart, zoneId));
+        event.put("registrationEndDate", FirestoreUtils.localDateToTimestamp(regEnd, zoneId));
+        event.put("drawDate", FirestoreUtils.localDateTimeToTimestamp(drawDateTime, zoneId));
+        event.put("entrantsLimit", entrantLimit);
+        event.put("waitlistLimit", waitlistLimit);
+        //event.put("location", location);
+        event.put("description", description);
+        event.put("geoLocationEnabled", isGeolocationEnabled);
 
-        eventUtils.updateEventInDB(event, organizer.getUserId());
+        eventUtils.updateEventInDB(event, eventId);
 
         finish(); // close activity
     }
@@ -210,5 +228,21 @@ public class EditEventActivity extends AppCompatActivity {
             );
             picker.show();
         });
+    }
+
+    private void setUI(Event event){
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm");
+
+        editName.setText(event.getName());
+        editRegStart.setText(event.getRegistrationStartDate().format(dateFormatter));
+        editRegEnd.setText(event.getRegistrationEndDate().format(dateFormatter));
+        editDrawDate.setText(event.getDrawDate().format(dateFormatter));
+        editDrawTime.setText(event.getDrawDate().format(timeFormatter));
+        editEntrantLimit.setText(String.valueOf(event.getAttendeesLimit()));
+        editWaitlistLimit.setText(String.valueOf(event.getWaitlistLimit()));
+        // editLocation.setText(); // need to get event location
+        editDescription.setText(event.getDescription());
+        switchGeolocation.setChecked(event.isGeolocationEnabled());
     }
 }

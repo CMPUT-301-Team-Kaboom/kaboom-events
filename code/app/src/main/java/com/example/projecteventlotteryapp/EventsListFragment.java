@@ -414,4 +414,8 @@ public class EventsListFragment extends Fragment {
         }
         return query;
     }
+
+    public void refreshEventList(){
+        getEventsForRole();
+    }
 }
