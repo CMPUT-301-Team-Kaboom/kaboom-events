@@ -42,6 +42,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private FirebaseFirestore db;
     private String eventId;
     private Event event;
+    private EventUtils eventUtils;
     private User globalUser;
     private DocumentReference eventDoc;
 
@@ -100,6 +101,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventId = getIntent().getStringExtra("eventId");
         eventDoc = db.collection("events").document(this.eventId);
         setupUi();
+        eventUtils = new EventUtils(db);
 
         MyApp app = (MyApp) getApplication();
         globalUser = app.getCurrentUser();
@@ -113,7 +115,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                     DocumentSnapshot document = task.getResult();
                     if (document.exists()) {
                         Log.d("EventActivity", "DocumentSnapshot data: " + document.getData());
-                        event = Event.fetchEventFromSnapshot(document);
+                        event = eventUtils.fetchEventFromSnapshot(document);
                         updateUi();
                     } else {
                         Log.d("EventActivity", "No such document");
@@ -124,62 +126,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             }
         });
 
-    }
-
-    /**
-     * Helper function that translates EntrantListType enum to the db collection name
-     *
-     * TODO: Consider moving function into the EntrantListType enum class
-     * @param type the EntrantListType
-     * @return String representation of the associated collection name in the db
-     */
-    private String getListField(EntrantListType type) {
-        switch (type) {
-            case WAITLIST:
-                return "waitlist";
-            case INVITED:
-                return "invited";
-            case DECLINED:
-                return "declined";
-            case ENROLLED:
-                return "enrolled";
-            default:
-                throw new IllegalArgumentException("Unknown list type: " + type);
-        }
-    }
-
-    /**
-     * Adds an entrant to a specified entrant list for this event.
-     *
-     * <p>This method updates the Firestore event document by adding the entrant's
-     * user ID to the corresponding list field using {@code FieldValue.arrayUnion}.
-     * If the user ID already exists in the list, Firestore will not add a duplicate.</p>
-     *
-     * @param listType the entrant list to which the user should be added
-     * @param entrant the user being added to the list
-     * @return a {@link Task} representing the asynchronous Firestore update operation
-     */
-    private Task<Void> addToEntrantList(EntrantListType listType, User entrant) {
-        Log.d("AddToEntrantList", String.format("Type: %s | userId: %s",
-                listType.toString(),
-                entrant.getUserId())
-        );
-
-        return eventDoc.update(getListField(listType), FieldValue.arrayUnion(entrant.getUserId()));
-    }
-
-    /**
-     * Removes an entrant from a specified entrant list for this event.
-     *
-     * <p>This function updates the Firestore event document by removing an entrant's userID from
-     * the corresponding list field using {@code FieldValue.arrayRemove}.</p>
-     * @param listType the list to remove the entrant from
-     * @param entrant the entrant to add to the list
-     * @return a {@link Task} representing the asynchronous Firestore update operation
-     */
-    public Task<Void> removeFromEntrantList(EntrantListType listType, User entrant) {
-        return eventDoc.update(getListField(listType),
-                FieldValue.arrayRemove(entrant.getUserId()));
     }
 
     /**
@@ -259,7 +205,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             editButton.setVisibility(View.GONE);
             mapButton.setVisibility(View.GONE);
 
-            event.entrantListContains(EntrantListType.INVITED, user).addOnSuccessListener(invited -> {
+            eventUtils.entrantListContains(EntrantListType.INVITED, user, event.getEventId()).addOnSuccessListener(invited -> {
                 if (invited) {
                     entrantPrimaryButton.setText("Enroll");
                     // TODO: Setup onclick listener for adding to Enrolled list
@@ -271,12 +217,12 @@ public class EventDetailsActivity extends AppCompatActivity {
                     // TODO: Setup onclick listener for adding to Declined list
                     entrantSecondaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Decline"));
                 } else {
-                    event.entrantListContains(EntrantListType.WAITLIST, user).addOnSuccessListener(waitlisted -> {
+                    eventUtils.entrantListContains(EntrantListType.WAITLIST, user, eventId).addOnSuccessListener(waitlisted -> {
                         if (waitlisted){
                             entrantPrimaryButton.setText("Remove Waitlist");
                             entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
                             entrantPrimaryButton.setOnClickListener(v -> {
-                                removeFromEntrantList(EntrantListType.WAITLIST, user)
+                                eventUtils.removeFromEntrantList(EntrantListType.WAITLIST, user, eventId)
                                         .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully Left Waitlist");
                                             entrantPrimaryButton.setText("Join Waitlist");
                                             configureUIForRole(user);
@@ -288,7 +234,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                             entrantPrimaryButton.setText("Join Waitlist");
                             entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.secondaryAccent));
                             entrantPrimaryButton.setOnClickListener(v -> {
-                                addToEntrantList(EntrantListType.WAITLIST, user)
+                                eventUtils.addToEntrantList(EntrantListType.WAITLIST, user, eventId)
                                         .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully joined Waitlist");
                                         entrantPrimaryButton.setText("Remove Waitlist");
                                         configureUIForRole(user);
@@ -329,13 +275,17 @@ public class EventDetailsActivity extends AppCompatActivity {
             if (doc.exists()){
                 DocumentReference posterRef = doc.getDocumentReference("poster");
 
-                posterRef.get().addOnSuccessListener(posterDoc -> {
-                    if (posterDoc.exists()){
-                        Glide.with(this).load(posterDoc.getString("url")).into(posterIV);
-                    } else {
-                        Glide.with(this).load(R.drawable.default_poster).into(posterIV);
-                    }
-                });
+                if (posterRef != null) {
+                    posterRef.get().addOnSuccessListener(posterDoc -> {
+                        if (posterDoc.exists()){
+                            Glide.with(this).load(posterDoc.getString("url")).into(posterIV);
+                        } else {
+                            Glide.with(this).load(R.drawable.default_poster).into(posterIV);
+                        }
+                    });
+                } else {
+                    Glide.with(this).load(R.drawable.default_poster).into(posterIV);
+                }
             }
         });
 

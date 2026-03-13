@@ -17,7 +17,8 @@
         android:theme="@style/Theme.ProjectEventLotteryApp">
         <activity
             android:name=".RegistrationActivity"
-            android:exported="true">
+            android:exported="true"
+            android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
@@ -64,6 +65,9 @@
             android:exported="false" />
         <activity
             android:name=".EditEventActivity"
+            android:exported="false"/>
+        <activity
+            android:name=".EntrantSettingsActivity"
             android:exported="false"/>
     </application>
 

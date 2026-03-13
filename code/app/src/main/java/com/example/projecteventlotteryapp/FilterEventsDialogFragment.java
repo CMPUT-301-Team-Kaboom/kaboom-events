@@ -16,7 +16,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.ToggleButton;
 
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
@@ -29,7 +32,10 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A simple {@link DialogFragment} subclass.
@@ -54,11 +60,16 @@ public class FilterEventsDialogFragment extends DialogFragment {
     }
 
     private FilterEventsListener listener;
+    private LinearLayout tagContainerLinearLayout;
+    private ArrayList<String> tags;
+    private ToggleButton enrolledToggleButton, declinedToggleButton, invitedToggleButton, onWaitListToggleButton;
 
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        listener.clearFilters();    // band aid fix for subsequent filter button presses leaving dirty values
         View view = getLayoutInflater().inflate(R.layout.fragment_filter_events, null);
+        tags = new ArrayList<String>();
 
         // grab references to EditTexts and Buttons
         EditText filterName = view.findViewById(R.id.et_filter_name);
@@ -67,7 +78,21 @@ public class FilterEventsDialogFragment extends DialogFragment {
         EditText filterDrawDate = view.findViewById(R.id.et_filter_draw_date);
         Button clearFiltersButton = view.findViewById(R.id.btn_clear_filters);
         Button confirmButton = view.findViewById(R.id.btn_filter_confirm);
-        // todo: implement tags and enrollment status buttons
+        Button addTagButton = view.findViewById(R.id.btn_add_tag);
+        tagContainerLinearLayout = view.findViewById(R.id.ll_filter_tags);
+
+        enrolledToggleButton = view.findViewById(R.id.mbtn_filter_enrolled);
+        declinedToggleButton = view.findViewById(R.id.mbtn_filter_declined);
+        invitedToggleButton = view.findViewById(R.id.mbtn_filter_invited);
+        onWaitListToggleButton = view.findViewById(R.id.mbtn_filter_on_wait);
+        List<ToggleButton> toggleButtons = List.of(
+                enrolledToggleButton,
+                declinedToggleButton,
+                invitedToggleButton,
+                onWaitListToggleButton
+        );
+
+        setupToggleButtons(toggleButtons);
 
         // convert EditTexts for dates to be pickers instead of text
         attachDatePicker(filterRegStart);
@@ -79,35 +104,48 @@ public class FilterEventsDialogFragment extends DialogFragment {
                 .create();
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);;
 
+        // addTag button logic
+        addTagButton.setOnClickListener(v -> {
+            EditText input = new EditText(requireContext());
+            input.setHint("Enter Tag");
+
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Enter value")
+                    .setView(input)
+                    .setPositiveButton("Add", (nestedDialog, which) -> {
+
+                        String tagText = input.getText().toString().trim().toUpperCase();
+
+                        if (!tagText.isEmpty()) {
+                            addNewTagBox(tagText);
+                        }
+
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        });
+
+
+        // clear Filter logic
+        clearFiltersButton.setOnClickListener(v -> {
+            listener.clearFilters();
+            dialog.dismiss();
+        });
+
         confirmButton.setOnClickListener(v -> {
             // validation
             boolean isValid = true;
 
-            String name = filterName.getText().toString().trim();
-            if (name.isEmpty()) {
-                name = null;
-            }
-            // todo: implement
+            // TODO: implement status
             String status = null;
-            ArrayList<String> tags = null;
 
-            // initialize date filters to null
-            LocalDate regStart = null;
-            LocalDate regEnd = null;
-            LocalDate drawDate = null;
+            String name = getTextOrNull(filterName);
 
-            // only parse if date not null
-            if (!filterRegStart.getText().toString().isEmpty()) {
-                regStart = LocalDate.parse(filterRegStart.getText().toString().trim());
-            }
+            // initialize date filters
+            LocalDate regStart = getLocalDateOrNull(filterRegStart);
+            LocalDate regEnd = getLocalDateOrNull(filterRegEnd);
+            LocalDate drawDate = getLocalDateOrNull(filterDrawDate);
 
-            if (!filterRegEnd.getText().toString().isEmpty()) {
-                regEnd = LocalDate.parse(filterRegEnd.getText().toString().trim());
-            }
-
-            if (!filterDrawDate.getText().toString().isEmpty()) {
-                drawDate = LocalDate.parse(filterDrawDate.getText().toString().trim());
-            }
             if (regStart != null && regEnd != null && !regEnd.isAfter(regStart)) {
                 filterRegEnd.setError("Must be after start date");
                 isValid = false;
@@ -123,20 +161,17 @@ public class FilterEventsDialogFragment extends DialogFragment {
                 isValid = false;
             }
 
+            String enrollmentStatuses = getToggleStatus();
+
             if (!isValid) {
                 return;
             }
 
             // give some filter info to EventListFragment
             if (listener != null) {
-                listener.filterEvents(name, status, tags, regStart, regEnd, drawDate);
+                listener.filterEvents(name, enrollmentStatuses, tags, regStart, regEnd, drawDate);
             }
 
-            dialog.dismiss();
-        });
-
-        clearFiltersButton.setOnClickListener(v -> {
-            listener.clearFilters();
             dialog.dismiss();
         });
 
@@ -175,4 +210,82 @@ public class FilterEventsDialogFragment extends DialogFragment {
         });
     }
 
+    /**
+     * TODO: Find a more elegant solution than returning strings. This was a band aid
+     * @return
+     */
+    private String getToggleStatus() {
+        Map<ToggleButton, String> toggleMap = new HashMap<>();
+        toggleMap.put(enrolledToggleButton, "enrolled");
+        toggleMap.put(declinedToggleButton, "declined");
+        toggleMap.put(invitedToggleButton, "invited");
+        toggleMap.put(onWaitListToggleButton, "waitlist");
+
+        for (Map.Entry<ToggleButton, String> entry : toggleMap.entrySet()) {
+            if (entry.getKey().isChecked()) {
+                return entry.getValue();
+            }
+        }
+
+        return null;
+    }
+
+    private void setupToggleButtons(List<ToggleButton> buttons) {
+        for (ToggleButton tb : buttons) {
+            tb.setOnCheckedChangeListener(((buttonView, isChecked) -> {
+                if (!isChecked) {
+                    return;
+                }
+
+                for (ToggleButton other : buttons) {
+                    if (other != buttonView) {
+                        other.setChecked(false);
+                    }
+                }
+            }));
+        }
+    }
+
+    private String getTextOrNull(EditText editText) {
+        String text = editText.getText().toString().trim();
+        if (text.isEmpty()) {
+            return null;
+        }
+        return text;
+    }
+
+    /**
+     * Helper function to extract the LocalDate from an EditText or null
+     *
+     * @param editText the editText to extract from; MUST be set by a datePicker
+     * @return
+     */
+    private LocalDate getLocalDateOrNull(EditText editText) {
+        String dateText = editText.getText().toString();
+        if (dateText.isEmpty()) {
+            return null;
+        }
+        return LocalDate.parse(dateText);
+    }
+
+    /**
+     * Adds a new textbox to the fragment_filter_events tags linear layout
+     * code adapted from AI prompt:
+     * "How can I add a textview to a LinearLayout using Java code instead of XML"
+     *
+     * @param tagText
+     */
+    private void addNewTagBox(String tagText) {
+        Log.d("FilterEventsDialogFragment", "new Tag filer: " + tagText);
+
+        int currentBoxes = tagContainerLinearLayout.getChildCount() - 1;    // -1 to remove the '+' button
+        if (currentBoxes >= 5) return;
+
+        TextView newBox = new TextView(requireContext(), null, 0, R.style.TagBoxTextView);
+        newBox.setText(tagText);
+
+        tags.add(tagText);
+        int insertIndex = tagContainerLinearLayout.getChildCount() - 1;
+        tagContainerLinearLayout.addView(newBox, insertIndex);
+    }
 }

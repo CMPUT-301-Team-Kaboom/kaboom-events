@@ -17,7 +17,7 @@ import java.util.ArrayList;
 public class ProfileArrayAdapter extends ArrayAdapter<User> {
     private ArrayList<User> profiles;
     private Context context;
-    private OnDeleteClickListener deleteListener;
+    OnDeleteClickListener deleteListener;
 
     public interface OnDeleteClickListener {
         void onDeleteClick(User user);

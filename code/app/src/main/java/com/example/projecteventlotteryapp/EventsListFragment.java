@@ -28,6 +28,7 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 
 /**
@@ -40,10 +41,10 @@ import java.util.Objects;
 public class EventsListFragment extends Fragment {
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
+
+    private EventUtils eventUtils;
     private User globalUser;
-
     private ListView eventsListView;
-
     private ArrayList<Event> eventsArrayList;
     private ArrayAdapter<Event> eventsArrayAdapter;
 
@@ -77,6 +78,7 @@ public class EventsListFragment extends Fragment {
 
         // setup db
         db = FirebaseFirestore.getInstance();
+        eventUtils = new EventUtils(db);
         eventsRef = db.collection("events");
 
         // get user role
@@ -92,6 +94,15 @@ public class EventsListFragment extends Fragment {
      * are not retrieved</p>
      *
      * <p>If the user is an entrant, all events are displayed.</p>
+     *
+     * Code Citation:
+     *     [1] The following code is adapted from...
+     *         Author: user658042
+     *         Title: "Using context in a fragment"
+     *         Answer: https://stackoverflow.com/a/8215398
+     *         Date: 2011-11-12
+     *         Retrieved: 2026-02-28
+     *         License: CC-BY-SA 4.0
      *
      * @param inflater The LayoutInflater object that can be used to inflate
      * any views in the fragment,
@@ -111,20 +122,18 @@ public class EventsListFragment extends Fragment {
         // setup ListView and EventArrayAdapter
         eventsListView = view.findViewById(R.id.lv_events_list);
         eventsArrayList = new ArrayList<Event>();
-        /*
-        The following code is adapted from...
-        Author: user658042
-        Title: "Using context in a fragment"
-        Answer: https://stackoverflow.com/a/8215398
-        Date: 2011-11-12
-        Retrieved: 2026-02-28
-        License: CC-BY-SA 4.0
-        */
+
+        // [1] see code citation
         eventsArrayAdapter = new EventArrayAdapter(getActivity(), eventsArrayList);
         eventsListView.setAdapter(eventsArrayAdapter);
 
         // listener for a ListView event items
         eventsListView.setOnItemClickListener((parent, view1, position, id) -> {
+            // don't allow clicking for empty event list
+            if (position < 0 || position >= eventsArrayList.size()) {
+                return;
+            }
+
             Event selectedEvent = eventsArrayList.get(position);
 
             Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
@@ -145,6 +154,19 @@ public class EventsListFragment extends Fragment {
             for entrant/organizer, and change so that organizer does a query on events instead of
             fetching all events and filtering by looking at the organizerRef for each.
     */
+
+    /**
+     * Fetches events from the database according to user role.
+     *
+     * Code Citation:
+     *     [1] The following code is adapted from...
+     *         Author: Alex Mamo https://stackoverflow.com/users/5246885/alex-mamo
+     *         Title: "Check if Firestore query is empty"
+     *         Answer: https://stackoverflow.com/a/56847476
+     *         Date: 2019-07-02
+     *         Retrieved: 2026-03-12
+     *         License: CC-BY-SA 4.0
+     */
     private void getEventsForRole() {
         Query query = eventsRef;
 
@@ -159,11 +181,29 @@ public class EventsListFragment extends Fragment {
         query.get().addOnSuccessListener(queryDocumentSnapshots -> {
             eventsArrayList.clear();
 
-            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
-                Event event = Event.fetchEventFromSnapshot(snapshot);
-                eventsArrayList.add(event);
+            // [1] see code citation
+            // try to handle empty query
+            if (queryDocumentSnapshots.isEmpty()) {
+                eventsArrayAdapter.notifyDataSetChanged();
+                return;
             }
-            eventsArrayAdapter.notifyDataSetChanged();
+
+            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                Event event = eventUtils.fetchEventFromSnapshot(snapshot);
+
+                // get organizer
+                DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
+                if (organizerRef != null) {
+                    eventUtils.fetchOrganizerForEvent(event, organizerRef)
+                            .addOnSuccessListener(aVoid -> {
+                                eventsArrayList.add(event);
+                                eventsArrayAdapter.notifyDataSetChanged();
+                            });
+                } else {
+                    eventsArrayList.add(event);
+                    eventsArrayAdapter.notifyDataSetChanged();
+                }
+            }
         });
     }
 
@@ -182,9 +222,6 @@ public class EventsListFragment extends Fragment {
         filterName = name;
         filterStatus = status;
         filterTags = tags;
-        if (tags != null) {
-            filterTags = new ArrayList<>(tags);
-        }
         filterRegStart = regStart;
         filterRegEnd = regEnd;
         filterDrawDate = drawDate;
@@ -197,21 +234,40 @@ public class EventsListFragment extends Fragment {
      *  Get all events again without filters.
      */
     void clearFilters() {
+
+        filterName = null;
+        filterStatus = null;
+        filterTags = null;
+        filterRegStart = null;
+        filterRegEnd = null;
+        filterDrawDate = null;
+
+        Log.d("EventListFragment", "Cleared Filters");
         getEventsForRole();
     }
 
     /**
      * Perform the filtering of events fetched from the database.
+     *
+     * Code Citation:
+     *     [1] The following code is adapted from...
+     *         Title: "Perform simple and compound queries in Cloud Firestore"
+     *         Source: https://firebase.google.com/docs/firestore/query-data/
+     *         Retrieved: 2026-03-11
+     *
+     *     [2] The following code is adapted from...
+     *         Author: Alex Mamo https://stackoverflow.com/users/5246885/alex-mamo
+     *         Title: "Check if Firestore query is empty"
+     *         Answer: https://stackoverflow.com/a/56847476
+     *         Date: 2019-07-02
+     *         Retrieved: 2026-03-12
+     *         License: CC-BY-SA 4.0
+     *
      */
-    /*
-    The following code is adapted from...
-    Title: "Perform simple and compound queries in Cloud Firestore"
-    Source: https://firebase.google.com/docs/firestore/query-data/
-    Retrieved: 2026-03-11
-    */
     private void getFilteredEvents() {
         Query query = eventsRef;
 
+        // [1] see code citation
         // filter by role
         if (globalUser.getRole() == Role.ORGANIZER) {
             Log.d("EventsListFragment", "filter organizer: " + globalUser.getUserId());
@@ -226,15 +282,10 @@ public class EventsListFragment extends Fragment {
             query = query.whereEqualTo("name", filterName);
         }
 
-        /*
-        todo: status not sure how this works yet
-        if (filterStatus != null) {
-            query = query.whereEqualTo("name", filterStatus);
-        }
-        */
+        query = filterByEnrollmentStatus(query, filterStatus);
 
         // filter by tags
-        if (filterTags != null) {
+        if (filterTags != null && !filterTags.isEmpty()) {
             Log.d("EventsListFragment", "filter tags: " + filterTags);
             query = query.whereArrayContainsAny("tags", filterTags);
         }
@@ -253,57 +304,58 @@ public class EventsListFragment extends Fragment {
         // do filtered query
         query.get().addOnSuccessListener(queryDocumentSnapshots -> {
             eventsArrayList.clear();
-            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
-                Event event = Event.fetchEventFromSnapshot(snapshot);
 
-                // filter by registration date range
-                if (filterRegStart != null && filterRegEnd != null) {
-                    if (event.getRegistrationEndDate().compareTo(filterRegStart) < 0 || event.getRegistrationStartDate().compareTo(filterRegEnd) > 0) {
-                        continue;  // not in range
-                    }
-                }
-
-                // filter by draw date
-                if (filterDrawDate != null) {
-                    LocalDate eventDate = event.getDrawDate().toLocalDate();
-                    if (!eventDate.equals(filterDrawDate)) {
-                        continue;  // not on draw date
-                    }
-                }
-
-                eventsArrayList.add(event);
+            // [2] see code citation
+            // try to handle empty query
+            if (queryDocumentSnapshots.isEmpty()) {
+                eventsArrayAdapter.notifyDataSetChanged();
+                return;
             }
-            eventsArrayAdapter.notifyDataSetChanged();
+
+            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                Event event = eventUtils.fetchEventFromSnapshot(snapshot);
+                    // filter by registration date range
+                    if (filterRegStart != null && filterRegEnd != null) {
+                        if (event.getRegistrationEndDate().isBefore(filterRegStart) || event.getRegistrationStartDate().isAfter(filterRegEnd)) {
+                            continue;  // not in range
+                        }
+                    }
+
+                    // filter by draw date
+                    if (filterDrawDate != null) {
+                        LocalDate eventDate = event.getDrawDate().toLocalDate();
+                        if (!eventDate.equals(filterDrawDate)) {
+                            continue;  // not on draw date
+                        }
+                    }
+
+                    // get organizer
+                    DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
+                    if (organizerRef != null) {
+                        eventUtils.fetchOrganizerForEvent(event, organizerRef)
+                                .addOnSuccessListener(aVoid -> {
+                                    eventsArrayList.add(event);
+                                    eventsArrayAdapter.notifyDataSetChanged();
+                                });
+                    } else {
+                        eventsArrayList.add(event);
+                        eventsArrayAdapter.notifyDataSetChanged();
+                    }
+            }
         });
     }
 
     /**
-     * Helper to determine whether or not display an event based on user role and ID.
-     *
-     * @param event to check
-     * @param user to get role and ID of
-     * @return boolean of whether or not this event should be displayed in the context
-     */
-    private boolean displayEventForRole(Event event, User user) {
-        if (user.getRole() == Role.ORGANIZER) {
-            Log.d("EventList", "Organizer: " + user.getUserId());
-            return (user.getUserId().equals(event.getOrganizerId()));
-        } else {
-            Log.d("EventList", "User: " + user.getUserId());
-            return true;
-        }
-    }
-
-    /**
      * Helper to convert LocalDate to Timestamp for the end of that date for database comparison.
+     *
+     * Code Citation:
+     *          The following code is adapted from Google AI Overview...
+     *          Query: "java convert local date to timestamp firebase"
+     *          Retrieved: 2026-03-12
+     *
      * @param localDate to convert
      * @return Timestamp result
      */
-    /*
-    The following code is adapted from Google AI Overview...
-    Query: "java convert local date to timestamp firebase"
-    Retrieved: 2026-03-12
-    */
     public static Timestamp convertEndLocalDateToTimestamp(LocalDate localDate) {
         // convert LocalDate to ZonedDateTime using the system's default time zone at midnight
         ZonedDateTime zonedDateTime = localDate
@@ -320,6 +372,11 @@ public class EventsListFragment extends Fragment {
     /**
      * Helper to convert LocalDate to Timestamp for the start of that date for database comparison.
      *
+     * Code Citation:
+     *          The following code is adapted from Google AI Overview...
+     *          Query: "java convert local date to timestamp firebase"
+     *          Retrieved: 2026-03-12
+     *
      * @param localDate to convert
      * @return Timestamp result
      */
@@ -333,5 +390,28 @@ public class EventsListFragment extends Fragment {
 
         // create a Firebase Timestamp from Date
         return new Timestamp(date);
+    }
+
+    /**
+     * Edits the Query based on enrollment status
+     *
+     * @param query
+     * @param enrollmentStatus
+     * @return
+     */
+    private Query filterByEnrollmentStatus(Query query, String enrollmentStatus) {
+        if (enrollmentStatus == null) {
+            return query;   // return unchanged query
+        }
+        String userId = globalUser.getUserId();
+
+        List<String> enrollmentTypes = List.of("waitlist", "invited", "declined", "enrolled");
+
+        for (String enrollmentType : enrollmentTypes) {
+            if (enrollmentStatus.equals(enrollmentType)) {
+                query = query.whereArrayContains(enrollmentType, userId);
+            }
+        }
+        return query;
     }
 }

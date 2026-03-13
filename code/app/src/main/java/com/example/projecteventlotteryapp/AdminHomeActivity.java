@@ -53,7 +53,7 @@ public class AdminHomeActivity extends AppCompatActivity {
         BottomNavigationView bottomNavigationView = findViewById(R.id.bn_events_list_menu);
         bottomNavigationView.setOnItemSelectedListener(item -> {
             if (item.getItemId() == R.id.profile) {
-                startActivity(new Intent(AdminHomeActivity.this, AdminActivity.class));
+                startActivity(new Intent(AdminHomeActivity.this, EntrantSettingsActivity.class));
                 return true;
             }
             return false;

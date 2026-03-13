@@ -1,10 +1,12 @@
 package com.example.projecteventlotteryapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -34,13 +36,15 @@ import java.util.Map;
  */
 public class EntrantSettingsActivity extends AppCompatActivity {
 
-    private FirebaseFirestore db;
+    private FirebaseDB db;
     private String deviceID;
 
     private EditText nameEditText;
     private EditText emailEditText;
     private EditText phoneEditText;
     private Button btnSave;
+    private Button btnDelete;
+    private User globalUser;
 
     /**
      * Entry point of the activity
@@ -56,22 +60,30 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_entrant);
 
         // Initialize Firebase Firestore
-        db = FirebaseFirestore.getInstance();
+        db = new FirebaseDB(FirebaseFirestore.getInstance());
 
         // Get the device ID
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-
         // connects the variables to their UI elements in the xml
         nameEditText = findViewById(R.id.et_name);
         emailEditText = findViewById(R.id.et_edit_email);
         phoneEditText = findViewById(R.id.et_edit_phone);
         btnSave = findViewById(R.id.btn_save_profile);
+        btnDelete = findViewById(R.id.btn_delete_profile);
+        ImageButton btnBack = findViewById(R.id.btn_entrant_back);
+
+        btnBack.setOnClickListener(v -> finish());
+
+        MyApp app = (MyApp) getApplication();
+        globalUser = app.getCurrentUser();
 
         //puts the saved data into the text hints
         loadProfileFromFirestore();
 
         //save when save button is clicked
         btnSave.setOnClickListener(v -> updateProfileInFirestore());
+        btnDelete.setOnClickListener(v -> deleteProfileFromFirestore());
+
     }
 
     /**
@@ -83,11 +95,8 @@ public class EntrantSettingsActivity extends AppCompatActivity {
      * the user to create one.
      */
     private void loadProfileFromFirestore() {
-        //get profile from firestore
-        DocumentReference userRef = db.collection("entrants").document(deviceID);
-
         //check if profile exists
-        userRef.get().addOnSuccessListener(documentSnapshot -> {
+        db.loadUserProfile(deviceID, globalUser.getRole()).addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
                 String name = documentSnapshot.getString("name");
                 String email = documentSnapshot.getString("email");
@@ -125,9 +134,6 @@ public class EntrantSettingsActivity extends AppCompatActivity {
            Toast.makeText(this, "Please fill in all fields", Toast.LENGTH_SHORT).show();
            return;
        }
-        //update profile in firestore
-       DocumentReference ref = db.collection("entrants").document(deviceID);
-
 
        //create a map of the fields to update
         Map<String, Object> updates = new HashMap<>();
@@ -136,7 +142,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         updates.put("phone", phone);
 
         //update the profile
-        ref.update(updates).addOnSuccessListener(unused ->
+        db.updateUserProfile(deviceID, updates, globalUser.getRole()).addOnSuccessListener(unused ->
                 Toast.makeText(this, "Profile updated successfully", Toast.LENGTH_SHORT).show()
         ).addOnFailureListener(e ->{
             Log.e("PROFILE", "Failed to update profile", e);
@@ -145,5 +151,26 @@ public class EntrantSettingsActivity extends AppCompatActivity {
 
     }
 
+    private void deleteProfileFromFirestore() {
+        // TODO: Delete profile from everywhere in database (inside waitlists etc.)
+
+        db.deleteUserProfile(deviceID, globalUser.getRole()).addOnSuccessListener(unused -> {
+            Toast.makeText(this, "Profile deleted successfully", Toast.LENGTH_SHORT).show();
+
+            //clear text fields
+            nameEditText.setText("");
+            emailEditText.setText("");
+            phoneEditText.setText("");
+
+            //close activity and return to the registration screen
+            Intent intent = new Intent(this, RegistrationActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+            finish();
+        }).addOnFailureListener(e -> {
+            Log.e("PROFILE", "Failed to delete profile", e);
+            Toast.makeText(this, "Failed to delete profile", Toast.LENGTH_SHORT).show();
+        });
+    }
 
 }
