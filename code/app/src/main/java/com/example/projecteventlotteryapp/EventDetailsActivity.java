@@ -225,6 +225,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                 eventUtils.removeFromEntrantList(EntrantListType.WAITLIST, user, eventId)
                                         .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully Left Waitlist");
                                             entrantPrimaryButton.setText("Join Waitlist");
+                                            //TODO make this non recursive
                                             configureUIForRole(user);
                                         })
                                         .addOnFailureListener(e -> {Log.d("EventDetails", "Failed to join Waitlist");
@@ -236,8 +237,9 @@ public class EventDetailsActivity extends AppCompatActivity {
                             entrantPrimaryButton.setOnClickListener(v -> {
                                 eventUtils.addToEntrantList(EntrantListType.WAITLIST, user, eventId)
                                         .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully joined Waitlist");
-                                        entrantPrimaryButton.setText("Remove Waitlist");
-                                        configureUIForRole(user);
+                                            entrantPrimaryButton.setText("Remove Waitlist");
+                                            // TODO: make this non recursive
+                                            configureUIForRole(user);
                                         })
                                         .addOnFailureListener(e -> {Log.d("EventDetails", "Failed to join Waitlist");
                                         });
