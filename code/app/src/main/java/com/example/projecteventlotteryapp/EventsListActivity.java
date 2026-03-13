@@ -99,6 +99,7 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
 
         // set click listener for filter button
         filterButton.setOnClickListener(view -> {
+            clearFilters();
             FilterEventsDialogFragment filterEventsDialogFragment = new FilterEventsDialogFragment();
             filterEventsDialogFragment.show(getSupportFragmentManager(), "Filter Events");
         });

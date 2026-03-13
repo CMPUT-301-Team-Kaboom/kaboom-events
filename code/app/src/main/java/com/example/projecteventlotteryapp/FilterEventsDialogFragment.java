@@ -73,8 +73,6 @@ public class FilterEventsDialogFragment extends DialogFragment {
         EditText filterDrawDate = view.findViewById(R.id.et_filter_draw_date);
         Button clearFiltersButton = view.findViewById(R.id.btn_clear_filters);
         Button confirmButton = view.findViewById(R.id.btn_filter_confirm);
-        // TODO: implement tags and enrollment status buttons
-        // not sure how to add more tags visually yet as you type them in
         Button addTagButton = view.findViewById(R.id.btn_add_tag);
         tagContainerLinearLayout = view.findViewById(R.id.ll_filter_tags);
 
@@ -88,36 +86,47 @@ public class FilterEventsDialogFragment extends DialogFragment {
                 .create();
         dialog.getWindow().setBackgroundDrawableResource(android.R.color.transparent);;
 
+        // addTag button logic
+        addTagButton.setOnClickListener(v -> {
+            EditText input = new EditText(requireContext());
+            input.setHint("Enter Tag");
+
+            new AlertDialog.Builder(requireContext())
+                    .setTitle("Enter value")
+                    .setView(input)
+                    .setPositiveButton("Add", (nestedDialog, which) -> {
+
+                        String tagText = input.getText().toString().trim().toUpperCase();
+
+                        if (!tagText.isEmpty()) {
+                            addNewTagBox(tagText);
+                        }
+
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .show();
+        });
+
+        // clear Filter logic
+        clearFiltersButton.setOnClickListener(v -> {
+            listener.clearFilters();
+            dialog.dismiss();
+        });
+
         confirmButton.setOnClickListener(v -> {
             // validation
             boolean isValid = true;
 
-            String name = filterName.getText().toString().trim();
-            if (name.isEmpty()) {
-                name = null;
-            }
             // TODO: implement status
             String status = null;
 
-            // TODO: implement tags
+            String name = getTextOrNull(filterName);
 
-            // initialize date filters to null
-            LocalDate regStart = null;
-            LocalDate regEnd = null;
-            LocalDate drawDate = null;
+            // initialize date filters
+            LocalDate regStart = getLocalDateOrNull(filterRegStart);
+            LocalDate regEnd = getLocalDateOrNull(filterRegEnd);
+            LocalDate drawDate = getLocalDateOrNull(filterDrawDate);
 
-            // only parse if date not null
-            if (!filterRegStart.getText().toString().isEmpty()) {
-                regStart = LocalDate.parse(filterRegStart.getText().toString().trim());
-            }
-
-            if (!filterRegEnd.getText().toString().isEmpty()) {
-                regEnd = LocalDate.parse(filterRegEnd.getText().toString().trim());
-            }
-
-            if (!filterDrawDate.getText().toString().isEmpty()) {
-                drawDate = LocalDate.parse(filterDrawDate.getText().toString().trim());
-            }
             if (regStart != null && regEnd != null && !regEnd.isAfter(regStart)) {
                 filterRegEnd.setError("Must be after start date");
                 isValid = false;
@@ -142,31 +151,6 @@ public class FilterEventsDialogFragment extends DialogFragment {
                 listener.filterEvents(name, status, tags, regStart, regEnd, drawDate);
             }
 
-            dialog.dismiss();
-        });
-
-        addTagButton.setOnClickListener(v -> {
-            EditText input = new EditText(requireContext());
-            input.setHint("Enter Tag");
-
-            new AlertDialog.Builder(requireContext())
-                .setTitle("Enter value")
-                .setView(input)
-                .setPositiveButton("Add", (nestedDialog, which) -> {
-
-                    String tagText = input.getText().toString().trim().toUpperCase();
-
-                    if (!tagText.isEmpty()) {
-                        addNewTagBox(tagText);
-                    }
-
-                })
-                .setNegativeButton("Cancel", null)
-                .show();
-        });
-
-        clearFiltersButton.setOnClickListener(v -> {
-            listener.clearFilters();
             dialog.dismiss();
         });
 
@@ -205,6 +189,44 @@ public class FilterEventsDialogFragment extends DialogFragment {
         });
     }
 
+//    private boolean validateDates( LocalDate regStart, LocalDate regEnd,LocalDate drawDate) {
+//        boolean isValid = true;
+//
+//        if (regStart != null && regEnd != null && !regEnd.isAfter(regStart)) {
+//            filterRegEnd.setError("Must be after start date");
+//            isValid = false;
+//        }
+//
+//        if (drawDate != null && regEnd != null && !drawDate.isAfter(regEnd)) {
+//            filterDrawDate.setError("Must be after registration end date");
+//            isValid = false;
+//        }
+//
+//        return isValid;
+//    }
+
+
+    private String getTextOrNull(EditText editText) {
+        String text = editText.getText().toString().trim();
+        if (text.isEmpty()) {
+            return null;
+        }
+        return text;
+    }
+
+    /**
+     * Helper function to extract the LocalDate from an EditText or null
+     *
+     * @param editText the editText to extract from; MUST be set by a datePicker
+     * @return
+     */
+    private LocalDate getLocalDateOrNull(EditText editText) {
+        String dateText = editText.getText().toString();
+        if (dateText.isEmpty()) {
+            return null;
+        }
+        return LocalDate.parse(dateText);
+    }
 
     /**
      * Adds a new textbox to the fragment_filter_events tags linear layout

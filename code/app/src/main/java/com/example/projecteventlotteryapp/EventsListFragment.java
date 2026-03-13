@@ -94,6 +94,15 @@ public class EventsListFragment extends Fragment {
      *
      * <p>If the user is an entrant, all events are displayed.</p>
      *
+     * Code Citation:
+     *     [1] The following code is adapted from...
+     *         Author: user658042
+     *         Title: "Using context in a fragment"
+     *         Answer: https://stackoverflow.com/a/8215398
+     *         Date: 2011-11-12
+     *         Retrieved: 2026-02-28
+     *         License: CC-BY-SA 4.0
+     *
      * @param inflater The LayoutInflater object that can be used to inflate
      * any views in the fragment,
      * @param container If non-null, this is the parent view that the fragment's
@@ -112,15 +121,8 @@ public class EventsListFragment extends Fragment {
         // setup ListView and EventArrayAdapter
         eventsListView = view.findViewById(R.id.lv_events_list);
         eventsArrayList = new ArrayList<Event>();
-        /*
-        The following code is adapted from...
-        Author: user658042
-        Title: "Using context in a fragment"
-        Answer: https://stackoverflow.com/a/8215398
-        Date: 2011-11-12
-        Retrieved: 2026-02-28
-        License: CC-BY-SA 4.0
-        */
+
+        // [1] see code citation
         eventsArrayAdapter = new EventArrayAdapter(getActivity(), eventsArrayList);
         eventsListView.setAdapter(eventsArrayAdapter);
 
@@ -194,9 +196,6 @@ public class EventsListFragment extends Fragment {
         filterName = name;
         filterStatus = status;
         filterTags = tags;
-        if (tags != null) {
-            filterTags = new ArrayList<>(tags);
-        }
         filterRegStart = regStart;
         filterRegEnd = regEnd;
         filterDrawDate = drawDate;
@@ -209,6 +208,15 @@ public class EventsListFragment extends Fragment {
      *  Get all events again without filters.
      */
     void clearFilters() {
+
+        filterName = null;
+        filterStatus = null;
+        filterTags = null;
+        filterRegStart = null;
+        filterRegEnd = null;
+        filterDrawDate = null;
+
+        Log.d("EventListFragment", "Cleared Filters");
         getEventsForRole();
     }
 
@@ -248,7 +256,7 @@ public class EventsListFragment extends Fragment {
         */
 
         // filter by tags
-        if (filterTags != null) {
+        if (filterTags != null && !filterTags.isEmpty()) {
             Log.d("EventsListFragment", "filter tags: " + filterTags);
             query = query.whereArrayContainsAny("tags", filterTags);
         }
