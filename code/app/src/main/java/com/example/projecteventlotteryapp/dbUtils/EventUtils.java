@@ -7,7 +7,6 @@ import com.example.projecteventlotteryapp.Event;
 import com.example.projecteventlotteryapp.User;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
@@ -46,13 +45,11 @@ public class EventUtils {
      * <p>This method converts an {@link EntrantListType} enum value into the
      * associated Firestore field used to store that list.</p>
      *
-     * TODO: Consider moving to the EntrantListType enum
-     *
      * @param type the entrant list type
      * @return the Firestore field name representing the list
      * @throws IllegalArgumentException if the list type is unknown
      */
-    public String getListField(EntrantListType type) {
+    public String getDbEntrantListFieldName(EntrantListType type) {
         switch (type) {
             case WAITLIST:
                 return "waitlist";
@@ -88,7 +85,7 @@ public class EventUtils {
             DocumentSnapshot doc = task.getResult();
             if (!doc.exists()) { return false;}
 
-            ArrayList<String> entrantList = (ArrayList<String>) doc.get(getListField(listType));
+            ArrayList<String> entrantList = (ArrayList<String>) doc.get(getDbEntrantListFieldName(listType));
 
             return entrantList != null && entrantList.contains(entrant.getUserId());
         });
@@ -114,7 +111,7 @@ public class EventUtils {
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
         HashMap<String, Object> updates = new HashMap<>();
-        String listField = getListField(listType);
+        String listField = getDbEntrantListFieldName(listType);
         updates.put(listField, FieldValue.arrayUnion(entrant.getUserId()));
 
         if (listField.equals("waitlist")) {
@@ -136,7 +133,7 @@ public class EventUtils {
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
         HashMap<String, Object> updates = new HashMap<>();
-        String listField = getListField(listType);
+        String listField = getDbEntrantListFieldName(listType);
         updates.put(listField, FieldValue.arrayRemove(entrant.getUserId()));
         if (listField.equals("waitlist")) {
             updates.put("waitlistSize", FieldValue.increment(-1));

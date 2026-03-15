@@ -4,7 +4,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.junit.Assert.*;
 
-import com.example.projecteventlotteryapp.dbUtils.FirebaseDB;
+import com.example.projecteventlotteryapp.dbUtils.UserUtils;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -29,7 +29,7 @@ public class EntrantProfileTest {
     @Mock
     DocumentReference documentReference;
     @InjectMocks
-    FirebaseDB service;
+    UserUtils service;
 
     String deviceID;
     Role userRole;
@@ -38,7 +38,7 @@ public class EntrantProfileTest {
     public void setup(){
         MockitoAnnotations.openMocks(this);
 
-        service = new FirebaseDB(db);
+        service = new UserUtils(db);
 
         deviceID = "device123";
         userRole = Role.ENTRANT;

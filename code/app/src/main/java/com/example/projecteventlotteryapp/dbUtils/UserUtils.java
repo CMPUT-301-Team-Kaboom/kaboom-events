@@ -8,17 +8,17 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.Map;
 
 /**
- * Database class to handle all database operations
+ * Database utility class to handle all database operations on User classes
  *
- * <p>This class is designed to encapsulated all database operates. An instance of this
+ * <p>This class is designed to encapsulated all user database operates. An instance of this
  *  class should be declared with an injection of the database instance that the operations are
  *  performed on.</p>
  *
  * @author Ashley Kang (akang2)
  */
-public class FirebaseDB {
+public class UserUtils {
     private FirebaseFirestore db;
-    public FirebaseDB(FirebaseFirestore db){
+    public UserUtils(FirebaseFirestore db){
         this.db = db;
     }
 
