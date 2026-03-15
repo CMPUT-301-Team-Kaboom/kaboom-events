@@ -36,8 +36,6 @@ public class Event {
     // private map
     private String poster;
 
-    private FirebaseFirestore db;
-    private DocumentReference eventDoc;
 
     /**
      * Creates a new Event object with basic event information.
