@@ -1,10 +1,10 @@
 package com.example.projecteventlotteryapp;
 
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.junit.Assert.*;
 
+import com.example.projecteventlotteryapp.dbUtils.FirebaseDB;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,7 +28,8 @@ public class EntrantProfileTest {
     CollectionReference collectionReference;
     @Mock
     DocumentReference documentReference;
-    @InjectMocks FirebaseDB service;
+    @InjectMocks
+    FirebaseDB service;
 
     String deviceID;
     Role userRole;

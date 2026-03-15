@@ -1,5 +1,6 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.dbUtils;
 
+import com.example.projecteventlotteryapp.Role;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;

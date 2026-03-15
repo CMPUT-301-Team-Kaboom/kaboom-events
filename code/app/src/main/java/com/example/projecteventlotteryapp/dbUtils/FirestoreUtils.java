@@ -1,4 +1,4 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.dbUtils;
 
 import com.google.firebase.Timestamp;
 

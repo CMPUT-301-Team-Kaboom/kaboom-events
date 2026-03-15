@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.firestore.DocumentReference;
+import com.example.projecteventlotteryapp.dbUtils.FirebaseDB;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;

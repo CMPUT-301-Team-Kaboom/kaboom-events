@@ -1,7 +1,10 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.dbUtils;
 
 import android.util.Log;
 
+import com.example.projecteventlotteryapp.EntrantListType;
+import com.example.projecteventlotteryapp.Event;
+import com.example.projecteventlotteryapp.User;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Timestamp;
@@ -9,14 +12,12 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
