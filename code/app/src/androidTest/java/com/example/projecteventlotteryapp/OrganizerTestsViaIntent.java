@@ -11,6 +11,8 @@ import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import android.content.Intent;
 
@@ -20,8 +22,11 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.example.projecteventlotteryapp.dbUtils.EventUtils;
+import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.junit.After;
@@ -112,6 +117,38 @@ public class OrganizerTestsViaIntent {
             Tasks.await(db.collection("events").document(testEventId).set(eventData));
         } catch (ExecutionException | InterruptedException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    @Test
+    public void testCreateNewEventDBItem() throws ExecutionException, InterruptedException {
+        Event event = new Event(
+                testEventId,
+                "Test Event",
+                LocalDate.now().minusDays(1),
+                LocalDate.now().plusDays(1),
+                LocalDateTime.now().plusDays(7),
+                10
+        );
+
+        // Act
+        MyApp app = (MyApp) ApplicationProvider.getApplicationContext();
+        try {
+            // Act: create the event
+            eventUtils.createNewEventDbItem(event, app.getCurrentUser().getUserId());
+
+            // Assert: verify it exists in Firestore
+            DocumentSnapshot snapshot = Tasks.await(db.collection("events").document(testEventId).get());
+            assertTrue(snapshot.exists());
+            assertEquals("Test Event", snapshot.getString("name"));
+
+        } finally {
+            // Tear down: delete the event so it doesn't persist after the test
+            try {
+                Tasks.await(db.collection("events").document(testEventId).delete());
+            } catch (ExecutionException | InterruptedException e) {
+                e.printStackTrace();
+            }
         }
     }
 

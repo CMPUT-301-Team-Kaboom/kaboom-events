@@ -1,22 +1,22 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.dbUtils;
 
 import android.util.Log;
 
+import com.example.projecteventlotteryapp.EntrantListType;
+import com.example.projecteventlotteryapp.Event;
+import com.example.projecteventlotteryapp.User;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
-import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.storage.FirebaseStorage;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -45,13 +45,11 @@ public class EventUtils {
      * <p>This method converts an {@link EntrantListType} enum value into the
      * associated Firestore field used to store that list.</p>
      *
-     * TODO: Consider moving to the EntrantListType enum
-     *
      * @param type the entrant list type
      * @return the Firestore field name representing the list
      * @throws IllegalArgumentException if the list type is unknown
      */
-    public String getListField(EntrantListType type) {
+    public String getDbEntrantListFieldName(EntrantListType type) {
         switch (type) {
             case WAITLIST:
                 return "waitlist";
@@ -87,7 +85,7 @@ public class EventUtils {
             DocumentSnapshot doc = task.getResult();
             if (!doc.exists()) { return false;}
 
-            ArrayList<String> entrantList = (ArrayList<String>) doc.get(getListField(listType));
+            ArrayList<String> entrantList = (ArrayList<String>) doc.get(getDbEntrantListFieldName(listType));
 
             return entrantList != null && entrantList.contains(entrant.getUserId());
         });
@@ -113,7 +111,7 @@ public class EventUtils {
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
         HashMap<String, Object> updates = new HashMap<>();
-        String listField = getListField(listType);
+        String listField = getDbEntrantListFieldName(listType);
         updates.put(listField, FieldValue.arrayUnion(entrant.getUserId()));
 
         if (listField.equals("waitlist")) {
@@ -135,7 +133,7 @@ public class EventUtils {
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
         HashMap<String, Object> updates = new HashMap<>();
-        String listField = getListField(listType);
+        String listField = getDbEntrantListFieldName(listType);
         updates.put(listField, FieldValue.arrayRemove(entrant.getUserId()));
         if (listField.equals("waitlist")) {
             updates.put("waitlistSize", FieldValue.increment(-1));
@@ -188,20 +186,20 @@ public class EventUtils {
         String qrcodePath = snapshot.getString("qrCodePath");
 
         // get number fields
-        int attendeesLimit = fetchInt(snapshot, "entrantsLimit");
-        int waitlistLimit = fetchInt(snapshot, "waitlistLimit");
-        int waitlistSize = fetchInt(snapshot, "waitlistSize");
+        int attendeesLimit = FirestoreUtils.fetchInt(snapshot, "entrantsLimit", -1);
+        int waitlistLimit = FirestoreUtils.fetchInt(snapshot, "waitlistLimit", -1);
+        int waitlistSize = FirestoreUtils.fetchInt(snapshot, "waitlistSize", -1);
 
         // get boolean field
-        boolean geolocationEnabled = fetchBoolean(snapshot, "geoLocationEnabled");
+        boolean geolocationEnabled = FirestoreUtils.fetchBoolean(snapshot, "geoLocationEnabled", false);
 
         // get timestamp fields
-        LocalDateTime drawDate = fetchLocalDateTime(snapshot, "drawDate");
-        LocalDate registrationEndDate = fetchLocalDate(snapshot, "registrationEndDate");
-        LocalDate registrationStartDate = fetchLocalDate(snapshot, "registrationStartDate");
+        LocalDateTime drawDate = FirestoreUtils.fetchLocalDateTime(snapshot, "drawDate");
+        LocalDate registrationEndDate = FirestoreUtils.fetchLocalDate(snapshot, "registrationEndDate");
+        LocalDate registrationStartDate = FirestoreUtils.fetchLocalDate(snapshot, "registrationStartDate");
 
         // get array field
-        ArrayList<String> tagsList = fetchStringArrayList(snapshot, "tags");
+        ArrayList<String> tagsList = FirestoreUtils.fetchStringArrayList(snapshot, "tags");
 
         DocumentReference organizer = snapshot.getDocumentReference("organizer");
 
@@ -226,104 +224,6 @@ public class EventUtils {
     }
 
     /**
-     * Fetches an int value from an event document snapshot
-     * @param snapshot snapshot of the event
-     * @param field the field we want the value of
-     * @return the value of the fetched field
-     */
-    private int fetchInt(DocumentSnapshot snapshot, String field) {
-        Long value = snapshot.getLong(field);
-
-        if (value != null) {
-            return value.intValue();
-        } else {
-            return -1;
-        }
-    }
-
-    /**
-     * Fetches a localDate value from an event document snapshot
-     * @param snapshot snapshot of the event
-     * @param field the field we want the value of
-     * @return the value of the fetched field
-     */
-    private LocalDate fetchLocalDate(DocumentSnapshot snapshot, String field) {
-        /*
-        The following code is adapted from...
-        Author: Ruslan https://stackoverflow.com/users/2032701/ruslan
-        Title: "How to convert java.sql.timestamp to LocalDate (java8) java.time?"
-        Answer: https://stackoverflow.com/a/57101544
-        Date: 2019-07-18
-        Retrieved: 2026-02-28
-        License: CC-BY-SA 4.0
-        */
-        Timestamp value = snapshot.getTimestamp(field);
-
-        if (value != null) {
-            return value.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Fetches a LocalDateTime value from an event document snapshot
-     * @param snapshot snapshot of the event
-     * @param field the field we want the value of
-     * @return the value of the fetched field
-     */
-    private LocalDateTime fetchLocalDateTime(DocumentSnapshot snapshot, String field) {
-        Timestamp value = snapshot.getTimestamp(field);
-
-        if (value != null) {
-            return value.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-        } else {
-            return null;
-        }
-    }
-
-    /**
-     * Fetches a boolean value from an event document snapshot
-     * @param snapshot snapshot of the event
-     * @param field the field we want the value of
-     * @return the value of the fetched field
-     */
-    private boolean fetchBoolean(DocumentSnapshot snapshot, String field) {
-        Boolean value = snapshot.getBoolean(field);
-
-        if (value != null) {
-            return value.booleanValue();
-        } else {
-            return false;
-        }
-    }
-
-    /**
-     * Fetches a String list value from an event document snapshot and returns an ArrayList representation of it
-     * @param snapshot snapshot of the event
-     * @param field the field we want the value of
-     * @return Arraylist of the string list
-     */
-    private ArrayList<String> fetchStringArrayList(DocumentSnapshot snapshot, String field) {
-        /*
-        The following code is adapted from...
-        Author: Doug Stevenson https://stackoverflow.com/users/807126/doug-stevenson
-        Title: "How to get an array from Firestore?"
-        Answer: https://stackoverflow.com/a/50236950
-        Date: 2018-05-08
-        Retrieved: 2026-02-28
-        License: CC-BY-SA 4.0
-        */
-        Object value = snapshot.get(field);
-
-        if (value instanceof ArrayList) {
-            return (ArrayList<String>) value;
-        } else {
-            return new ArrayList<String>();
-        }
-    }
-
-    /**
      * Creates and uploads a new Event database object
      *
      * <p>Uses an Event instance and uploads it to the database. Only populates the following attributes:
@@ -335,26 +235,28 @@ public class EventUtils {
      * drawDate
      * entrantsLimit
      *
-     * All other values are initialized to null or the equivalent default value
-     * Further event refinement is handled by event editing</p>
+     * All other values are initialized to null or the equivalent default value</p>
+     *
+     * <p>This function is ONLY to be used to create a new Event db entry with the values required at
+     * creation. This is to ensure all initial values are set accordingly. Further event attribute
+     * refinements are handled using the associated Event db entry update methods.</p>
      *
      * @param event the Event that is to be uploaded
      * @param organizerId the user ID of the organizer of the event
      */
     public void createNewEventDbItem(Event event, String organizerId) {
-        // Inputted values
         HashMap<String, Object> eventData = new HashMap<>();
 
+        // Helper variable initialization
         DocumentReference organizerRef =
                 db.collection("organizers").document(organizerId);
         DocumentReference defaultPoster =
                 db.collection("posters").document("default_poster");
+        ZoneId zoneId = ZoneId.systemDefault();
+
+        // Mandatory values
         eventData.put("organizer", organizerRef);
         eventData.put("name", event.getName());
-        eventData.put("poster", defaultPoster);
-
-        ZoneId zoneId = ZoneId.systemDefault();
-        // TODO: update to grab system zoneid
         eventData.put(
                 "drawDate",
                 FirestoreUtils.localDateTimeToTimestamp(
@@ -378,7 +280,8 @@ public class EventUtils {
         );
         eventData.put("entrantsLimit", event.getAttendeesLimit());
 
-        // setting null values
+        // setting null values these
+        eventData.put("poster", defaultPoster);
         eventData.put("waitlistSize", 0);
         eventData.put("description", null);
         eventData.put("geoLocationEnabled", false);
@@ -388,7 +291,7 @@ public class EventUtils {
         eventData.put("waitlistLimit", -1);  // -1 indicates no limit
         eventData.put("waitlist", new ArrayList<>());
         eventData.put("enrolled", new ArrayList<>());
-        eventData.put("invited", new ArrayList<>());
+        eventData.put("invited",  new ArrayList<>());
         eventData.put("declined", new ArrayList<>());
 
         db.collection("events")

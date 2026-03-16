@@ -11,7 +11,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.firebase.firestore.DocumentReference;
+import com.example.projecteventlotteryapp.dbUtils.UserUtils;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.HashMap;
@@ -36,7 +36,7 @@ import java.util.Map;
  */
 public class EntrantSettingsActivity extends AppCompatActivity {
 
-    private FirebaseDB db;
+    private UserUtils db;
     private String deviceID;
 
     private EditText nameEditText;
@@ -60,7 +60,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         setContentView(R.layout.activity_entrant);
 
         // Initialize Firebase Firestore
-        db = new FirebaseDB(FirebaseFirestore.getInstance());
+        db = new UserUtils(FirebaseFirestore.getInstance());
 
         // Get the device ID
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
