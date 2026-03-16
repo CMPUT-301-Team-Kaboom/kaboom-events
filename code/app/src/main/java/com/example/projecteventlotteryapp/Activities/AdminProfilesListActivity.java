@@ -1,4 +1,4 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.Activities;
 
 import android.os.Bundle;
 import android.widget.ImageButton;
@@ -8,6 +8,8 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.projecteventlotteryapp.Enums.Role;
 import com.example.projecteventlotteryapp.Models.User;
+import com.example.projecteventlotteryapp.ProfileArrayAdapter;
+import com.example.projecteventlotteryapp.R;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 

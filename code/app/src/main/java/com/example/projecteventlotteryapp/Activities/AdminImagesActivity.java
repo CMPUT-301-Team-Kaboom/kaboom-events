@@ -1,4 +1,4 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.Activities;
 
 import android.os.Bundle;
 import android.widget.ImageButton;
@@ -8,7 +8,10 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.projecteventlotteryapp.AdminImagesAdapter;
 import com.example.projecteventlotteryapp.Models.Image;
+import com.example.projecteventlotteryapp.PosterImageHandler;
+import com.example.projecteventlotteryapp.R;
 
 import java.util.ArrayList;
 

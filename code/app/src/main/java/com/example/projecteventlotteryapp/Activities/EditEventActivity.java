@@ -1,6 +1,6 @@
 // references: https://www.geeksforgeeks.org/android/how-to-generate-qr-code-in-android/
 
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.Activities;
 
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
@@ -18,6 +18,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
 import com.example.projecteventlotteryapp.Models.Event;
+import com.example.projecteventlotteryapp.PosterImageHandler;
+import com.example.projecteventlotteryapp.R;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.google.firebase.firestore.FirebaseFirestore;

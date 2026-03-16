@@ -22,6 +22,12 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.example.projecteventlotteryapp.Activities.EditEventActivity;
+import com.example.projecteventlotteryapp.Activities.EventDetailsActivity;
+import com.example.projecteventlotteryapp.Activities.OrganizerDeclinedActivity;
+import com.example.projecteventlotteryapp.Activities.OrganizerEnrolledActivity;
+import com.example.projecteventlotteryapp.Activities.OrganizerInvitedActivity;
+import com.example.projecteventlotteryapp.Activities.OrganizerWaitlistActivity;
 import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.Enums.Role;
 import com.example.projecteventlotteryapp.Models.User;

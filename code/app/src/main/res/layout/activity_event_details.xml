@@ -6,7 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primaryBackground"
-    tools:context=".EventDetailsActivity">
+    tools:context=".Activities.EventDetailsActivity">
 
 
     <androidx.constraintlayout.widget.ConstraintLayout

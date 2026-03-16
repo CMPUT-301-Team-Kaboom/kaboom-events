@@ -2,6 +2,7 @@ package com.example.projecteventlotteryapp;
 
 import android.net.Uri;
 
+import com.example.projecteventlotteryapp.Activities.EditEventActivity;
 import com.example.projecteventlotteryapp.Models.Image;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;

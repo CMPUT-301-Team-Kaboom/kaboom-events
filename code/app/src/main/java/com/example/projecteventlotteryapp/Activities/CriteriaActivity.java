@@ -1,8 +1,10 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.Activities;
 
 import android.os.Bundle;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.projecteventlotteryapp.R;
 
 public class CriteriaActivity extends AppCompatActivity {
     @Override
