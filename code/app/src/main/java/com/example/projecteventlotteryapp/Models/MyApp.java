@@ -1,9 +1,7 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.Models;
 
 import android.app.Application;
 import android.util.Log;
-
-import com.example.projecteventlotteryapp.Models.User;
 
 /**
  * Application level class used to store global application state.

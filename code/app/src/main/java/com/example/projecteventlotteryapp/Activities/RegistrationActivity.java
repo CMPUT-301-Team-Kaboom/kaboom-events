@@ -18,7 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.projecteventlotteryapp.Enums.Role;
 import com.example.projecteventlotteryapp.EventsListActivity;
 import com.example.projecteventlotteryapp.Models.User;
-import com.example.projecteventlotteryapp.MyApp;
+import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.R;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;

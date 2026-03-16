@@ -24,7 +24,7 @@ import com.example.projecteventlotteryapp.Enums.EntrantListType;
 import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.Enums.Role;
 import com.example.projecteventlotteryapp.Models.User;
-import com.example.projecteventlotteryapp.MyApp;
+import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.R;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.google.android.gms.tasks.OnCompleteListener;

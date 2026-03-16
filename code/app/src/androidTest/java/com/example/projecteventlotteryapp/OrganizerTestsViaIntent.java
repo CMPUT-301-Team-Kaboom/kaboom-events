@@ -30,6 +30,7 @@ import com.example.projecteventlotteryapp.Activities.OrganizerInvitedActivity;
 import com.example.projecteventlotteryapp.Activities.OrganizerWaitlistActivity;
 import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.Enums.Role;
+import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
