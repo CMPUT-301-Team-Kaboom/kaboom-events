@@ -6,6 +6,8 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.projecteventlotteryapp.Enums.Role;
+import com.example.projecteventlotteryapp.Models.User;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -50,7 +52,7 @@ public class AdminProfilesListActivity extends AppCompatActivity {
             if (task.isSuccessful() && task.getResult() != null) {
                 profileDataList.clear();
                 for (DocumentSnapshot doc : task.getResult().getDocuments()) {
-                    User user = new User(Role.ENTRANT, doc.getId(), 
+                    User user = new User(Role.ENTRANT, doc.getId(),
                             doc.getString("name"), 
                             doc.getString("email"), 
                             doc.getString("phone"));

@@ -22,6 +22,9 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.example.projecteventlotteryapp.Models.Event;
+import com.example.projecteventlotteryapp.Enums.Role;
+import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.google.android.gms.tasks.Tasks;

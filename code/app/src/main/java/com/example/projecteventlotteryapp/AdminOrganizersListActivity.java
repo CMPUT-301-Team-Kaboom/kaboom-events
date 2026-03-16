@@ -7,6 +7,8 @@ import android.widget.ListView;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.projecteventlotteryapp.Enums.Role;
+import com.example.projecteventlotteryapp.Models.User;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -61,7 +63,7 @@ public class AdminOrganizersListActivity extends AppCompatActivity {
             if (task.isSuccessful() && task.getResult() != null) {
                 organizerDataList.clear();
                 for (DocumentSnapshot doc : task.getResult().getDocuments()) {
-                    User user = new User(Role.ORGANIZER, doc.getId(), 
+                    User user = new User(Role.ORGANIZER, doc.getId(),
                             doc.getString("name"), 
                             doc.getString("email"), 
                             doc.getString("phoneNumber"));

@@ -15,6 +15,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
 
+import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.google.firebase.firestore.FirebaseFirestore;
 

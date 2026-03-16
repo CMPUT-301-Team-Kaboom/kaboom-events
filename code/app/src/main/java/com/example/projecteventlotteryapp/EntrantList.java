@@ -1,6 +1,7 @@
 package com.example.projecteventlotteryapp;
 
-import android.util.Log;
+import com.example.projecteventlotteryapp.Enums.Role;
+import com.example.projecteventlotteryapp.Models.User;
 
 import java.io.Serializable;
 import java.util.ArrayList;

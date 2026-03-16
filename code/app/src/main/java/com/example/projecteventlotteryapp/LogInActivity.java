@@ -12,6 +12,8 @@ import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.projecteventlotteryapp.Enums.Role;
+import com.example.projecteventlotteryapp.Models.User;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**

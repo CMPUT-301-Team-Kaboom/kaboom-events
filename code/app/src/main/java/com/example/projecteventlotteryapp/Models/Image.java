@@ -1,6 +1,4 @@
-package com.example.projecteventlotteryapp;
-
-import android.net.Uri;
+package com.example.projecteventlotteryapp.Models;
 
 /**
  * Represents an image in the app.

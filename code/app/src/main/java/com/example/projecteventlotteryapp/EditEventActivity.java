@@ -17,6 +17,7 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
+import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.google.firebase.firestore.FirebaseFirestore;

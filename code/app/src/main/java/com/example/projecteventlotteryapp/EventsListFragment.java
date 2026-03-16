@@ -13,6 +13,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
 
+import com.example.projecteventlotteryapp.Models.Event;
+import com.example.projecteventlotteryapp.Enums.Role;
+import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;

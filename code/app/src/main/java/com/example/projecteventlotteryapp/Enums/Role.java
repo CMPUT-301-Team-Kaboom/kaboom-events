@@ -1,4 +1,4 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.Enums;
 
 public enum Role {
     ADMIN,
