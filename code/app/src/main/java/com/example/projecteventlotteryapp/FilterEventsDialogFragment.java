@@ -1,4 +1,4 @@
-package com.example.projecteventlotteryapp.Controllers;
+package com.example.projecteventlotteryapp;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -17,8 +17,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.ToggleButton;
-
-import com.example.projecteventlotteryapp.R;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
