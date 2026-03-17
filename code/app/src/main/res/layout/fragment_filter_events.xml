@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@drawable/rounded_container"
     android:padding="22dp"
-    tools:context=".FilterEventsDialogFragment">
+    tools:context=".Controllers.FilterEventsDialogFragment">
 
     <TextView
         style="@style/MainHeaderTextviewStyle"

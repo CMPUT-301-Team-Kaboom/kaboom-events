@@ -14,6 +14,7 @@ import android.widget.ListView;
 
 
 import com.example.projecteventlotteryapp.Activities.EventDetailsActivity;
+import com.example.projecteventlotteryapp.Controllers.EventArrayAdapter;
 import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.Enums.Role;
 import com.example.projecteventlotteryapp.Models.MyApp;

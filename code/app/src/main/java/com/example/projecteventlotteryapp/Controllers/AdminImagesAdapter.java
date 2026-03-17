@@ -1,4 +1,4 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.Controllers;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
 import com.example.projecteventlotteryapp.Models.Image;
+import com.example.projecteventlotteryapp.PosterImageHandler;
+import com.example.projecteventlotteryapp.R;
 
 import java.util.ArrayList;
 

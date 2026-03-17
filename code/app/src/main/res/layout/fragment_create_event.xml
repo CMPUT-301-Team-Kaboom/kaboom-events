@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/tertiaryBackground"
-    tools:context=".CreateEventDialogFragment">
+    tools:context=".Controllers.CreateEventDialogFragment">
 
 
     <TextView

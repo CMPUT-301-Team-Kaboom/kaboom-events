@@ -10,7 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.example.projecteventlotteryapp.OrganizerEntrantListAdapter;
+import com.example.projecteventlotteryapp.Controllers.OrganizerEntrantListAdapter;
 import com.example.projecteventlotteryapp.R;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;

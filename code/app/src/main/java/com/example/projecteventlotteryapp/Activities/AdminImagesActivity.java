@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.projecteventlotteryapp.AdminImagesAdapter;
+import com.example.projecteventlotteryapp.Controllers.AdminImagesAdapter;
 import com.example.projecteventlotteryapp.Models.Image;
 import com.example.projecteventlotteryapp.PosterImageHandler;
 import com.example.projecteventlotteryapp.R;
