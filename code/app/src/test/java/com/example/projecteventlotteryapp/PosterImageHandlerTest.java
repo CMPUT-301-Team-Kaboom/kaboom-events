@@ -18,6 +18,7 @@ import static org.mockito.Mockito.when;
 
 import android.net.Uri;
 
+import com.example.projecteventlotteryapp.Models.Image;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;

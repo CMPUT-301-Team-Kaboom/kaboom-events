@@ -1,4 +1,4 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.Models;
 
 import android.app.Application;
 import android.util.Log;

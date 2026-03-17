@@ -2,9 +2,9 @@ package com.example.projecteventlotteryapp.dbUtils;
 
 import android.util.Log;
 
-import com.example.projecteventlotteryapp.EntrantListType;
-import com.example.projecteventlotteryapp.Event;
-import com.example.projecteventlotteryapp.User;
+import com.example.projecteventlotteryapp.Enums.EntrantListType;
+import com.example.projecteventlotteryapp.Models.Event;
+import com.example.projecteventlotteryapp.Models.User;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;

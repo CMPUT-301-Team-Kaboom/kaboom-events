@@ -1,4 +1,4 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,6 +12,9 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.example.projecteventlotteryapp.AdminEventArrayAdapter;
+import com.example.projecteventlotteryapp.Models.Event;
+import com.example.projecteventlotteryapp.R;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;

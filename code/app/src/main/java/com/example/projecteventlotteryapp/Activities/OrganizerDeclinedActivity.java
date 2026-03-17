@@ -1,4 +1,4 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,26 +10,28 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.projecteventlotteryapp.OrganizerEntrantListAdapter;
+import com.example.projecteventlotteryapp.R;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
-public class OrganizerEnrolledActivity extends AppCompatActivity {
+public class OrganizerDeclinedActivity extends AppCompatActivity {
     private String eventId;
     private OrganizerEntrantListAdapter adapter;
-    private ListView enrolledListView;
+    private ListView declinedListView;
     private ImageButton backBtn;
-    private ArrayList<String> enrolled;
+    private ArrayList<String> declined;
     private FirebaseFirestore db;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_organizer_enrolled);
+        setContentView(R.layout.activity_organizer_declined);
 
-        enrolledListView = findViewById(R.id.lv_organizer_enrolled_list);
+        declinedListView = findViewById(R.id.lv_organizer_declined_list);
         Intent intent  = getIntent();
         eventId = intent.getStringExtra("eventID");
 
@@ -40,20 +42,20 @@ public class OrganizerEnrolledActivity extends AppCompatActivity {
             if (task.isSuccessful()){
                 DocumentSnapshot doc = task.getResult();
                 if(doc.exists()){
-                    enrolled = (ArrayList<String>) doc.get("enrolled");
+                    declined = (ArrayList<String>) doc.get("declined");
 
-                    adapter = new OrganizerEntrantListAdapter(this, enrolled);
-                    enrolledListView.setAdapter(adapter);
+                    adapter = new OrganizerEntrantListAdapter(this, declined);
+                    declinedListView.setAdapter(adapter);
 
-                    TextView enrolledSize = findViewById(R.id.tv_organizer_enrolled_size);
-                    enrolledSize.setText(enrolled.size() + "/" + doc.get("entrantsLimit"));
+                    TextView declinedSize = findViewById(R.id.tv_organizer_declined_size);
+                    declinedSize.setText(String.valueOf(declined.size()));
                 }
             } else {
-                Log.d("OrganizerEnrolled", "Document retrieval failed", task.getException());
+                Log.d("OrganizerInvited", "Document retrieval failed", task.getException());
             }
         });
 
-        backBtn = findViewById(R.id.btn_organizer_enrolled_back);
+        backBtn = findViewById(R.id.btn_organizer_declined_back);
         backBtn.setOnClickListener(v -> finish());
     }
 }

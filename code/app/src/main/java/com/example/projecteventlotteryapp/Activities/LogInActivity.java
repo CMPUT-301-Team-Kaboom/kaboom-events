@@ -1,4 +1,4 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.Activities;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -12,6 +12,11 @@ import android.widget.ToggleButton;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.projecteventlotteryapp.Enums.Role;
+import com.example.projecteventlotteryapp.EventsListActivity;
+import com.example.projecteventlotteryapp.Models.User;
+import com.example.projecteventlotteryapp.Models.MyApp;
+import com.example.projecteventlotteryapp.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**

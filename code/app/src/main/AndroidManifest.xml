@@ -6,7 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
-        android:name=".MyApp"
+        android:name=".Models.MyApp"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -16,7 +16,7 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.ProjectEventLotteryApp">
         <activity
-            android:name=".RegistrationActivity"
+            android:name=".Activities.RegistrationActivity"
             android:exported="true"
             android:launchMode="singleTop">
             <intent-filter>
@@ -25,58 +25,58 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".LogInActivity"
+            android:name=".Activities.LogInActivity"
             android:exported="false" />
         <activity
             android:name=".EventsListActivity"
             android:exported="false" />
         <activity
-            android:name=".EventDetailsActivity"
+            android:name=".Activities.EventDetailsActivity"
             android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true"/>
         <activity
-            android:name=".CriteriaAppGuideActivity"
+            android:name=".Activities.CriteriaAppGuideActivity"
             android:exported="false" />
         <activity
-            android:name=".AdminImagesActivity"
+            android:name=".Activities.AdminImagesActivity"
             android:exported="true" />
         <activity
-            android:name=".AdminHomeActivity"
+            android:name=".Activities.AdminHomeActivity"
             android:exported="false" />
         <activity
-            android:name=".AdminActivity"
+            android:name=".Activities.AdminActivity"
             android:exported="false" />
         <activity
-            android:name=".OrganizerWaitlistActivity"
+            android:name=".Activities.OrganizerWaitlistActivity"
             android:exported="false" />
         <activity
-            android:name=".AdminProfilesListActivity"
+            android:name=".Activities.AdminProfilesListActivity"
             android:exported="true" />
         <activity
-            android:name=".AdminOrganizersListActivity"
+            android:name=".Activities.AdminOrganizersListActivity"
             android:exported="true" />
         <activity
-            android:name=".AdminEventsActivity"
+            android:name=".Activities.AdminEventsActivity"
             android:exported="false" />
         <activity
-            android:name=".adminNotificationsActivity"
+            android:name=".Activities.adminNotificationsActivity"
             android:exported="false" />
         <activity
-            android:name=".EditEventActivity"
+            android:name=".Activities.EditEventActivity"
             android:exported="false"/>
         <activity
-            android:name=".EntrantSettingsActivity"
+            android:name=".Activities.EntrantSettingsActivity"
             android:exported="false"/>
         <activity
-            android:name=".OrganizerEnrolledActivity"
+            android:name=".Activities.OrganizerEnrolledActivity"
             android:exported="false"/>
         <activity
-            android:name=".OrganizerInvitedActivity"
+            android:name=".Activities.OrganizerInvitedActivity"
             android:exported="false"/>
         <activity
-            android:name=".OrganizerDeclinedActivity"
+            android:name=".Activities.OrganizerDeclinedActivity"
             android:exported="false"/>
     </application>
 

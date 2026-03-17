@@ -1,10 +1,11 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.Activities;
 
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageButton;
 
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.example.projecteventlotteryapp.R;
 
 /**
  * Lottery criteria guide for the user.

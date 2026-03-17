@@ -1,4 +1,4 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -11,6 +11,9 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.projecteventlotteryapp.Models.User;
+import com.example.projecteventlotteryapp.Models.MyApp;
+import com.example.projecteventlotteryapp.R;
 import com.example.projecteventlotteryapp.dbUtils.UserUtils;
 import com.google.firebase.firestore.FirebaseFirestore;
 

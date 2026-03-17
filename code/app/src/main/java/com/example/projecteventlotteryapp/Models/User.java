@@ -1,4 +1,6 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.Models;
+
+import com.example.projecteventlotteryapp.Enums.Role;
 
 import java.io.Serializable;
 

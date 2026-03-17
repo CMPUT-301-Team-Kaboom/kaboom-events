@@ -1,4 +1,4 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -10,28 +10,28 @@ import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.projecteventlotteryapp.OrganizerEntrantListAdapter;
+import com.example.projecteventlotteryapp.R;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
 
-/**
- * Provides an organizer with the waitlist of entrants that have entered to join their event
- */
-public class OrganizerWaitlistActivity extends AppCompatActivity {
+public class OrganizerInvitedActivity extends AppCompatActivity {
     private String eventId;
     private OrganizerEntrantListAdapter adapter;
-    private ListView waitlistView;
+    private ListView invitedListView;
     private ImageButton backBtn;
-    private ArrayList<String> waitlist;
+    private ArrayList<String> invited;
     private FirebaseFirestore db;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_organizer_waitlist);
+        setContentView(R.layout.activity_organizer_invited);
 
-        waitlistView = findViewById(R.id.lv_organizer_waitlist_list);
+        invitedListView = findViewById(R.id.lv_organizer_invited_list);
         Intent intent  = getIntent();
         eventId = intent.getStringExtra("eventID");
 
@@ -42,20 +42,20 @@ public class OrganizerWaitlistActivity extends AppCompatActivity {
             if (task.isSuccessful()){
                 DocumentSnapshot doc = task.getResult();
                 if(doc.exists()){
-                    waitlist = (ArrayList<String>) doc.get("waitlist");
+                    invited = (ArrayList<String>) doc.get("invited");
 
-                    adapter = new OrganizerEntrantListAdapter(this, waitlist);
-                    waitlistView.setAdapter(adapter);
+                    adapter = new OrganizerEntrantListAdapter(this, invited);
+                    invitedListView.setAdapter(adapter);
 
-                    TextView waitlistSize = findViewById(R.id.tv_organizer_waitlist_size);
-                    waitlistSize.setText(waitlist.size() + "/" + doc.get("waitlistLimit"));
+                    TextView invitedSize = findViewById(R.id.tv_organizer_invited_size);
+                    invitedSize.setText(String.valueOf(invited.size()));
                 }
             } else {
-                Log.d("OrganizerWaitlist", "Document retrieval failed", task.getException());
+                Log.d("OrganizerInvited", "Document retrieval failed", task.getException());
             }
         });
 
-        backBtn = findViewById(R.id.btn_organizer_waitlist_back);
+        backBtn = findViewById(R.id.btn_organizer_invited_back);
         backBtn.setOnClickListener(v -> finish());
     }
 }

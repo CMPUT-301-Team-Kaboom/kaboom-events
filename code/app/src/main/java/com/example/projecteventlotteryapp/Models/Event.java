@@ -1,7 +1,4 @@
-package com.example.projecteventlotteryapp;
-
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.FirebaseFirestore;
+package com.example.projecteventlotteryapp.Models;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;

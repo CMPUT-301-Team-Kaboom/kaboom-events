@@ -17,6 +17,13 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.example.projecteventlotteryapp.Activities.CriteriaAppGuideActivity;
+import com.example.projecteventlotteryapp.Activities.EntrantSettingsActivity;
+import com.example.projecteventlotteryapp.Activities.EventDetailsActivity;
+import com.example.projecteventlotteryapp.Enums.Role;
+import com.example.projecteventlotteryapp.Models.MyApp;
+import com.example.projecteventlotteryapp.Models.User;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;

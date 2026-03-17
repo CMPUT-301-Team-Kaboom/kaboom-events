@@ -4,6 +4,7 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.junit.Assert.*;
 
+import com.example.projecteventlotteryapp.Enums.Role;
 import com.example.projecteventlotteryapp.dbUtils.UserUtils;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;

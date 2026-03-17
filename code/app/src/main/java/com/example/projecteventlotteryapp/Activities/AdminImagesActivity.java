@@ -1,15 +1,17 @@
-package com.example.projecteventlotteryapp;
+package com.example.projecteventlotteryapp.Activities;
 
-import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Button;
 import android.widget.ImageButton;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.projecteventlotteryapp.AdminImagesAdapter;
+import com.example.projecteventlotteryapp.Models.Image;
+import com.example.projecteventlotteryapp.PosterImageHandler;
+import com.example.projecteventlotteryapp.R;
 
 import java.util.ArrayList;
 
