@@ -1,4 +1,4 @@
-package com.example.projecteventlotteryapp.Controllers;
+package com.example.projecteventlotteryapp;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -12,7 +12,6 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import com.example.projecteventlotteryapp.Models.Event;
-import com.example.projecteventlotteryapp.R;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;

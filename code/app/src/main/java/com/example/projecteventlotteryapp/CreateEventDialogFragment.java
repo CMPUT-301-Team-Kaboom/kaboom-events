@@ -1,4 +1,4 @@
-package com.example.projecteventlotteryapp.Controllers;
+package com.example.projecteventlotteryapp;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
@@ -17,7 +17,6 @@ import android.widget.EditText;
 
 import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.Models.MyApp;
-import com.example.projecteventlotteryapp.R;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.google.firebase.firestore.FirebaseFirestore;
 

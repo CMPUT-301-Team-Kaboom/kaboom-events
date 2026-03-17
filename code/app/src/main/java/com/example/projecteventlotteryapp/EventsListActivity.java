@@ -15,7 +15,6 @@ import androidx.core.view.WindowInsetsCompat;
 import com.example.projecteventlotteryapp.Activities.CriteriaAppGuideActivity;
 import com.example.projecteventlotteryapp.Activities.EntrantSettingsActivity;
 import com.example.projecteventlotteryapp.Enums.Role;
-import com.example.projecteventlotteryapp.Controllers.CreateEventDialogFragment;
 import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.Models.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
