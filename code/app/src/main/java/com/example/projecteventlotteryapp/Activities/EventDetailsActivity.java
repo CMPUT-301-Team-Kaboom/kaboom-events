@@ -9,6 +9,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
 import androidx.annotation.NonNull;
@@ -240,31 +241,9 @@ public class EventDetailsActivity extends AppCompatActivity {
                 } else {
                     eventUtils.entrantListContains(EntrantListType.WAITLIST, user, eventId).addOnSuccessListener(waitlisted -> {
                         if (waitlisted){
-                            entrantPrimaryButton.setText("Remove Waitlist");
-                            entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
-                            entrantPrimaryButton.setOnClickListener(v -> {
-                                eventUtils.removeFromEntrantList(EntrantListType.WAITLIST, user, eventId)
-                                        .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully Left Waitlist");
-                                            entrantPrimaryButton.setText("Join Waitlist");
-                                            //TODO make this non recursive
-                                            configureUIForRole(user);
-                                        })
-                                        .addOnFailureListener(e -> {Log.d("EventDetails", "Failed to join Waitlist");
-                                        });
-                            });
+                            showRemoveWaitlistButtonState(user);
                         } else {
-                            entrantPrimaryButton.setText("Join Waitlist");
-                            entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.secondaryAccent));
-                            entrantPrimaryButton.setOnClickListener(v -> {
-                                eventUtils.addToEntrantList(EntrantListType.WAITLIST, user, eventId)
-                                        .addOnSuccessListener(aVoid -> {Log.d("EventDetails", "Successfully joined Waitlist");
-                                            entrantPrimaryButton.setText("Remove Waitlist");
-                                            // TODO: make this non recursive
-                                            configureUIForRole(user);
-                                        })
-                                        .addOnFailureListener(e -> {Log.d("EventDetails", "Failed to join Waitlist");
-                                        });
-                            });
+                            showJoinWaitlistButtonState(user);
                         }
                     });
                 }
@@ -341,6 +320,38 @@ public class EventDetailsActivity extends AppCompatActivity {
             tagTv.setText(tags.get(i));
             tagTv.setVisibility(View.VISIBLE);
         }
+    }
+
+    private void showRemoveWaitlistButtonState(User user) {
+        entrantPrimaryButton.setText("Remove Waitlist");
+        entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
+        entrantPrimaryButton.setOnClickListener(v -> {
+            eventUtils.removeFromEntrantList(EntrantListType.WAITLIST, user, eventId)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("EventDetails", "Successfully Left Waitlist");
+                        showJoinWaitlistButtonState(user);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.d("EventDetails", "Failed to join Waitlist - Error: " + e);
+                        Toast.makeText(this, "Failed to join Waitlist", Toast.LENGTH_SHORT).show();
+                    });
+        });
+    }
+
+    private void showJoinWaitlistButtonState(User user) {
+        entrantPrimaryButton.setText("Join Waitlist");
+        entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.white));
+        entrantPrimaryButton.setOnClickListener(v -> {
+            eventUtils.addToEntrantList(EntrantListType.WAITLIST, user, eventId)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("EventDetails", "Successfully joined Waitlist");
+                        showRemoveWaitlistButtonState(user);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.d("EventDetails", "Failed to join Waitlist - Error: " + e);
+                        Toast.makeText(this, "Failed to join Waitlist", Toast.LENGTH_SHORT).show();
+                    });
+        });
     }
 }
 
