@@ -385,6 +385,11 @@ public class EventUtils {
 
     public Task<ArrayList<String>> getEntrantList(String eventId, EntrantListType listType) {
         DocumentReference eventDoc = db.collection("events").document(eventId);
+        Log.d("getEntrantList", String.format("Fetching entrantList. EventId: %s | type: %s",
+                eventId,
+                listType.toString()
+            )
+        );
         return eventDoc.get().continueWith(task -> {
             if (!task.isSuccessful()) {
                 Log.e("getEntrantList", String.format("Failed to fetch entrantList for event: EventId: %s | type: %s | Error: %s",
@@ -418,7 +423,7 @@ public class EventUtils {
         Task<ArrayList<String>> waitlistTask = getEntrantList(eventId, EntrantListType.WAITLIST);
         Task<Integer> invitedListTask = getEntrantListSize(eventId, EntrantListType.INVITED);
 
-        Tasks.whenAllSuccess(waitlistTask, invitedListTask)
+        return Tasks.whenAllSuccess(waitlistTask, invitedListTask)
             .continueWithTask(task -> {
                 if (!task.isSuccessful()) {
                     return Tasks.forException(task.getException());
@@ -466,6 +471,7 @@ public class EventUtils {
             Log.d("sampleEntrantsList", "invitedList is full. n: " + n);
             return new ArrayList<>();
         }
+        Log.d("sampleEntrantList", String.format("Sampling %d entrants.", n));
 
         ArrayList<String> copy = new ArrayList<>(waitlist);
         Collections.shuffle(copy);
