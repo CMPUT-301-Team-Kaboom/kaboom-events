@@ -1,5 +1,7 @@
 package com.example.projecteventlotteryapp.Models;
 
+import org.checkerframework.common.returnsreceiver.qual.This;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -21,6 +23,7 @@ public class Event {
     private int waitlistLimit;
     private int waitlistSize;   // number of users on the waitlist
     private boolean geolocationEnabled;
+    private boolean isPrivate;
     private LocalDateTime drawDate;
     private LocalDate registrationStartDate;
     private LocalDate registrationEndDate;
@@ -38,6 +41,8 @@ public class Event {
      * Creates a new Event object with basic event information.
      * <p> This constructor is typically used when creating a new event before
      * it has been stored in the database.</p>
+     *
+     * This version has been deprecated. Please update your constructors with the isPrivate method
      *
      * @param name name of the event
      * @param registrationStartDate the date when event registration opens
@@ -57,7 +62,31 @@ public class Event {
         this.registrationEndDate = registrationEndDate;
         this.drawDate = drawDate;
         this.attendeesLimit = attendeesLimit;
+        isPrivate = false;
     }
+
+    /**
+     * Creates a new Event object with basic event information as well as Privacy.
+     * <p> This constructor is typically used when creating a new event before
+     * it has been stored in the database, this also includes privacy.</p>
+     * @param isPrivate boolean value indicating if Event is private
+     */
+    public Event(
+            String name,
+            LocalDate registrationStartDate,
+            LocalDate registrationEndDate,
+            LocalDateTime drawDate,
+            int attendeesLimit,
+            boolean isPrivate
+    ) {
+        this.name = name;
+        this.registrationStartDate = registrationStartDate;
+        this.registrationEndDate = registrationEndDate;
+        this.drawDate = drawDate;
+        this.attendeesLimit = attendeesLimit;
+        this.isPrivate = isPrivate;
+    }
+
 
     /**
      * Creates an Event object that corresponds to an existing Firestore document.
@@ -71,6 +100,7 @@ public class Event {
      * @param registrationEndDate the date when event registration closes
      * @param drawDate the date and time when the lottery draw occurs
      * @param attendeesLimit the maximum number of entrants that can attend the event
+     * @param isPrivate boolean value indicating if Event is private
      */
     public Event(
             String eventId,
@@ -78,9 +108,10 @@ public class Event {
             LocalDate registrationStartDate,
             LocalDate registrationEndDate,
             LocalDateTime drawDate,
-            int attendeesLimit
+            int attendeesLimit,
+            boolean isPrivate
     ) {
-        this(name, registrationStartDate, registrationEndDate, drawDate, attendeesLimit);
+        this(name, registrationStartDate, registrationEndDate, drawDate, attendeesLimit, isPrivate);
         this.eventId = eventId;
         //eventDoc = this.db.collection("events").document(this.eventId);
     }
@@ -291,4 +322,12 @@ public class Event {
      */
     public void setPoster(String poster) { this.poster = poster; }
     public String getPoster() { return poster; }
+
+    public boolean isPrivate() {
+        return isPrivate;
+    }
+
+    public void setPrivate(boolean privacy) {
+        isPrivate = privacy;
+    }
 }

@@ -192,6 +192,7 @@ public class EventUtils {
 
         // get boolean field
         boolean geolocationEnabled = FirestoreUtils.fetchBoolean(snapshot, "geoLocationEnabled", false);
+        boolean EventIsPrivate = FirestoreUtils.fetchBoolean(snapshot, "isPrivate", false);
 
         // get timestamp fields
         LocalDateTime drawDate = FirestoreUtils.fetchLocalDateTime(snapshot, "drawDate");
@@ -209,7 +210,8 @@ public class EventUtils {
                 registrationStartDate,
                 registrationEndDate,
                 drawDate,
-                attendeesLimit
+                attendeesLimit,
+                EventIsPrivate
         );
 
         event.setDescription(description);
@@ -279,6 +281,7 @@ public class EventUtils {
                 )
         );
         eventData.put("entrantsLimit", event.getAttendeesLimit());
+        eventData.put("isPrivate", event.isPrivate());
 
         // setting null values these
         eventData.put("poster", defaultPoster);
