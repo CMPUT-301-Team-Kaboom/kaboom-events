@@ -356,6 +356,12 @@ public class EventUtils {
         db.collection("events").document(eventId).update(updates);
     }
 
+    /**
+     * Fetches the size of an EntrantList for a given event (number of entrants currently in the list)
+     * @param eventId the eventId of the event
+     * @param listType the type of desired list
+     * @return the size of the list
+     */
     public Task<Integer> getEntrantListSize(String eventId, EntrantListType listType) {
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
@@ -383,6 +389,12 @@ public class EventUtils {
         });
     }
 
+    /**
+     * Fetches the contents of an entrantList
+     * @param eventId the eventId of the event
+     * @param listType the EntrantListType of the desired list
+     * @return on success, an ArrayList of entrantIds
+     */
     public Task<ArrayList<String>> getEntrantList(String eventId, EntrantListType listType) {
         DocumentReference eventDoc = db.collection("events").document(eventId);
         Log.d("getEntrantList", String.format("Fetching entrantList. EventId: %s | type: %s",
@@ -419,6 +431,17 @@ public class EventUtils {
         });
     }
 
+    /**
+     * Generates the InvitationList for an event, or adds new entrants if it already exists
+     *
+     * <p>This function populates the Invited list for an event based on how many free spaces exist.
+     * It first gets the users in the waitlist as well as the size of the invited list before
+     * creating a random sample of the waitlist and moving all users from the sampled list into the
+     * invitedList.</p>
+     * @param eventId the id of the event to generate the invited list for
+     * @param entrantsLimit the number of amount of entrants that are allowed to be in the invited list. Must be greater than 0
+     * @return a task
+     */
     public Task<Void> generateInvitationList(String eventId, int entrantsLimit) {
         Task<ArrayList<String>> waitlistTask = getEntrantList(eventId, EntrantListType.WAITLIST);
         Task<Integer> invitedListTask = getEntrantListSize(eventId, EntrantListType.INVITED);

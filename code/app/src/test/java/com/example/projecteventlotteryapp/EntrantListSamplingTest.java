@@ -11,6 +11,10 @@ import org.junit.Test;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+/**
+ * References:
+ * Tests generated using AI
+ */
 public class EntrantListSamplingTest {
     EventUtils eventUtils;
 
