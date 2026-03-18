@@ -1,8 +1,10 @@
 package com.example.projecteventlotteryapp.dbUtils;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.projecteventlotteryapp.Enums.EntrantListType;
+import com.example.projecteventlotteryapp.Enums.Role;
 import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.Models.User;
 import com.google.android.gms.tasks.Task;
@@ -11,13 +13,19 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.WriteBatch;
 
+import java.lang.reflect.Array;
+import java.lang.reflect.Field;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.StringJoiner;
 
 /**
  * Utility class to provide database operations on the Event class
@@ -138,6 +146,30 @@ public class EventUtils {
         if (listField.equals("waitlist")) {
             updates.put("waitlistSize", FieldValue.increment(-1));
         }
+
+        return eventDoc.update(updates);
+    }
+
+    /**
+     * This function moves a single entrant to toList from fromList
+     *
+     * <p>This function moves a single entrant across two lists. Using this method is preferred to
+     * using the addToEntrantList and removeFromEntrantList together because it guarantees atomicity.
+     * ie. ensures that both lists are simultaneously updated.
+     *
+     * Note: MUST be sure that the entrantId is already in the toList. </p>
+     * @param eventId eventId of the event
+     * @param entrantId id of the user to be moved
+     * @param toList the EntrantListType of the list the user is currently in
+     * @param fromList the EntrantListType of the list the user is moving to
+     * @return
+     */
+    private Task<Void> moveEntrantAcrossLists(String eventId, String entrantId, EntrantListType toList, EntrantListType fromList) {
+        DocumentReference eventDoc = db.collection("events").document(eventId);
+
+        HashMap<String, Object> updates = new HashMap<>();
+        updates.put(getDbEntrantListFieldName(toList), FieldValue.arrayUnion(entrantId));
+        updates.put(getDbEntrantListFieldName(fromList), FieldValue.arrayRemove(entrantId));
 
         return eventDoc.update(updates);
     }
@@ -322,5 +354,91 @@ public class EventUtils {
      */
     public void updateEventInDB(Map<String, Object> updates, String eventId){
         db.collection("events").document(eventId).update(updates);
+    }
+
+    public Task<Integer> getEntrantListSize(String eventId, EntrantListType listType) {
+        DocumentReference eventDoc = db.collection("events").document(eventId);
+
+        return eventDoc.get().continueWith(task -> {
+            if (!task.isSuccessful()) {
+                throw task.getException();
+            }
+
+            DocumentSnapshot doc = task.getResult();
+            if (!doc.exists()) {
+                Log.e("getEntrantListSize", "Event document does not exist: EventId: " + eventId);
+                throw new Exception("Event document missing");
+            }
+
+            List<String> rawList = (List<String>) doc.get(getDbEntrantListFieldName(listType));
+            if (rawList == null) {
+                Log.e("getEntrantList", String.format("No Entrants found for event. EventId: %s | type: %s",
+                        eventId,
+                        listType.toString()
+                ));
+                return 0;
+            }
+
+            return ((List<?>) rawList).size();
+        });
+    }
+
+    public Task<ArrayList<String>> getEntrantList(String eventId, EntrantListType listType) {
+        DocumentReference eventDoc = db.collection("events").document(eventId);
+        return eventDoc.get().continueWith(task -> {
+            if (!task.isSuccessful()) {
+                Log.e("getEntrantList", String.format("Failed to fetch entrantList for event: EventId: %s | type: %s | Error: %s",
+                        eventId,
+                        listType.toString(),
+                        task.getException()
+                ));
+                throw task.getException();
+            }
+
+            DocumentSnapshot doc = task.getResult();
+            if (!doc.exists()) {
+                Log.e("getEntrantList", "Event document does not exist: EventId: " + eventId);
+                throw new Exception("Event document missing");
+            }
+
+            List<String> rawList = (List<String>) doc.get(getDbEntrantListFieldName(listType));
+            if (rawList == null) {
+                Log.e("getEntrantList", String.format("No Entrants found for event. EventId: %s | type: %s",
+                        eventId,
+                        listType.toString()
+                ));
+                return new ArrayList<>();
+            }
+
+            return new ArrayList<>(rawList);
+        });
+    }
+
+    public void generateInvitationList(String eventId, int entrantsLimit) {
+        Task<ArrayList<String>> waitlistTask = getEntrantList(eventId, EntrantListType.WAITLIST);
+        Task<Integer> invitedListTask = getEntrantListSize(eventId, EntrantListType.INVITED);
+
+        Tasks.whenAllSuccess(waitlistTask, invitedListTask)
+            .addOnSuccessListener(results -> {
+                ArrayList<String> waitlist = (ArrayList<String>) results.get(0);
+                int invitedListSize = (Integer) results.get(1);
+
+                ArrayList<String> sampledEntrants = sampleEntrantList(waitlist, entrantsLimit, invitedListSize);
+                
+                for (String entrantId : sampledEntrants) {
+                    moveEntrantAcrossLists(eventId, entrantId, EntrantListType.INVITED, EntrantListType.WAITLIST);
+                }
+            });
+    }
+    public ArrayList<String> sampleEntrantList(ArrayList<String> waitlist, int entrantsLimit, int invitedListSize) {
+        // subtract to allow for sampling of only number of spots left on inviteList
+        int n = entrantsLimit - invitedListSize;
+
+        ArrayList<String> copy = new ArrayList<>(waitlist);
+        Collections.shuffle(copy);
+
+        // sampledList is a sublist of shuffled waitlist
+        List<String> sampledList = copy.subList(0, Math.min(n, copy.size()));
+        return new ArrayList<>(sampledList);
     }
 }
