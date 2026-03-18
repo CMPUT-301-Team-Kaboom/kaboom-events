@@ -191,10 +191,12 @@ public class EventDetailsActivity extends AppCompatActivity {
             editButton.setVisibility(View.VISIBLE);
             mapButton.setVisibility(View.VISIBLE);
 
-            if (event.getRegistrationEndDate().isAfter(LocalDate.now())) {
+            if (event.getRegistrationEndDate().isBefore(LocalDate.now())) {
                 drawButton.setVisibility(View.VISIBLE);
+            } else {
+                drawButton.setVisibility(View.GONE);
             }
-            
+
             // TODO: set onClickListeners for Organizer specific buttons
             waitlistButton.setOnClickListener(v -> {
                 Log.d("EventDetails", "[TEMP] Open waitlist");
