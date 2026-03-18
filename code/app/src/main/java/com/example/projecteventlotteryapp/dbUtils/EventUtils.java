@@ -414,21 +414,36 @@ public class EventUtils {
         });
     }
 
-    public void generateInvitationList(String eventId, int entrantsLimit) {
+    public Task<Void> generateInvitationList(String eventId, int entrantsLimit) {
         Task<ArrayList<String>> waitlistTask = getEntrantList(eventId, EntrantListType.WAITLIST);
         Task<Integer> invitedListTask = getEntrantListSize(eventId, EntrantListType.INVITED);
 
         Tasks.whenAllSuccess(waitlistTask, invitedListTask)
-            .addOnSuccessListener(results -> {
+            .continueWithTask(task -> {
+                if (!task.isSuccessful()) {
+                    return Tasks.forException(task.getException());
+                }
+
+                List<Object> results = task.getResult();
                 ArrayList<String> waitlist = (ArrayList<String>) results.get(0);
                 int invitedListSize = (Integer) results.get(1);
 
                 // array of randomly sampled entrants on waitlist
                 ArrayList<String> sampledEntrants = sampleEntrantList(waitlist, entrantsLimit, invitedListSize);
-                
+
+                List<Task<Void>> moveTasks = new ArrayList<>();
                 for (String entrantId : sampledEntrants) {
-                    moveEntrantAcrossLists(eventId, entrantId, EntrantListType.INVITED, EntrantListType.WAITLIST);
+                    moveTasks.add(
+                        moveEntrantAcrossLists(
+                                eventId,
+                                entrantId,
+                                EntrantListType.INVITED,
+                                EntrantListType.WAITLIST
+                        )
+                    );
                 }
+
+                return Tasks.whenAll(moveTasks);
             });
     }
 

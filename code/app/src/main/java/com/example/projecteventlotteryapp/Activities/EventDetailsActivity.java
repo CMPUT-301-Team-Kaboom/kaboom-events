@@ -63,6 +63,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private Button enrolledButton;
     private Button declinedButton;
     private Button editButton;
+    private Button drawButton;
     private Button mapButton;
 
     // entrant buttons
@@ -161,6 +162,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         entrantController   = findViewById(R.id.cl_eventDetails_entrant_button_controls);
 
         editButton = findViewById(R.id.btn_eventDetails_edit);
+        drawButton = findViewById(R.id.btn_eventDetails_Draw);
         backButton = findViewById(R.id.btn_eventDetails_back);
         backButton.setOnClickListener(v -> finish());
     }
@@ -186,6 +188,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             entrantController.setVisibility(View.GONE);
             organizerController.setVisibility(View.VISIBLE);
             editButton.setVisibility(View.VISIBLE);
+            drawButton.setVisibility(View.VISIBLE);
             mapButton.setVisibility(View.VISIBLE);
 
             // TODO: set onClickListeners for Organizer specific buttons
@@ -219,12 +222,25 @@ public class EventDetailsActivity extends AppCompatActivity {
                 intent.putExtra("eventId", eventId);
                 startActivity(intent);
             });
+
+            drawButton.setOnClickListener(v -> {
+                eventUtils.generateInvitationList(event.getEventId(), event.getAttendeesLimit())
+                        .addOnSuccessListener(aVoid -> {
+                            Toast.makeText(this, "Draw Complete", Toast.LENGTH_SHORT).show();
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("EventDetailsActivity", "Failed to generate invitationList. Error: " + e);
+                            Toast.makeText(this, "Could not complete Draw", Toast.LENGTH_SHORT).show();
+                        });
+            });
+
             mapButton.setOnClickListener(v -> Log.d("EventDetails", "Clicked Map Button"));
         } else if (user.getRole() == Role.ENTRANT) {
             entrantController.setVisibility(View.VISIBLE);
             organizerController.setVisibility(View.GONE);
             entrantSecondaryButton.setVisibility(View.GONE);
             editButton.setVisibility(View.GONE);
+            drawButton.setVisibility(View.GONE);
             mapButton.setVisibility(View.GONE);
 
             eventUtils.entrantListContains(EntrantListType.INVITED, user, event.getEventId()).addOnSuccessListener(invited -> {
