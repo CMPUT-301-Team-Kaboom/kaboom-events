@@ -58,7 +58,7 @@ public class AdminEventDeletionTest {
         LocalDate regEnd = LocalDate.parse("2026-01-02");
         LocalDateTime drawDate = LocalDateTime.parse("2026-01-03T12:00:00");
 
-        event = new Event(eventId, "event", regStart, regEnd, drawDate, 1);
+        event = new Event(eventId, "event", regStart, regEnd, drawDate, 1, false);
         eventList.add(event);
 
         adapter = new AdminEventArrayAdapter(context, eventList, eventDelete ->{
