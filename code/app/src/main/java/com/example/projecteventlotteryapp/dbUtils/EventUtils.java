@@ -423,6 +423,7 @@ public class EventUtils {
                 ArrayList<String> waitlist = (ArrayList<String>) results.get(0);
                 int invitedListSize = (Integer) results.get(1);
 
+                // array of randomly sampled entrants on waitlist
                 ArrayList<String> sampledEntrants = sampleEntrantList(waitlist, entrantsLimit, invitedListSize);
                 
                 for (String entrantId : sampledEntrants) {
@@ -430,9 +431,26 @@ public class EventUtils {
                 }
             });
     }
+
+    /**
+     * Randomly samples an arrayList of Strings
+     *
+     * <p>This function is used to randomly sample an ArrayList that represents the waitlist of an
+     * event to return a partial invited list. It subtracts invitedListSize from entrantsLimit to
+     * determine the size of the ArrayList of random entrants to return</p>
+     *
+     * @param waitlist an ArrayList of userIds on a waitlist
+     * @param entrantsLimit The amount of entrants allowed to enroll in an event
+     * @param invitedListSize the size of the associated invitedList, used to calculate return size
+     * @return an ArrayList of randomly sampled users given via the waitlist of size entrantsLimit - invitedListSize
+     */
     public ArrayList<String> sampleEntrantList(ArrayList<String> waitlist, int entrantsLimit, int invitedListSize) {
         // subtract to allow for sampling of only number of spots left on inviteList
         int n = entrantsLimit - invitedListSize;
+        if (n <= 0) {
+            Log.d("sampleEntrantsList", "invitedList is full. n: " + n);
+            return new ArrayList<>();
+        }
 
         ArrayList<String> copy = new ArrayList<>(waitlist);
         Collections.shuffle(copy);
