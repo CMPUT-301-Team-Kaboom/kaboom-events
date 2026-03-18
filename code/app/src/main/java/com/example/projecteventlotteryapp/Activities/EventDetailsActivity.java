@@ -34,6 +34,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -188,9 +189,12 @@ public class EventDetailsActivity extends AppCompatActivity {
             entrantController.setVisibility(View.GONE);
             organizerController.setVisibility(View.VISIBLE);
             editButton.setVisibility(View.VISIBLE);
-            drawButton.setVisibility(View.VISIBLE);
             mapButton.setVisibility(View.VISIBLE);
 
+            if (event.getRegistrationEndDate().isAfter(LocalDate.now())) {
+                drawButton.setVisibility(View.VISIBLE);
+            }
+            
             // TODO: set onClickListeners for Organizer specific buttons
             waitlistButton.setOnClickListener(v -> {
                 Log.d("EventDetails", "[TEMP] Open waitlist");
