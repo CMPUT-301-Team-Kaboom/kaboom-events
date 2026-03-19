@@ -16,9 +16,11 @@ import java.util.Arrays;
  * Tests generated using AI
  * Prompt: Please write me testcases for a function with this description:
  *      Randomly samples an arrayList of Strings
+ *
  *      This function is used to randomly sample an ArrayList that represents the waitlist of an
  *      event to return a partial invited list. It subtracts invitedListSize from entrantsLimit to
  *      determine the size of the ArrayList of random entrants to return
+ *      
  *      param waitlist an ArrayList of userIds on a waitlist
  *      param entrantsLimit The amount of entrants allowed to enroll in an event
  *      param invitedListSize the size of the associated invitedList, used to calculate return size
