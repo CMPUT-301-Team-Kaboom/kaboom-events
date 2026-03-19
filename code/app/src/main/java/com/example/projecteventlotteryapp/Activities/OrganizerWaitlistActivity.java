@@ -3,6 +3,7 @@ package com.example.projecteventlotteryapp.Activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -26,6 +27,7 @@ public class OrganizerWaitlistActivity extends AppCompatActivity {
     private OrganizerEntrantListAdapter adapter;
     private ListView waitlistView;
     private ImageButton backBtn;
+    private Button selectbtn;
     private ArrayList<String> waitlist;
     private FirebaseFirestore db;
     @Override
