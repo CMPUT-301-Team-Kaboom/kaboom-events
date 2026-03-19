@@ -30,6 +30,7 @@ import com.example.projecteventlotteryapp.R;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -249,20 +250,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             drawButton.setVisibility(View.GONE);
             mapButton.setVisibility(View.GONE);
 
-            eventUtils.entrantListContains(EntrantListType.INVITED, user, event.getEventId()).addOnSuccessListener(invited -> {
-                if (invited) {
-                    showEnrollButton(user);
-                    showDeclineButton(user);
-                } else {
-                    eventUtils.entrantListContains(EntrantListType.WAITLIST, user, eventId).addOnSuccessListener(waitlisted -> {
-                        if (waitlisted){
-                            showRemoveWaitlistButtonState(user);
-                        } else {
-                            showJoinWaitlistButtonState(user);
-                        }
-                    });
-                }
-            });
+            setupEntrantButtonsByEnrollmentStatus(user);
         }
     }
 
@@ -426,13 +414,53 @@ public class EventDetailsActivity extends AppCompatActivity {
         if (status == EntrantListType.ENROLLED) {
             entrantPrimaryButton.setText("Enrolled");
             entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.secondaryAccent));
-            entrantPrimaryButton.setShadowLayer(3,0,0, R.color.black);
+            entrantPrimaryButton.setShadowLayer(10,0,0, R.color.black);
             entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
         } else {
             entrantPrimaryButton.setText("Declined");
             entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
             entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
         }
+    }
+
+    /**
+     * Configures entrant related buttons based on user's enrollment status for the current event.
+     *
+     * <p>THis method checks all of the entrant lists (invited, enrolled, declined, waitlist) to
+     * determine which buttons to show. The checks are executed in parallel and once all results
+     * are available, the correct UI is applied.
+     * If any of the fetching fails, an error is logged and nothing happens.</p>
+     * @param user the current user
+     */
+    private void setupEntrantButtonsByEnrollmentStatus(User user) {
+        String eventId = event.getEventId();
+
+        Tasks.whenAllSuccess(
+                eventUtils.entrantListContains(EntrantListType.INVITED, user, eventId),
+                eventUtils.entrantListContains(EntrantListType.ENROLLED, user, eventId),
+                eventUtils.entrantListContains(EntrantListType.DECLINED, user, eventId),
+                eventUtils.entrantListContains(EntrantListType.WAITLIST, user, eventId)
+        ).addOnSuccessListener(results -> {
+            boolean invited     = (Boolean) results.get(0);
+            boolean enrolled    = (Boolean) results.get(1);
+            boolean declined    = (Boolean) results.get(2);
+            boolean waitlisted  = (Boolean) results.get(3);
+
+            if (invited) {
+                showEnrollButton(user);
+                showDeclineButton(user);
+            } else if (enrolled) {
+                showEnrolledDeclinedStatus(EntrantListType.ENROLLED);
+            } else if (declined) {
+                showEnrolledDeclinedStatus(EntrantListType.DECLINED);
+            } else if (waitlisted) {
+                showRemoveWaitlistButtonState(user);
+            } else {
+                showJoinWaitlistButtonState(user);
+            }
+        }).addOnFailureListener(e -> {
+            Log.e("setupEntrantButtonsByEnrollmentStatus", "Failed to determine entrant status", e);
+        });
     }
 }
 
