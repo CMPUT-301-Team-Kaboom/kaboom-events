@@ -165,7 +165,14 @@ public class EventUtils {
      * @param fromList the EntrantListType of the list the user is moving to
      * @return
      */
-    private Task<Void> moveEntrantAcrossLists(String eventId, String entrantId, EntrantListType toList, EntrantListType fromList) {
+    public Task<Void> moveEntrantAcrossLists(String eventId, String entrantId, EntrantListType toList, EntrantListType fromList) {
+        Log.d("moveEntrantAcrossLists", String.format("Attempting to move entrant. UserId: %s | eventId: %s | to: %s | from: %s",
+                entrantId,
+                eventId,
+                toList.toString(),
+                fromList.toString()
+            )
+        );
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
         HashMap<String, Object> updates = new HashMap<>();
