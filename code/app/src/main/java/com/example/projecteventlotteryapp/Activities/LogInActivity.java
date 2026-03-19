@@ -17,6 +17,7 @@ import com.example.projecteventlotteryapp.EventsListActivity;
 import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.R;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 /**
@@ -140,8 +141,9 @@ public class LogInActivity extends AppCompatActivity {
                         Log.d("AUTH", "User found in " + collectionName + ": " + deviceID);
 
                         // extract userId field from Firestore
-                        String userId = task.getResult().getId();
-                        User user = new User(role, userId);
+                        DocumentSnapshot userSnapshot = task.getResult();
+                        String userId = userSnapshot.getId();
+                        User user = new User(role, userId, userSnapshot.getString("name"), userSnapshot.getString("email"), userSnapshot.getString("phone"));
 
                         // set global MyApp user
                         MyApp app = (MyApp) getApplication();

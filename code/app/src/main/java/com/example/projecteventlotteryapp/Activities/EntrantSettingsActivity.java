@@ -7,6 +7,7 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
+import android.widget.Switch;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -47,6 +48,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
     private EditText phoneEditText;
     private Button btnSave;
     private Button btnDelete;
+    private Switch swtchNotification;
     private User globalUser;
 
     /**
@@ -73,6 +75,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         phoneEditText = findViewById(R.id.et_edit_phone);
         btnSave = findViewById(R.id.btn_save_profile);
         btnDelete = findViewById(R.id.btn_delete_profile);
+        swtchNotification = findViewById((R.id.s_switch));
         ImageButton btnBack = findViewById(R.id.btn_entrant_back);
 
         btnBack.setOnClickListener(v -> finish());
@@ -86,6 +89,35 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         //save when save button is clicked
         btnSave.setOnClickListener(v -> updateProfileInFirestore());
         btnDelete.setOnClickListener(v -> deleteProfileFromFirestore());
+
+        // Load the current notification status from Firestore
+        db.loadUserProfile(deviceID, globalUser.getRole()).addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                boolean notificationEnabled = documentSnapshot.getBoolean("notificationEnabled");
+                // default to true if the field doesn't exist yet
+                swtchNotification.setChecked(notificationEnabled);
+            }
+        });
+
+        // Save the status immediately when the user toggles the switch
+        swtchNotification.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            Map<String, Object> update = new HashMap<>();
+            update.put("notificationEnabled", isChecked);
+
+            db.updateUserProfile(deviceID, update, globalUser.getRole())
+                    .addOnSuccessListener(unused -> {
+                        String status = isChecked ? "Notification enabled" : "Notification disabled";
+                        Toast.makeText(this, status, Toast.LENGTH_SHORT).show();
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("PROFILE", "Failed to update notification status", e);
+                        Toast.makeText(this, "Failed to update notification status", Toast.LENGTH_SHORT).show();
+                        // Revert the switch visual state if the database update failed
+                        swtchNotification.setChecked(!isChecked);
+                    });
+
+
+        });
 
     }
 
