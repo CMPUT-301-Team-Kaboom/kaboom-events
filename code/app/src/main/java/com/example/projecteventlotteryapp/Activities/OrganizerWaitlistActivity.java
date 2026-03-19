@@ -3,6 +3,7 @@ package com.example.projecteventlotteryapp.Activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -10,6 +11,7 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.projecteventlotteryapp.OrganizerEntrantListAdapter;
 import com.example.projecteventlotteryapp.R;
@@ -27,17 +29,33 @@ public class OrganizerWaitlistActivity extends AppCompatActivity {
     private OrganizerEntrantListAdapter adapter;
     private ListView waitlistView;
     private ImageButton backBtn;
-    private Button selectbtn;
+    private Button selectBtn;
+    private Button notifcationBtn;
+    private Button doneBtn;
+    private ConstraintLayout floatingActionsContainer;
     private ArrayList<String> waitlist;
     private FirebaseFirestore db;
+    private boolean isSelectionMode = false;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organizer_waitlist);
 
+        // finding ui elements
         waitlistView = findViewById(R.id.lv_organizer_waitlist_list);
         Intent intent  = getIntent();
         eventId = intent.getStringExtra("eventID");
+
+        selectBtn = findViewById(R.id.btn_organizer_waitlist_select);
+        notifcationBtn = findViewById(R.id.btn_send_notification);
+        doneBtn = findViewById(R.id.btn_done);
+        floatingActionsContainer = findViewById(R.id.cl_floating_actions);
+        backBtn = findViewById(R.id.btn_organizer_waitlist_back);
+        backBtn.setOnClickListener(v -> finish());
+
+        // hide notification buttons container initially
+        floatingActionsContainer.setVisibility(View.GONE);
 
         db = FirebaseFirestore.getInstance();
         DocumentReference eventDoc = db.collection("events").document(eventId);
@@ -59,7 +77,27 @@ public class OrganizerWaitlistActivity extends AppCompatActivity {
             }
         });
 
-        backBtn = findViewById(R.id.btn_organizer_waitlist_back);
-        backBtn.setOnClickListener(v -> finish());
+        selectBtn.setOnClickListener(v -> {
+            if (!isSelectionMode) {
+                // Enter selection mode
+                isSelectionMode = true;
+                selectBtn.setText("Select All");
+                floatingActionsContainer.setVisibility(View.VISIBLE);
+                adapter.setSelectionMode(true);
+            } else {
+                // select all otherwise
+                adapter.selectAll();
+            }
+            });
+
+        doneBtn.setOnClickListener(v -> {
+            // Exit Selection Mode
+            isSelectionMode = false;
+            selectBtn.setText("Select");
+            floatingActionsContainer.setVisibility(View.GONE);
+            adapter.setSelectionMode(false);
+            adapter.clearSelection();
+        });
+
     }
 }
