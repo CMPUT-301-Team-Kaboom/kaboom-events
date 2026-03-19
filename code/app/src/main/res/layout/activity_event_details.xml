@@ -227,7 +227,7 @@
                 android:backgroundTint="@color/secondaryAccent"
                 android:text="Join Waitlist"
                 android:textAlignment="textStart"
-                android:textSize="12sp"
+                android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
@@ -240,7 +240,7 @@
                 android:backgroundTint="@color/red"
                 android:text="Decline"
                 android:textAlignment="textStart"
-                android:textSize="12sp"
+                android:textSize="15sp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />

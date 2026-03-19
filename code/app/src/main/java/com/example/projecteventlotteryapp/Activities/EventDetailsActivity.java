@@ -251,15 +251,8 @@ public class EventDetailsActivity extends AppCompatActivity {
 
             eventUtils.entrantListContains(EntrantListType.INVITED, user, event.getEventId()).addOnSuccessListener(invited -> {
                 if (invited) {
-                    entrantPrimaryButton.setText("Enroll");
-                    // TODO: Setup onclick listener for adding to Enrolled list
-                    entrantPrimaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Enroll"));
-
-
-                    entrantSecondaryButton.setVisibility(View.VISIBLE);
-                    entrantSecondaryButton.setText("Decline");
-                    // TODO: Setup onclick listener for adding to Declined list
-                    entrantSecondaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Decline"));
+                    showEnrollButton(user);
+                    showDeclineButton(user);
                 } else {
                     eventUtils.entrantListContains(EntrantListType.WAITLIST, user, eventId).addOnSuccessListener(waitlisted -> {
                         if (waitlisted){
@@ -376,6 +369,68 @@ public class EventDetailsActivity extends AppCompatActivity {
                         Toast.makeText(this, "Failed to join Waitlist", Toast.LENGTH_SHORT).show();
                     });
         });
+    }
+
+    private void showEnrollButton(User user) {
+        entrantPrimaryButton.setText("Enroll");
+        entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.secondaryAccent));
+        entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
+        entrantPrimaryButton.setShadowLayer(10,0,0, R.color.black);
+        entrantPrimaryButton.setOnClickListener(v -> {
+            Log.d("EventDetails", "Attempting to enroll user in event. EventId: " + event.getEventId());
+
+            eventUtils.moveEntrantAcrossLists(event.getEventId(), user.getUserId(), EntrantListType.ENROLLED, EntrantListType.INVITED)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("EventDetails", "Successfully to enrolled user in event");
+                        showEnrolledDeclinedStatus(EntrantListType.ENROLLED);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.d("EventDetails", "Failed to enrolled user in event. Error: " + e);
+                        Toast.makeText(this, "Failed to enroll in event", Toast.LENGTH_SHORT).show();
+                    });
+        });
+    }
+
+    private void showDeclineButton(User user) {
+        entrantSecondaryButton.setText("Decline");
+        entrantSecondaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
+        entrantSecondaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
+        entrantSecondaryButton.setVisibility(View.VISIBLE);
+        entrantSecondaryButton.setOnClickListener(v -> {
+            Log.d("EventDetails", "Attempting to decline event. EventId: " + event.getEventId());
+
+            eventUtils.moveEntrantAcrossLists(event.getEventId(), user.getUserId(), EntrantListType.DECLINED, EntrantListType.ENROLLED)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("EventDetails", "Successfully to enrolled user in event");
+                        showEnrolledDeclinedStatus(EntrantListType.DECLINED);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.d("EventDetails", "Failed to decline user invitation for event. Error: " + e);
+                        Toast.makeText(this, "Failed to decline event", Toast.LENGTH_SHORT).show();
+                    });
+        });
+    }
+
+    private void showEnrolledDeclinedStatus(EntrantListType status) {
+        if (status != EntrantListType.DECLINED && status != EntrantListType.ENROLLED) {
+            Log.d("showEnrolledDeclinedStatus", "Not supplied valid EntrantListType status. Expected: ENROLLED, DECLINED");
+            return;
+        }
+
+        entrantSecondaryButton.setVisibility(View.GONE);
+        entrantPrimaryButton.setOnClickListener(v -> {
+            // do nothing
+        });
+        if (status == EntrantListType.ENROLLED) {
+            entrantPrimaryButton.setText("Enrolled");
+            entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.secondaryAccent));
+            entrantPrimaryButton.setShadowLayer(3,0,0, R.color.black);
+            entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
+        } else {
+            entrantPrimaryButton.setText("Declined");
+            entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
+            entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
+        }
     }
 }
 
