@@ -379,9 +379,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         entrantPrimaryButton.setOnClickListener(v -> {
             Log.d("EventDetails", "Attempting to enroll user in event. EventId: " + event.getEventId());
 
+            // move user from INVITED to ENROLLED
             eventUtils.moveEntrantAcrossLists(event.getEventId(), user.getUserId(), EntrantListType.ENROLLED, EntrantListType.INVITED)
                     .addOnSuccessListener(aVoid -> {
-                        Log.d("EventDetails", "Successfully to enrolled user in event");
+                        Log.d("EventDetails", "Successfully enrolled user in event");
                         showEnrolledDeclinedStatus(EntrantListType.ENROLLED);
                     })
                     .addOnFailureListener(e -> {
@@ -399,9 +400,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         entrantSecondaryButton.setOnClickListener(v -> {
             Log.d("EventDetails", "Attempting to decline event. EventId: " + event.getEventId());
 
-            eventUtils.moveEntrantAcrossLists(event.getEventId(), user.getUserId(), EntrantListType.DECLINED, EntrantListType.ENROLLED)
+            // move user from INVITED to DECLINED
+            eventUtils.moveEntrantAcrossLists(event.getEventId(), user.getUserId(), EntrantListType.DECLINED, EntrantListType.INVITED)
                     .addOnSuccessListener(aVoid -> {
-                        Log.d("EventDetails", "Successfully to enrolled user in event");
+                        Log.d("EventDetails", "Successfully declined user in event");
                         showEnrolledDeclinedStatus(EntrantListType.DECLINED);
                     })
                     .addOnFailureListener(e -> {
