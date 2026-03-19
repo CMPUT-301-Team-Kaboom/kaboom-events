@@ -542,7 +542,8 @@ public class EventDetailsActivity extends AppCompatActivity {
         }).addOnFailureListener(e -> {
             Log.e("setupEntrantButtonsByEnrollmentStatus", "Failed to determine entrant status", e);
         });
-      
+    }
+
     /**
      * Given an array of comments, loads all comments into the Event Details page
      *
