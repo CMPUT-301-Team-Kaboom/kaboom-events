@@ -13,6 +13,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.example.projecteventlotteryapp.Models.CreateNotificationDialogFragment;
 import com.example.projecteventlotteryapp.OrganizerEntrantListAdapter;
 import com.example.projecteventlotteryapp.R;
 import com.google.firebase.firestore.DocumentReference;
@@ -20,11 +21,14 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Provides an organizer with the waitlist of entrants that have entered to join their event
  */
-public class OrganizerWaitlistActivity extends AppCompatActivity {
+public class OrganizerWaitlistActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {
     private String eventId;
     private OrganizerEntrantListAdapter adapter;
     private ListView waitlistView;
@@ -32,6 +36,7 @@ public class OrganizerWaitlistActivity extends AppCompatActivity {
     private Button selectBtn;
     private Button notifcationBtn;
     private Button doneBtn;
+    private Button sendNotifBtn;
     private ConstraintLayout floatingActionsContainer;
     private ArrayList<String> waitlist;
     private FirebaseFirestore db;
@@ -53,6 +58,8 @@ public class OrganizerWaitlistActivity extends AppCompatActivity {
         floatingActionsContainer = findViewById(R.id.cl_floating_actions);
         backBtn = findViewById(R.id.btn_organizer_waitlist_back);
         backBtn.setOnClickListener(v -> finish());
+        sendNotifBtn = findViewById(R.id.btn_send_notification);
+
 
         // hide notification buttons container initially
         floatingActionsContainer.setVisibility(View.GONE);
@@ -99,5 +106,33 @@ public class OrganizerWaitlistActivity extends AppCompatActivity {
             adapter.clearSelection();
         });
 
+        sendNotifBtn.setOnClickListener(v -> {
+            // Only show if users are selected
+            if (!adapter.getSelectedPositions().isEmpty()) {
+                CreateNotificationDialogFragment.newInstance()
+                        .show(getSupportFragmentManager(), "create_notification");
+            }
+        });
+
+    }
+
+    @Override
+    public void onSendNotification(String message) {
+        // Here you handle the actual Firestore saving logic
+        Set<Integer> selected = adapter.getSelectedPositions();
+        for (Integer pos : selected) {
+            String userId = waitlist.get(pos);
+            sendToFirestore(userId, message);
+        }
+    }
+
+    private void sendToFirestore(String userId, String message) {
+        Map<String, Object> notif = new HashMap<>();
+        notif.put("recipient", userId);
+        notif.put("text", message);
+        notif.put("date", com.google.firebase.Timestamp.now());
+        notif.put("event", "Waitlist Update"); // Or actual event name
+
+        db.collection("notifications").add(notif);
     }
 }
