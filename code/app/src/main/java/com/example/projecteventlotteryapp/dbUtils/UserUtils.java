@@ -77,4 +77,19 @@ public class UserUtils {
     public Task<Void> deleteUserProfile(String deviceId, Role userRole){
         return db.collection(getRoleString(userRole)).document(deviceId).delete();
     }
+
+    /**
+     * Updates the notification preference of a specified user
+     *
+     * @param deviceId document ID of the user to update the preference for
+     * @param userRole Role of the user
+     * @param isEnabled boolean value of the notification preference
+     * @return an async task for the completion of the update
+     */
+    public Task<Void> updateNotificationPreference(String deviceId, Role userRole, boolean isEnabled){
+        return db.collection(getRoleString(userRole))
+                    .document(deviceId)
+                        .update("notificationEnabled", isEnabled);
+
+    }
 }
