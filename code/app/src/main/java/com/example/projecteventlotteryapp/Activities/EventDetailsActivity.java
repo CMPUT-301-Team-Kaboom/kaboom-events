@@ -325,6 +325,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Sets the entrantPrimaryButton to Remove Waitlist functionality
+     * @param user the current user
+     */
     private void showRemoveWaitlistButtonState(User user) {
         entrantPrimaryButton.setText("Remove Waitlist");
         entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
@@ -342,6 +346,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sets the entrantPrimaryButton to Join Waitlist functionality
+     * @param user the current user
+     */
     private void showJoinWaitlistButtonState(User user) {
         entrantPrimaryButton.setText("Join Waitlist");
         entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.white));
@@ -359,6 +367,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sets the entrantPrimaryButton to Enroll in event functionality
+     * @param user the current user
+     */
     private void showEnrollButton(User user) {
         entrantPrimaryButton.setText("Enroll");
         entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.secondaryAccent));
@@ -380,6 +392,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sets the entrantSecondaryButton to Decline event functionality.
+     * @param user the current user
+     */
     private void showDeclineButton(User user) {
         entrantSecondaryButton.setText("Decline");
         entrantSecondaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
@@ -401,6 +417,14 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Deactivates the entrantPrimary/SecondaryButton and sets the text to the entrant's enrollment
+     * status.
+     *
+     * <p>This function takes in an EntrantListType and based on its value, updates the
+     * entrantPrimaryButton to display their enrollment status.</p>
+     * @param status the EntrantListType that represents the entrants enrollment status. Must be DECLINED or ENROLLED
+     */
     private void showEnrolledDeclinedStatus(EntrantListType status) {
         if (status != EntrantListType.DECLINED && status != EntrantListType.ENROLLED) {
             Log.d("showEnrolledDeclinedStatus", "Not supplied valid EntrantListType status. Expected: ENROLLED, DECLINED");
