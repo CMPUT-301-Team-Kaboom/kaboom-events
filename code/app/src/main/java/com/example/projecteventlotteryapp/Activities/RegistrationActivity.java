@@ -174,7 +174,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     
                     Role role = getSelectedRole();
                     // extract userId field from Firestore
-                    User user = new User(role, deviceID);
+                    User user = new User(role, deviceID, name, email, phone);
 
                     // set global MyApp user
                     MyApp app = (MyApp) getApplication();

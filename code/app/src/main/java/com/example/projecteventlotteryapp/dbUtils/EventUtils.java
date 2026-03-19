@@ -509,6 +509,21 @@ public class EventUtils {
         return new ArrayList<>(sampledList);
     }
 
+    /**
+     * Adds a comment to the event
+     *
+     * <p>
+     *     This function is used to add a new comment to the comments collection in the database, as well as updates the array
+     *     of comment ID strings in the event. It returns a document reference task so that the comment document ID can be
+     *     referenced after it's been added.
+     *
+     *     NOTE: the new comment must contain the comment text, the timestamp of the comment, and the ID of the user who
+     *     made the comment.
+     * </p>
+     * @param eventID ID of the event that the comment is being added onto.
+     * @param newComment A hashmap object of a new comment, includes the text, timestamp, and user ID of the commenter
+     * @return a task containing the document reference of the new comment in the comments collection
+     */
     public Task<DocumentReference> addCommentToEvent(String eventID, Map<String, Object> newComment) {
         return db.collection("comments").add(newComment).addOnSuccessListener(commentDoc -> {
             String commentID = commentDoc.getId();

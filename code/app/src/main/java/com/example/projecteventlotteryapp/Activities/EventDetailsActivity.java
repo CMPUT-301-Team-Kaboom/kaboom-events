@@ -2,6 +2,7 @@ package com.example.projecteventlotteryapp.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -201,7 +202,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             Task<DocumentReference> commentDoc = eventUtils.addCommentToEvent(event.getEventId(), newComment);
             commentDoc.addOnSuccessListener(comment -> {
                 commentsList.add(comment.getId());
-                loadComments(commentsList);
+                loadNewComment(text, timestamp);
             });
         });
         backButton      = findViewById(R.id.btn_eventDetails_back);
@@ -420,6 +421,16 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Given an array of comments, loads all comments into the Event Details page
+     *
+     * <p>
+     *     Essentially acts as an array adapter for the linear layout container of comments.
+     *     For each, comment, fetches the comment information from the database and populates the comment item
+     *     with the correct information
+     * </p>
+     * @param comments an ArrayList of comment IDs
+     */
     private void loadComments(ArrayList<String> comments) {
         commentsLV.removeAllViews();
 
@@ -467,6 +478,29 @@ public class EventDetailsActivity extends AppCompatActivity {
                 commentsLV.addView(view);
             });
         }
+    }
+
+    /**
+     * Given a text string and a timestamp, loads a new comment into an event comment section
+     *
+     * <p>
+     *     This method loads a new comment made by the user without needing to load every comment again.
+     *
+     *     NOTE: this method should not be called without calling addCommentToEvent in EventUtils in tandem
+     * </p>
+     * @param text a String of the comment text
+     * @param timestamp the timestamp that the comment was made
+     */
+    private void loadNewComment(String text, LocalDateTime timestamp){
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM. dd, yyyy HH:mm");
+        String username = globalUser.getName();
+
+        View view = LayoutInflater.from(this).inflate(R.layout.event_comment, commentsLV, false);
+        ((TextView) view.findViewById(R.id.tv_comment_text)).setText(text);
+        ((TextView) view.findViewById(R.id.tv_comment_username)).setText(username);
+        ((TextView) view.findViewById(R.id.tv_comment_datetime)).setText(dateFormatter.format(timestamp));
+
+        commentsLV.addView(view);
     }
 }
 
