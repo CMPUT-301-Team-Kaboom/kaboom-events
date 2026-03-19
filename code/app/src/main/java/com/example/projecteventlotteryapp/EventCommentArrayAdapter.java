@@ -39,6 +39,8 @@ public class EventCommentArrayAdapter extends ArrayAdapter<String> {
         this.comments = comments;
         this.db = FirebaseFirestore.getInstance();
         userUtils = new UserUtils(db);
+
+        Log.d("CommentAdapter", "Comments: " + comments.size());
     }
 
     @NonNull
@@ -64,7 +66,7 @@ public class EventCommentArrayAdapter extends ArrayAdapter<String> {
                 Log.e("Comments", "Comment does not exist: " + comments.get(position));
             }
 
-            LocalDateTime commentDateTime = FirestoreUtils.fetchLocalDateTime(comment, "commentTimestamp");
+            LocalDateTime commentDateTime = FirestoreUtils.fetchLocalDateTime(comment, "timestamp");
             DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM. dd, yyyy HH:mm");
 
             date.setText(dateFormatter.format(commentDateTime));

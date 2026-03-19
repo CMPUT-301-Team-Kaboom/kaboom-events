@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Utility class to provide database operations on the Event class
@@ -328,6 +329,7 @@ public class EventUtils {
         eventData.put("enrolled", new ArrayList<>());
         eventData.put("invited",  new ArrayList<>());
         eventData.put("declined", new ArrayList<>());
+        eventData.put("comments", new ArrayList<>());
 
         db.collection("events")
                 .add(eventData)
@@ -505,5 +507,12 @@ public class EventUtils {
         // sampledList is a sublist of shuffled waitlist
         List<String> sampledList = copy.subList(0, Math.min(n, copy.size()));
         return new ArrayList<>(sampledList);
+    }
+
+    public Task<DocumentReference> addCommentToEvent(String eventID, Map<String, Object> newComment) {
+        return db.collection("comments").add(newComment).addOnSuccessListener(commentDoc -> {
+            String commentID = commentDoc.getId();
+            db.collection("events").document(eventID).update("comments", FieldValue.arrayUnion(commentID));
+        });
     }
 }
