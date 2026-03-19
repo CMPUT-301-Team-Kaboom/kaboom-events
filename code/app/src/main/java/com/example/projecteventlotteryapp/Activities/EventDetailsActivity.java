@@ -354,6 +354,21 @@ public class EventDetailsActivity extends AppCompatActivity {
         entrantPrimaryButton.setText("Join Waitlist");
         entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.white));
         entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.secondaryBackground));
+
+        if (event.getRegistrationEndDate().isBefore(LocalDate.now())) {
+            entrantPrimaryButton.setText("Registration Period Passed");
+            entrantPrimaryButton.setOnClickListener(v -> {
+                // do nothing
+            });
+            return;
+        } else if (event.getRegistrationStartDate().isAfter(LocalDate.now())) {
+            entrantPrimaryButton.setText("Registration Not Open");
+            entrantPrimaryButton.setOnClickListener(v -> {
+                // do nothing
+            });
+            return;
+        }
+
         entrantPrimaryButton.setOnClickListener(v -> {
             eventUtils.addToEntrantList(EntrantListType.WAITLIST, user, eventId)
                     .addOnSuccessListener(aVoid -> {
