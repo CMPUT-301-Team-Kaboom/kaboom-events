@@ -137,6 +137,12 @@
         <item name="android:textStyle">bold</item>
         <item name="android:padding">4dp</item>
     </style>
+    
+    <style name="DeleteGuard" parent="ThemeOverlay.AppCompat.Dialog.Alert">
+        <item name="android:background">@color/tertiaryBackground</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="colorAccent">@color/primaryAccent</item>
+    </style>
 
 
 </resources>

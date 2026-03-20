@@ -99,8 +99,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     private TextView waitListTV;
     private TextView descriptionTV;
     private ImageView posterIV;
-    private LinearLayout commentsLV;
-    private EditText commentTextbox;
     private Button commentButton;
 
     /**
@@ -130,7 +128,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         eventDoc = db.collection("events").document(this.eventId);
         setupUi();
         eventUtils = new EventUtils(db);
-        userUtils = new UserUtils(db);
 
         MyApp app = (MyApp) getApplication();
         globalUser = app.getCurrentUser();
@@ -143,8 +140,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                 if (document.exists()) {
                     Log.d("EventActivity", "DocumentSnapshot data: " + document.getData());
                     event = eventUtils.fetchEventFromSnapshot(document);
-
-                    commentsList = (ArrayList<String>) document.get("comments");
 
                     updateUi();
                 } else {
@@ -178,32 +173,17 @@ public class EventDetailsActivity extends AppCompatActivity {
         waitListTV              = findViewById(R.id.tv_eventDetails_waitlist_count);
         descriptionTV           = findViewById(R.id.tv_eventDetails_description);
         posterIV                = findViewById(R.id.img_eventDetails_poster);
-        commentTextbox          = findViewById(R.id.et_eventDetails_comment_text);
 
         organizerController = findViewById(R.id.ll_eventDetails_organizer_button_controls);
         entrantController   = findViewById(R.id.cl_eventDetails_entrant_button_controls);
 
-        commentsLV = findViewById(R.id.lv_eventDetails_comments_list);
-
         editButton      = findViewById(R.id.btn_eventDetails_edit);
         drawButton      = findViewById(R.id.btn_eventDetails_Draw);
-        commentButton   = findViewById(R.id.btn_eventDetails_post_comment);
+        commentButton   = findViewById(R.id.btn_eventDetails_view_comments);
         commentButton.setOnClickListener(v -> {
-            String text = String.valueOf(commentTextbox.getText());
-            LocalDateTime timestamp = LocalDateTime.now();
-
-            Map<String, Object> newComment = new HashMap<>();
-
-            newComment.put("text", text);
-            newComment.put("timestamp", FirestoreUtils.localDateTimeToTimestamp(timestamp, ZoneId.systemDefault()));
-            newComment.put("userID", globalUser.getUserId());
-
-            commentTextbox.getText().clear();
-            Task<DocumentReference> commentDoc = eventUtils.addCommentToEvent(event.getEventId(), newComment);
-            commentDoc.addOnSuccessListener(comment -> {
-                commentsList.add(comment.getId());
-                loadNewComment(text, timestamp);
-            });
+            Intent intent = new Intent(this, EventCommentsActivity.class);
+            intent.putExtra("eventId", eventId);
+            startActivity(intent);
         });
         backButton      = findViewById(R.id.btn_eventDetails_back);
         backButton.setOnClickListener(v -> finish());
@@ -315,8 +295,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                 event.getRegistrationEndDate().format(registrationPeriodPattern).toUpperCase()
         );
         registrationPeriodTV.setText(registrationPeriodText);
-
-        loadComments(commentsList);
 
         db.collection("events").document(eventId).get().addOnSuccessListener(doc->{
             if (doc.exists()){
@@ -559,88 +537,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         }).addOnFailureListener(e -> {
             Log.e("setupEntrantButtonsByEnrollmentStatus", "Failed to determine entrant status", e);
         });
-    }
-
-    /**
-     * Given an array of comments, loads all comments into the Event Details page
-     *
-     * <p>
-     *     Essentially acts as an array adapter for the linear layout container of comments.
-     *     For each, comment, fetches the comment information from the database and populates the comment item
-     *     with the correct information
-     * </p>
-     * @param comments an ArrayList of comment IDs
-     */
-    private void loadComments(ArrayList<String> comments) {
-        commentsLV.removeAllViews();
-
-        LayoutInflater inflater = LayoutInflater.from(this);
-
-        for(String comment : comments){
-            View view = inflater.inflate(R.layout.event_comment, commentsLV, false);
-
-            TextView username = view.findViewById(R.id.tv_comment_username);
-            TextView date = view.findViewById(R.id.tv_comment_datetime);
-            TextView text = view.findViewById(R.id.tv_comment_text);
-
-            DocumentReference commentDoc = db.collection("comments").document(comment);
-
-            commentDoc.get().addOnCompleteListener(commentTask -> {
-                if (!commentTask.isSuccessful()){
-                    Log.e("Comments", "Failed to fetch comments for comment: " + comment);
-                }
-                DocumentSnapshot commentSnapshot = commentTask.getResult();
-                if (!commentSnapshot.exists()){
-                    Log.e("Comments", "Comment does not exist: " + comment);
-                }
-
-                LocalDateTime commentDateTime = FirestoreUtils.fetchLocalDateTime(commentSnapshot, "timestamp");
-                DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM. dd, yyyy HH:mm");
-
-                date.setText(dateFormatter.format(commentDateTime));
-                text.setText(commentSnapshot.getString("text"));
-
-                Task<DocumentSnapshot> entrantComment = userUtils.loadUserProfile(commentSnapshot.getString("userID"), Role.ENTRANT);
-                Task<DocumentSnapshot> organizerComment = userUtils.loadUserProfile(commentSnapshot.getString("userID"), Role.ORGANIZER);
-
-                Tasks.whenAllSuccess(entrantComment, organizerComment).addOnSuccessListener(userTasks -> {
-                    DocumentSnapshot entrant = (DocumentSnapshot) userTasks.get(0);
-                    DocumentSnapshot organizer = (DocumentSnapshot) userTasks.get(1);
-                    if (entrant.exists()){
-                        username.setText(entrant.getString("name"));
-                    } else if (organizer.exists()){
-                        username.setText(organizer.getString("name"));
-                    } else {
-                        username.setText("deleted user");
-                    }
-                });
-
-                commentsLV.addView(view);
-            });
-        }
-    }
-
-    /**
-     * Given a text string and a timestamp, loads a new comment into an event comment section
-     *
-     * <p>
-     *     This method loads a new comment made by the user without needing to load every comment again.
-     *
-     *     NOTE: this method should not be called without calling addCommentToEvent in EventUtils in tandem
-     * </p>
-     * @param text a String of the comment text
-     * @param timestamp the timestamp that the comment was made
-     */
-    private void loadNewComment(String text, LocalDateTime timestamp){
-        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("MMM. dd, yyyy HH:mm");
-        String username = globalUser.getName();
-
-        View view = LayoutInflater.from(this).inflate(R.layout.event_comment, commentsLV, false);
-        ((TextView) view.findViewById(R.id.tv_comment_text)).setText(text);
-        ((TextView) view.findViewById(R.id.tv_comment_username)).setText(username);
-        ((TextView) view.findViewById(R.id.tv_comment_datetime)).setText(dateFormatter.format(timestamp));
-
-        commentsLV.addView(view);
     }
 }
 

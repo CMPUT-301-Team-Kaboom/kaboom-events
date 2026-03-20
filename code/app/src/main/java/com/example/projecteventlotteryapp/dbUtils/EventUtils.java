@@ -537,4 +537,9 @@ public class EventUtils {
             db.collection("events").document(eventID).update("comments", FieldValue.arrayUnion(commentID));
         });
     }
+
+    public void deleteCommentFromEvent(String eventId, String commentId){
+        db.collection("comments").document(commentId).delete();
+        db.collection("events").document(eventId).update("comments", FieldValue.arrayRemove(commentId));
+    }
 }
