@@ -1,19 +1,22 @@
 package com.example.projecteventlotteryapp.Activities;
 
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
-
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Layout;
 import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
@@ -23,22 +26,32 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.bumptech.glide.Glide;
 import com.example.projecteventlotteryapp.Enums.EntrantListType;
+import com.example.projecteventlotteryapp.EventCommentArrayAdapter;
 import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.Enums.Role;
 import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.R;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
+import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.example.projecteventlotteryapp.dbUtils.UserUtils;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 
 
 /**
@@ -51,8 +64,11 @@ public class EventDetailsActivity extends AppCompatActivity {
     private String eventId;
     private Event event;
     private EventUtils eventUtils;
+    private UserUtils userUtils;
     private User globalUser;
     private DocumentReference eventDoc;
+    private EventCommentArrayAdapter commentsAdapter;
+    private ArrayList<String> commentsList;
 
     //=============================
     // UI Elements
@@ -191,15 +207,15 @@ public class EventDetailsActivity extends AppCompatActivity {
      */
     private void configureUIForRole(User user) {
         if (user.getRole() == Role.ORGANIZER) {
-            entrantController.setVisibility(GONE);
-            organizerController.setVisibility(VISIBLE);
-            editButton.setVisibility(VISIBLE);
-            mapButton.setVisibility(VISIBLE);
+            entrantController.setVisibility(View.GONE);
+            organizerController.setVisibility(View.VISIBLE);
+            editButton.setVisibility(View.VISIBLE);
+            mapButton.setVisibility(View.VISIBLE);
 
             if (event.getRegistrationEndDate().isBefore(LocalDate.now())) {
-                drawButton.setVisibility(VISIBLE);
+                drawButton.setVisibility(View.VISIBLE);
             } else {
-                drawButton.setVisibility(GONE);
+                drawButton.setVisibility(View.GONE);
             }
 
             // TODO: set onClickListeners for Organizer specific buttons
@@ -247,34 +263,14 @@ public class EventDetailsActivity extends AppCompatActivity {
 
             mapButton.setOnClickListener(v -> Log.d("EventDetails", "Clicked Map Button"));
         } else if (user.getRole() == Role.ENTRANT) {
-            entrantController.setVisibility(VISIBLE);
-            organizerController.setVisibility(GONE);
-            entrantSecondaryButton.setVisibility(GONE);
-            editButton.setVisibility(GONE);
-            drawButton.setVisibility(GONE);
-            mapButton.setVisibility(GONE);
+            entrantController.setVisibility(View.VISIBLE);
+            organizerController.setVisibility(View.GONE);
+            entrantSecondaryButton.setVisibility(View.GONE);
+            editButton.setVisibility(View.GONE);
+            drawButton.setVisibility(View.GONE);
+            mapButton.setVisibility(View.GONE);
 
-            eventUtils.entrantListContains(EntrantListType.INVITED, user, event.getEventId()).addOnSuccessListener(invited -> {
-                if (invited) {
-                    entrantPrimaryButton.setText("Enroll");
-                    // TODO: Setup onclick listener for adding to Enrolled list
-                    entrantPrimaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Enroll"));
-
-
-                    entrantSecondaryButton.setVisibility(VISIBLE);
-                    entrantSecondaryButton.setText("Decline");
-                    // TODO: Setup onclick listener for adding to Declined list
-                    entrantSecondaryButton.setOnClickListener(v -> Log.d("EventDetails", "[TEMP] Decline"));
-                } else {
-                    eventUtils.entrantListContains(EntrantListType.WAITLIST, user, eventId).addOnSuccessListener(waitlisted -> {
-                        if (waitlisted){
-                            showRemoveWaitlistButtonState(user);
-                        } else {
-                            showJoinWaitlistButtonState(user);
-                        }
-                    });
-                }
-            });
+            setupEntrantButtonsByEnrollmentStatus(user);
         }
     }
 
@@ -285,7 +281,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void updateUi() {
         nameHeaderTextView.setText(event.getName());
         attendeesTV.setText(String.valueOf(event.getAttendeesLimit()));
-        waitListTV.setText(String.valueOf(event.getWaitlistSize()));
+        refreshWaitlistTV();
         descriptionTV.setText(event.getDescription());
         setupTags();
 
@@ -334,7 +330,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         List<TextView> tagsTVs = Arrays.asList(tag1, tag2, tag3);
 
         for (TextView tv:tagsTVs) {
-            tv.setVisibility(GONE);
+            tv.setVisibility(View.GONE);
         }
 
         if (numTags > 3) {
@@ -345,11 +341,17 @@ public class EventDetailsActivity extends AppCompatActivity {
         for (int i=0; i < numTags; i++) {
             TextView tagTv = tagsTVs.get(i);
             tagTv.setText(tags.get(i));
-            tagTv.setVisibility(VISIBLE);
+            tagTv.setVisibility(View.VISIBLE);
         }
     }
 
+    /**
+     * Sets the entrantPrimaryButton to Remove Waitlist functionality
+     * @param user the current user
+     */
     private void showRemoveWaitlistButtonState(User user) {
+        refreshWaitlistTV();
+
         entrantPrimaryButton.setText("Remove Waitlist");
         entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
         entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
@@ -366,10 +368,31 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Sets the entrantPrimaryButton to Join Waitlist functionality
+     * @param user the current user
+     */
     private void showJoinWaitlistButtonState(User user) {
+        refreshWaitlistTV();
+
         entrantPrimaryButton.setText("Join Waitlist");
         entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.white));
         entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.secondaryBackground));
+
+        if (event.getRegistrationEndDate().isBefore(LocalDate.now())) {
+            entrantPrimaryButton.setText("Registration Period Passed");
+            entrantPrimaryButton.setOnClickListener(v -> {
+                // do nothing
+            });
+            return;
+        } else if (event.getRegistrationStartDate().isAfter(LocalDate.now())) {
+            entrantPrimaryButton.setText("Registration Not Open");
+            entrantPrimaryButton.setOnClickListener(v -> {
+                // do nothing
+            });
+            return;
+        }
+
         entrantPrimaryButton.setOnClickListener(v -> {
             eventUtils.addToEntrantList(EntrantListType.WAITLIST, user, eventId)
                     .addOnSuccessListener(aVoid -> {
@@ -380,6 +403,139 @@ public class EventDetailsActivity extends AppCompatActivity {
                         Log.d("EventDetails", "Failed to join Waitlist - Error: " + e);
                         Toast.makeText(this, "Failed to join Waitlist", Toast.LENGTH_SHORT).show();
                     });
+        });
+    }
+
+    /**
+     * Sets the entrantPrimaryButton to Enroll in event functionality
+     * @param user the current user
+     */
+    private void showEnrollButton(User user) {
+        entrantPrimaryButton.setText("Enroll");
+        entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.secondaryAccent));
+        entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
+        entrantPrimaryButton.setShadowLayer(10,0,0, R.color.black);
+        entrantPrimaryButton.setOnClickListener(v -> {
+            Log.d("EventDetails", "Attempting to enroll user in event. EventId: " + event.getEventId());
+
+            // move user from INVITED to ENROLLED
+            eventUtils.moveEntrantAcrossLists(event.getEventId(), user.getUserId(), EntrantListType.ENROLLED, EntrantListType.INVITED)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("EventDetails", "Successfully enrolled user in event");
+                        showEnrolledDeclinedStatus(EntrantListType.ENROLLED);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.d("EventDetails", "Failed to enrolled user in event. Error: " + e);
+                        Toast.makeText(this, "Failed to enroll in event", Toast.LENGTH_SHORT).show();
+                    });
+        });
+    }
+
+    /**
+     * Refreshes the waitlistTV to accurately reflect the amount of users on the waitlist
+     */
+    private void refreshWaitlistTV() {
+        eventUtils.getEntrantListSize(eventId, EntrantListType.WAITLIST)
+                .addOnSuccessListener(size -> {
+                    waitListTV.setText(String.valueOf(size));
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("refreshWaitlistTV", "Failed to get size", e);
+                });
+    }
+
+    /**
+     * Sets the entrantSecondaryButton to Decline event functionality.
+     * @param user the current user
+     */
+    private void showDeclineButton(User user) {
+        entrantSecondaryButton.setText("Decline");
+        entrantSecondaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
+        entrantSecondaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
+        entrantSecondaryButton.setVisibility(View.VISIBLE);
+        entrantSecondaryButton.setOnClickListener(v -> {
+            Log.d("EventDetails", "Attempting to decline event. EventId: " + event.getEventId());
+
+            // move user from INVITED to DECLINED
+            eventUtils.moveEntrantAcrossLists(event.getEventId(), user.getUserId(), EntrantListType.DECLINED, EntrantListType.INVITED)
+                    .addOnSuccessListener(aVoid -> {
+                        Log.d("EventDetails", "Successfully declined user in event");
+                        showEnrolledDeclinedStatus(EntrantListType.DECLINED);
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.d("EventDetails", "Failed to decline user invitation for event. Error: " + e);
+                        Toast.makeText(this, "Failed to decline event", Toast.LENGTH_SHORT).show();
+                    });
+        });
+    }
+
+    /**
+     * Deactivates the entrantPrimary/SecondaryButton and sets the text to the entrant's enrollment
+     * status.
+     *
+     * <p>This function takes in an EntrantListType and based on its value, updates the
+     * entrantPrimaryButton to display their enrollment status.</p>
+     * @param status the EntrantListType that represents the entrants enrollment status. Must be DECLINED or ENROLLED
+     */
+    private void showEnrolledDeclinedStatus(EntrantListType status) {
+        if (status != EntrantListType.DECLINED && status != EntrantListType.ENROLLED) {
+            Log.d("showEnrolledDeclinedStatus", "Not supplied valid EntrantListType status. Expected: ENROLLED, DECLINED");
+            return;
+        }
+
+        entrantSecondaryButton.setVisibility(View.GONE);
+        entrantPrimaryButton.setOnClickListener(v -> {
+            // do nothing
+        });
+        if (status == EntrantListType.ENROLLED) {
+            entrantPrimaryButton.setText("Enrolled");
+            entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.secondaryAccent));
+            entrantPrimaryButton.setShadowLayer(10,0,0, R.color.black);
+            entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
+        } else {
+            entrantPrimaryButton.setText("Declined");
+            entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
+            entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
+        }
+    }
+
+    /**
+     * Configures entrant related buttons based on user's enrollment status for the current event.
+     *
+     * <p>THis method checks all of the entrant lists (invited, enrolled, declined, waitlist) to
+     * determine which buttons to show. The checks are executed in parallel and once all results
+     * are available, the correct UI is applied.
+     * If any of the fetching fails, an error is logged and nothing happens.</p>
+     * @param user the current user
+     */
+    private void setupEntrantButtonsByEnrollmentStatus(User user) {
+        String eventId = event.getEventId();
+
+        Tasks.whenAllSuccess(
+                eventUtils.entrantListContains(EntrantListType.INVITED, user, eventId),
+                eventUtils.entrantListContains(EntrantListType.ENROLLED, user, eventId),
+                eventUtils.entrantListContains(EntrantListType.DECLINED, user, eventId),
+                eventUtils.entrantListContains(EntrantListType.WAITLIST, user, eventId)
+        ).addOnSuccessListener(results -> {
+            boolean invited     = (Boolean) results.get(0);
+            boolean enrolled    = (Boolean) results.get(1);
+            boolean declined    = (Boolean) results.get(2);
+            boolean waitlisted  = (Boolean) results.get(3);
+
+            if (invited) {
+                showEnrollButton(user);
+                showDeclineButton(user);
+            } else if (enrolled) {
+                showEnrolledDeclinedStatus(EntrantListType.ENROLLED);
+            } else if (declined) {
+                showEnrolledDeclinedStatus(EntrantListType.DECLINED);
+            } else if (waitlisted) {
+                showRemoveWaitlistButtonState(user);
+            } else {
+                showJoinWaitlistButtonState(user);
+            }
+        }).addOnFailureListener(e -> {
+            Log.e("setupEntrantButtonsByEnrollmentStatus", "Failed to determine entrant status", e);
         });
     }
 }
