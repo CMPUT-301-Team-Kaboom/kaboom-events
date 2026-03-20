@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.StringJoiner;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Utility class to provide database operations on the Event class
@@ -164,7 +165,14 @@ public class EventUtils {
      * @param fromList the EntrantListType of the list the user is moving to
      * @return
      */
-    private Task<Void> moveEntrantAcrossLists(String eventId, String entrantId, EntrantListType toList, EntrantListType fromList) {
+    public Task<Void> moveEntrantAcrossLists(String eventId, String entrantId, EntrantListType toList, EntrantListType fromList) {
+        Log.d("moveEntrantAcrossLists", String.format("Attempting to move entrant. UserId: %s | eventId: %s | to: %s | from: %s",
+                entrantId,
+                eventId,
+                toList.toString(),
+                fromList.toString()
+            )
+        );
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
         HashMap<String, Object> updates = new HashMap<>();
@@ -328,6 +336,7 @@ public class EventUtils {
         eventData.put("enrolled", new ArrayList<>());
         eventData.put("invited",  new ArrayList<>());
         eventData.put("declined", new ArrayList<>());
+        eventData.put("comments", new ArrayList<>());
 
         db.collection("events")
                 .add(eventData)
@@ -505,5 +514,32 @@ public class EventUtils {
         // sampledList is a sublist of shuffled waitlist
         List<String> sampledList = copy.subList(0, Math.min(n, copy.size()));
         return new ArrayList<>(sampledList);
+    }
+
+    /**
+     * Adds a comment to the event
+     *
+     * <p>
+     *     This function is used to add a new comment to the comments collection in the database, as well as updates the array
+     *     of comment ID strings in the event. It returns a document reference task so that the comment document ID can be
+     *     referenced after it's been added.
+     *
+     *     NOTE: the new comment must contain the comment text, the timestamp of the comment, and the ID of the user who
+     *     made the comment.
+     * </p>
+     * @param eventID ID of the event that the comment is being added onto.
+     * @param newComment A hashmap object of a new comment, includes the text, timestamp, and user ID of the commenter
+     * @return a task containing the document reference of the new comment in the comments collection
+     */
+    public Task<DocumentReference> addCommentToEvent(String eventID, Map<String, Object> newComment) {
+        return db.collection("comments").add(newComment).addOnSuccessListener(commentDoc -> {
+            String commentID = commentDoc.getId();
+            db.collection("events").document(eventID).update("comments", FieldValue.arrayUnion(commentID));
+        });
+    }
+
+    public void deleteCommentFromEvent(String eventId, String commentId){
+        db.collection("comments").document(commentId).delete();
+        db.collection("events").document(eventId).update("comments", FieldValue.arrayRemove(commentId));
     }
 }

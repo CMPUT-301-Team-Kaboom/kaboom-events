@@ -82,6 +82,9 @@
         <activity
             android:name=".Activities.OrganizerDeclinedActivity"
             android:exported="false"/>
+        <activity
+            android:name=".Activities.EventCommentsActivity"
+            android:exported="false"/>
     </application>
 
 </manifest>

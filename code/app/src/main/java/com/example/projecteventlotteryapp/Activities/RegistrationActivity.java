@@ -166,6 +166,7 @@ public class RegistrationActivity extends AppCompatActivity {
         userData.put("name", name);
         userData.put("email", email);
         userData.put("phone", phone);
+        userData.put("notificationEnabled", true);
 
         // Add data to Firestore
         userRef.set(userData)
@@ -174,17 +175,20 @@ public class RegistrationActivity extends AppCompatActivity {
                     
                     Role role = getSelectedRole();
                     // extract userId field from Firestore
-                    User user = new User(role, deviceID);
+                    User user = new User(role, deviceID, name, email, phone);
 
                     // set global MyApp user
                     MyApp app = (MyApp) getApplication();
                     app.setCurrentUser(user);
 
-                    // Temporary handling of page routing, will add more cases for organizer and entrant for now
                     Intent intent;
                     if (role == Role.ADMIN) {
                         intent = new Intent(RegistrationActivity.this, AdminHomeActivity.class);
-                    } else {
+                    }
+                    else if (role == Role.ORGANIZER) {
+                        intent = new Intent(RegistrationActivity.this, EventsListActivity.class);
+                    }
+                    else {
                         intent = new Intent(RegistrationActivity.this, EventsListActivity.class);
                     }
                     startActivity(intent);
