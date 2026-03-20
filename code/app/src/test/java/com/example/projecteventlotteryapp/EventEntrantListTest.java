@@ -11,6 +11,10 @@ import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import com.example.projecteventlotteryapp.Enums.EntrantListType;
+import com.example.projecteventlotteryapp.Enums.Role;
+import com.example.projecteventlotteryapp.Models.User;
+import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.google.android.gms.tasks.Continuation;
 import com.google.android.gms.tasks.Task;
 import com.google.android.gms.tasks.Tasks;
@@ -27,7 +31,6 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
-import java.util.concurrent.CountDownLatch;
 
 /*
  Unit test class that functions to test for all four entrant list types: waitlist, invited, accepted, and declined
@@ -98,5 +101,94 @@ public class EventEntrantListTest {
 
         verify(eventDoc).update(eq("waitlist"), argThat(arg->
                 arg.getClass().getSimpleName().contains("ArrayRemove")));
+    }
+
+    @Test
+    public void getEntrantList_success_returnsList() throws Exception {
+        ArrayList<String> entrantList = new ArrayList<>();
+        entrantList.add("user1");
+        entrantList.add("user2");
+
+        Task<DocumentSnapshot> getTask = mock(Task.class);
+
+        when(eventDoc.get()).thenReturn(getTask);
+        when(eventSnapshot.exists()).thenReturn(true);
+        when(eventSnapshot.get("waitlist")).thenReturn(entrantList);
+        when(getTask.isSuccessful()).thenReturn(true);
+        when(getTask.getResult()).thenReturn(eventSnapshot);
+
+        when(getTask.continueWith(any())).thenAnswer(invocation -> {
+            Continuation<DocumentSnapshot, ArrayList<String>> continuation = invocation.getArgument(0);
+            ArrayList<String> result = continuation.then(getTask);
+            return Tasks.forResult(result);
+        });
+
+        Task<ArrayList<String>> result = eventUtils.getEntrantList(eventId, type);
+
+        assertEquals(2, result.getResult().size());
+        assertTrue(result.getResult().contains("user1"));
+
+        verify(eventDoc).get();
+    }
+
+    @Test
+    public void getEntrantList_nullField_returnsEmptyList() throws Exception {
+        Task<DocumentSnapshot> getTask = mock(Task.class);
+
+        when(eventDoc.get()).thenReturn(getTask);
+        when(eventSnapshot.exists()).thenReturn(true);
+        when(eventSnapshot.get("waitlist")).thenReturn(null);
+        when(getTask.isSuccessful()).thenReturn(true);
+        when(getTask.getResult()).thenReturn(eventSnapshot);
+
+        when(getTask.continueWith(any())).thenAnswer(invocation -> {
+            Continuation<DocumentSnapshot, ArrayList<String>> continuation = invocation.getArgument(0);
+            ArrayList<String> result = continuation.then(getTask);
+            return Tasks.forResult(result);
+        });
+
+        Task<ArrayList<String>> result = eventUtils.getEntrantList(eventId, type);
+
+        assertNotNull(result.getResult());
+        assertTrue(result.getResult().isEmpty());
+    }
+
+    @Test
+    public void getEntrantList_documentMissing_throwsException() throws Exception {
+        Task<DocumentSnapshot> getTask = mock(Task.class);
+
+        when(eventDoc.get()).thenReturn(getTask);
+        when(eventSnapshot.exists()).thenReturn(false);
+        when(getTask.isSuccessful()).thenReturn(true);
+        when(getTask.getResult()).thenReturn(eventSnapshot);
+
+        when(getTask.continueWith(any())).thenAnswer(invocation -> {
+            Continuation<DocumentSnapshot, ArrayList<String>> continuation = invocation.getArgument(0);
+            return Tasks.forException(new Exception("Event document missing"));
+        });
+
+        Task<ArrayList<String>> result = eventUtils.getEntrantList(eventId, type);
+
+        assertTrue(result.isComplete());
+        assertFalse(result.isSuccessful());
+    }
+
+    @Test
+    public void getEntrantList_taskFailure_propagatesException() throws Exception {
+        Task<DocumentSnapshot> getTask = mock(Task.class);
+        Exception exception = new Exception("Firestore error");
+
+        when(eventDoc.get()).thenReturn(getTask);
+        when(getTask.isSuccessful()).thenReturn(false);
+        when(getTask.getException()).thenReturn(exception);
+
+        when(getTask.continueWith(any())).thenAnswer(invocation -> {
+            return Tasks.forException(exception);
+        });
+
+        Task<ArrayList<String>> result = eventUtils.getEntrantList(eventId, type);
+
+        assertTrue(result.isComplete());
+        assertFalse(result.isSuccessful());
     }
 }

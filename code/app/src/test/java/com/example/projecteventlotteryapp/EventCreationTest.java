@@ -6,6 +6,9 @@ import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.junit.Assert.*;
 
+import com.example.projecteventlotteryapp.Models.Event;
+import com.example.projecteventlotteryapp.dbUtils.EventUtils;
+import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.CollectionReference;
@@ -24,6 +27,7 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 @ExtendWith(MockitoExtension.class)
 public class EventCreationTest {
@@ -44,6 +48,7 @@ public class EventCreationTest {
     LocalDate regEnd;
     LocalDateTime drawDate;
     int entrantLimit;
+    boolean eventIsPrivate;
 
     @Before
     public void setUpEvent(){
@@ -86,6 +91,31 @@ public class EventCreationTest {
 
         assertEquals(newRegStart, event.getRegistrationStartDate());
         assertEquals(newRegEnd, event.getRegistrationEndDate());
+    }
+
+    @Test
+    public void testIsPrivate_DefaultFalse() {
+        Event eventTest = new Event(eventName, regStart, regEnd, drawDate, entrantLimit, false);
+
+        assertFalse(eventTest.isPrivate());
+    }
+
+    @Test
+    public void testSetPrivate_True() {
+        Event eventTest = new Event(eventName, regStart, regEnd, drawDate, entrantLimit, false);
+        eventTest.setPrivate(true);
+
+        assertTrue(eventTest.isPrivate());
+    }
+
+    @Test
+    public void testSetPrivate_False() {
+        Event eventTest = new Event(eventName, regStart, regEnd, drawDate, entrantLimit, false);
+
+        eventTest.setPrivate(true);
+        eventTest.setPrivate(false);
+
+        assertFalse(eventTest.isPrivate());
     }
 
     @Test
@@ -135,6 +165,8 @@ public class EventCreationTest {
         eventData.put("qrCodePath", null);
         eventData.put("tags", null);
         eventData.put("waitlistLimit", -1);  // -1 indicates no limit
+        eventData.put("isPrivate", false);
+        eventData.put("waitlistSize", 0);
         eventData.put("waitlist", new ArrayList<>());
         eventData.put("enrolled", new ArrayList<>());
         eventData.put("invited", new ArrayList<>());

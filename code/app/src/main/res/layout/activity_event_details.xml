@@ -6,297 +6,311 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primaryBackground"
-    tools:context=".EventDetailsActivity">
+    tools:context=".Activities.EventDetailsActivity">
 
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_poster_area"
-        android:layout_width="match_parent"
-        android:layout_height="250dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent">
-
-        <ImageView
-            android:id="@+id/img_eventDetails_poster"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:scaleType="centerCrop"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            android:src="@drawable/default_poster" />
-
-        <TextView
-            android:id="@+id/tv_eventDetails_event_name_header"
-            style="@style/DefaultTextStyle"
-            android:layout_width="300dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:text="Event Name"
-            android:textAlignment="textStart"
-            android:textSize="36sp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <TextView
-            android:id="@+id/tv_eventDetails_org_header"
-            style="@style/DefaultTextStyle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginBottom="-10dp"
-            android:text="Organizer"
-            android:textAlignment="textStart"
-            android:textSize="20sp"
-            android:textStyle="normal"
-            app:layout_constraintBottom_toTopOf="@+id/tv_eventDetails_event_name_header"
-            app:layout_constraintStart_toStartOf="parent" />
-
-        <Button
-            android:id="@+id/btn_eventDetails_edit"
-            style="@style/RoundedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="5dp"
-            android:background="@drawable/rounded_button_transparent"
-            android:text="Edit"
-            android:textSize="18sp"
-            app:backgroundTint="@color/white"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
-
-        <!-- scaleType="fitCenter" lets button scale with size-->
-
-        <Button
-            android:id="@+id/btn_eventDetails_map"
-            style="@style/RoundedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginEnd="5dp"
-            android:layout_marginBottom="5dp"
-            android:background="@drawable/rounded_button_transparent"
-            android:text="Map"
-            android:textSize="18sp"
-            app:backgroundTint="@color/white"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent" />
-
-        <ImageButton
-            android:id="@+id/btn_eventDetails_back"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_marginTop="2dp"
-            android:background="@color/transparent"
-            android:scaleType="fitCenter"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:srcCompat="@drawable/outline_arrow_back_ios_new_24" />
-
-    </androidx.constraintlayout.widget.ConstraintLayout>
-
-    <TextView
-        android:id="@+id/tv_eventDetails_date_header"
-        style="@style/DefaultTextStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="10dp"
-        android:text="Draw Date"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cl_poster_area" />
-
-    <TextView
-        android:id="@+id/tv_eventDetails_draw_date"
-        style="@style/DefaultTextStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="MMM dd    xx:xx"
-        app:layout_constraintStart_toStartOf="@+id/tv_eventDetails_date_header"
-        app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_date_header" />
-
-    <TextView
-        android:id="@+id/tv_eventDetails_registration_period_header"
-        style="@style/DefaultTextStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
-        android:text="Registration Period"
-        android:textSize="16sp"
-        app:layout_constraintStart_toStartOf="@+id/tv_eventDetails_draw_date"
-        app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_draw_date" />
-
-    <TextView
-        android:id="@+id/tv_eventDetails_registration_period"
-        style="@style/DefaultTextStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="MMM d - MMM d"
-        app:layout_constraintStart_toStartOf="@+id/tv_eventDetails_registration_period_header"
-        app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_registration_period_header" />
-
-    <TextView
-        android:id="@+id/tv_eventDetails_attendees_header"
-        style="@style/DefaultTextStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="10dp"
-        android:text="Attendees"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/cl_poster_area" />
-
-    <TextView
-        android:id="@+id/tv_eventDetails_attendees"
-        style="@style/DefaultTextStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="30"
-        android:textAlignment="viewEnd"
-        app:layout_constraintEnd_toEndOf="@+id/tv_eventDetails_attendees_header"
-        app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_attendees_header" />
-
-    <TextView
-        android:id="@+id/tv_eventDetails_waitlist_count_header"
-        style="@style/DefaultTextStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="16dp"
-        android:layout_marginTop="10dp"
-        android:text="On Waitlist"
-        android:textSize="16sp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_attendees" />
-
-    <TextView
-        android:id="@+id/tv_eventDetails_waitlist_count"
-        style="@style/DefaultTextStyle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="30"
-        android:textAlignment="viewEnd"
-        app:layout_constraintEnd_toEndOf="@+id/tv_eventDetails_waitlist_count_header"
-        app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_waitlist_count_header" />
-
-    <androidx.constraintlayout.widget.ConstraintLayout
-        android:id="@+id/cl_event_details_button_controls"
-        android:layout_width="0dp"
-        android:layout_height="50dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_registration_period">
 
         <androidx.constraintlayout.widget.ConstraintLayout
-            android:id="@+id/cl_eventDetails_entrant_button_controls"
-            android:layout_width="0dp"
-            android:layout_height="50dp"
-            android:layout_marginStart="6dp"
-            android:layout_marginEnd="6dp"
-            android:orientation="horizontal"
-            app:layout_constraintBottom_toBottomOf="parent"
+            android:id="@+id/cl_poster_area"
+            android:layout_width="match_parent"
+            android:layout_height="250dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
 
-
-            <Button
-                android:id="@+id/btn_eventDetails_entrant_primary"
-                style="@style/RoundedButton"
-                android:layout_width="wrap_content"
-                android:height="35dp"
-                android:backgroundTint="@color/secondaryAccent"
-                android:text="Join Waitlist"
-                android:textAlignment="textStart"
-                android:textSize="12sp"
+            <ImageView
+                android:id="@+id/img_eventDetails_poster"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/default_poster"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <TextView
+                android:id="@+id/tv_eventDetails_event_name_header"
+                style="@style/DefaultTextStyle"
+                android:layout_width="300dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:text="Event Name"
+                android:textAlignment="textStart"
+                android:textSize="36sp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintStart_toStartOf="parent" />
+
+            <TextView
+                android:id="@+id/tv_eventDetails_org_header"
+                style="@style/DefaultTextStyle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="16dp"
+                android:layout_marginBottom="-10dp"
+                android:text="Organizer"
+                android:textAlignment="textStart"
+                android:textSize="20sp"
+                android:textStyle="normal"
+                app:layout_constraintBottom_toTopOf="@+id/tv_eventDetails_event_name_header"
+                app:layout_constraintStart_toStartOf="parent" />
+
             <Button
-                android:id="@+id/btn_eventDetails_entrant_secondary"
+                android:id="@+id/btn_eventDetails_edit"
                 style="@style/RoundedButton"
                 android:layout_width="wrap_content"
-                android:height="35dp"
-                android:backgroundTint="@color/red"
-                android:text="Decline"
-                android:textAlignment="textStart"
-                android:textSize="12sp"
-                app:layout_constraintBottom_toBottomOf="parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/rounded_button_transparent"
+                android:text="Edit"
+                android:textSize="18sp"
+                app:backgroundTint="@color/white"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
+            <Button
+                android:id="@+id/btn_eventDetails_Draw"
+                style="@style/RoundedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginEnd="5dp"
+                android:background="@drawable/rounded_button_transparent"
+                android:text="Draw"
+                android:textSize="18sp"
+                app:backgroundTint="@color/white"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/btn_eventDetails_edit" />
+
+            <!-- scaleType="fitCenter" lets button scale with size-->
+
+            <Button
+                android:id="@+id/btn_eventDetails_map"
+                style="@style/RoundedButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="@drawable/rounded_button_transparent"
+                android:text="Map"
+                android:textSize="18sp"
+                app:backgroundTint="@color/white"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent" />
+
+            <ImageButton
+                android:id="@+id/btn_eventDetails_back"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:layout_marginTop="2dp"
+                android:background="@color/transparent"
+                android:scaleType="fitCenter"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:srcCompat="@drawable/outline_arrow_back_ios_new_24" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
-        <LinearLayout
-            android:id="@+id/ll_eventDetails_organizer_button_controls"
+        <TextView
+            android:id="@+id/tv_eventDetails_date_header"
+            style="@style/DefaultTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="10dp"
+            android:text="Draw Date"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cl_poster_area" />
+
+        <TextView
+            android:id="@+id/tv_eventDetails_draw_date"
+            style="@style/DefaultTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MMM dd    xx:xx"
+            app:layout_constraintStart_toStartOf="@+id/tv_eventDetails_date_header"
+            app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_date_header" />
+
+        <TextView
+            android:id="@+id/tv_eventDetails_registration_period_header"
+            style="@style/DefaultTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Registration Period"
+            android:textSize="16sp"
+            app:layout_constraintStart_toStartOf="@+id/tv_eventDetails_draw_date"
+            app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_draw_date" />
+
+        <TextView
+            android:id="@+id/tv_eventDetails_registration_period"
+            style="@style/DefaultTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="MMM d - MMM d"
+            app:layout_constraintStart_toStartOf="@+id/tv_eventDetails_registration_period_header"
+            app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_registration_period_header" />
+
+        <TextView
+            android:id="@+id/tv_eventDetails_attendees_header"
+            style="@style/DefaultTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:text="Attendees"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/cl_poster_area" />
+
+        <TextView
+            android:id="@+id/tv_eventDetails_attendees"
+            style="@style/DefaultTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30"
+            android:textAlignment="viewEnd"
+            app:layout_constraintEnd_toEndOf="@+id/tv_eventDetails_attendees_header"
+            app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_attendees_header" />
+
+        <TextView
+            android:id="@+id/tv_eventDetails_waitlist_count_header"
+            style="@style/DefaultTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="16dp"
+            android:text="On Waitlist"
+            android:textSize="16sp"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_attendees" />
+
+        <TextView
+            android:id="@+id/tv_eventDetails_waitlist_count"
+            style="@style/DefaultTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="30"
+            android:textAlignment="viewEnd"
+            app:layout_constraintEnd_toEndOf="@+id/tv_eventDetails_waitlist_count_header"
+            app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_waitlist_count_header" />
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_event_details_button_controls"
             android:layout_width="0dp"
             android:layout_height="50dp"
-            android:layout_marginStart="6dp"
-            android:layout_marginEnd="6dp"
-            android:orientation="horizontal"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent">
+            app:layout_constraintTop_toBottomOf="@+id/tv_eventDetails_registration_period">
 
-            <Button
-                android:id="@+id/btn_eventDetails_organizer_waitlist"
-                style="@style/RoundedButton"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_eventDetails_entrant_button_controls"
                 android:layout_width="0dp"
-                android:layout_height="35dp"
-                android:layout_weight="1"
-                android:layout_margin="3dp"
-                android:background="@drawable/rounded_button_transparent"
-                android:text="Waitlist"
-                android:textSize="12sp"
-                app:backgroundTint="@color/white" />
+                android:layout_height="50dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <Button
-                android:id="@+id/btn_eventDetails_organizer_invited"
-                style="@style/RoundedButton"
+
+                <Button
+                    android:id="@+id/btn_eventDetails_entrant_primary"
+                    style="@style/RoundedButton"
+                    android:layout_width="wrap_content"
+                    android:height="35dp"
+                    android:backgroundTint="@color/secondaryAccent"
+                    android:text="Join Waitlist"
+                    android:textAlignment="textStart"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <Button
+                    android:id="@+id/btn_eventDetails_entrant_secondary"
+                    style="@style/RoundedButton"
+                    android:layout_width="wrap_content"
+                    android:height="35dp"
+                    android:backgroundTint="@color/red"
+                    android:text="Decline"
+                    android:textAlignment="textStart"
+                    android:textSize="15sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_eventDetails_organizer_button_controls"
                 android:layout_width="0dp"
-                android:layout_height="35dp"
-                android:layout_weight="1"
-                android:layout_margin="3dp"
-                android:background="@drawable/rounded_button_transparent"
-                android:text="Invited"
-                android:textSize="12sp"
-                app:backgroundTint="@color/white" />
+                android:layout_height="50dp"
+                android:layout_marginStart="6dp"
+                android:layout_marginEnd="6dp"
+                android:orientation="horizontal"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
 
-            <Button
-                android:id="@+id/btn_eventDetails_organizer_declined"
-                style="@style/RoundedButton"
-                android:layout_width="0dp"
-                android:layout_height="35dp"
-                android:layout_margin="3dp"
-                android:layout_weight="1"
-                android:background="@drawable/rounded_button_transparent"
-                android:padding="2dp"
-                android:text="Declined"
-                android:textSize="12sp"
-                app:backgroundTint="@color/white" />
+                <Button
+                    android:id="@+id/btn_eventDetails_organizer_waitlist"
+                    style="@style/RoundedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounded_button_transparent"
+                    android:text="Waitlist"
+                    android:textSize="12sp"
+                    app:backgroundTint="@color/white" />
 
-            <Button
-                android:id="@+id/btn_eventDetails_organizer_enrolled"
-                style="@style/RoundedButton"
-                android:layout_width="0dp"
-                android:layout_height="35dp"
-                android:layout_weight="1"
-                android:layout_margin="3dp"
-                android:background="@drawable/rounded_button_transparent"
-                android:text="Enrolled"
-                android:textSize="12sp"
-                app:backgroundTint="@color/white" />
-        </LinearLayout>
+                <Button
+                    android:id="@+id/btn_eventDetails_organizer_invited"
+                    style="@style/RoundedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounded_button_transparent"
+                    android:text="Invited"
+                    android:textSize="12sp"
+                    app:backgroundTint="@color/white" />
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+                <Button
+                    android:id="@+id/btn_eventDetails_organizer_declined"
+                    style="@style/RoundedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounded_button_transparent"
+                    android:padding="2dp"
+                    android:text="Declined"
+                    android:textSize="12sp"
+                    app:backgroundTint="@color/white" />
+
+                <Button
+                    android:id="@+id/btn_eventDetails_organizer_enrolled"
+                    style="@style/RoundedButton"
+                    android:layout_width="0dp"
+                    android:layout_height="35dp"
+                    android:layout_margin="3dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/rounded_button_transparent"
+                    android:text="Enrolled"
+                    android:textSize="12sp"
+                    app:backgroundTint="@color/white" />
+            </LinearLayout>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
 
     <LinearLayout
@@ -306,6 +320,7 @@
         android:layout_marginStart="10dp"
         android:layout_marginEnd="10dp"
         android:orientation="horizontal"
+        app:layout_constraintBottom_toTopOf="@+id/sv_eventDetails_description_scroll"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/cl_event_details_button_controls">
@@ -315,8 +330,8 @@
             style="@style/DefaultTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginEnd="8dp"
+            android:layout_weight="1"
             android:background="@drawable/squared_container"
             android:text="Tag 1" />
 
@@ -325,8 +340,8 @@
             style="@style/DefaultTextStyle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:layout_marginEnd="8dp"
+            android:layout_weight="1"
             android:background="@drawable/squared_container"
             android:text="Tag 2" />
 
@@ -341,11 +356,15 @@
     </LinearLayout>
 
     <ScrollView
+        android:id="@+id/sv_eventDetails_description_scroll"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginEnd="8dp"
         android:background="@drawable/rounded_container"
         android:padding="16dp"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/btn_eventDetails_view_comments"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/ll_eventDetails_tags">
@@ -353,15 +372,25 @@
         <TextView
             android:id="@+id/tv_eventDetails_description"
             style="@style/DefaultTextStyle"
-            android:textSize="14sp"
-            android:textStyle="normal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:text="@string/long_placeholder_text"
             android:textAlignment="textStart"
-            android:text="@string/long_placeholder_text" />
+            android:textSize="14sp"
+            android:textStyle="normal" />
     </ScrollView>
 
-
-
+    <Button
+        android:id="@+id/btn_eventDetails_view_comments"
+        style="@style/RoundedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="8dp"
+        android:text="Comments"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/sv_eventDetails_description_scroll" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -3,12 +3,11 @@
     <style name="Base.Theme.ProjectEventLotteryApp" parent="Theme.Material3.DayNight.NoActionBar">
         <item name="colorPrimary">@color/primaryAccent</item>
         <item name="colorOnPrimary">@color/white</item>
-        <item name="colorSecondary">@color/secondaryAccent</item>
+        <!--    Affects datePicker header    -->
+        <item name="colorSecondary">@color/primaryAccent</item>
         <item name="colorOnSecondary">@color/primaryBackground</item>
         <item name="colorTertiary">@color/tertiaryAccent</item>
-        <item name="colorOutline">@color/primaryAccent</item>
         <item name="android:windowBackground">@color/primaryBackground</item>
-        <item name="colorSurface">@color/primaryBackground</item>
         <item name="colorOnSurface">@color/white</item>
     </style>
 

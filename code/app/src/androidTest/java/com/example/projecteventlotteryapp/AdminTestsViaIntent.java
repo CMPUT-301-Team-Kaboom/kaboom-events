@@ -12,6 +12,12 @@ import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 
+import com.example.projecteventlotteryapp.Activities.AdminEventsActivity;
+import com.example.projecteventlotteryapp.Activities.AdminHomeActivity;
+import com.example.projecteventlotteryapp.Activities.AdminImagesActivity;
+import com.example.projecteventlotteryapp.Activities.AdminOrganizersListActivity;
+import com.example.projecteventlotteryapp.Activities.AdminProfilesListActivity;
+
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

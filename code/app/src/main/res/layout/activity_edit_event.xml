@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:background="@color/tertiaryBackground"
     android:paddingTop="32dp"
-    tools:context=".EditEventActivity">
+    tools:context=".Activities.EditEventActivity">
 
     <ImageButton
         android:id="@+id/btn_edit_event_back"
