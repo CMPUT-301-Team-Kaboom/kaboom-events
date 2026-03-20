@@ -2,6 +2,7 @@ package com.example.projecteventlotteryapp.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -30,11 +31,12 @@ import java.util.Set;
  */
 public class OrganizerWaitlistActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {
     private String eventId;
+    private String eventName;
     private OrganizerEntrantListAdapter adapter;
     private ListView waitlistView;
     private ImageButton backBtn;
     private Button selectBtn;
-    private Button notifcationBtn;
+    private Button notificationBtn;
     private Button doneBtn;
     private Button sendNotifBtn;
     private ConstraintLayout floatingActionsContainer;
@@ -51,9 +53,10 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
         waitlistView = findViewById(R.id.lv_organizer_waitlist_list);
         Intent intent  = getIntent();
         eventId = intent.getStringExtra("eventID");
+        eventName = intent.getStringExtra("eventName");
 
         selectBtn = findViewById(R.id.btn_organizer_waitlist_select);
-        notifcationBtn = findViewById(R.id.btn_send_notification);
+        notificationBtn = findViewById(R.id.btn_send_notification);
         doneBtn = findViewById(R.id.btn_done);
         floatingActionsContainer = findViewById(R.id.cl_floating_actions);
         backBtn = findViewById(R.id.btn_organizer_waitlist_back);
@@ -71,6 +74,9 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
             if (task.isSuccessful()){
                 DocumentSnapshot doc = task.getResult();
                 if(doc.exists()){
+                    if (eventName == null) {
+                        eventName = doc.getString("name");
+                    }
                     waitlist = (ArrayList<String>) doc.get("waitlist");
 
                     adapter = new OrganizerEntrantListAdapter(this, waitlist);
@@ -120,6 +126,11 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
     public void onSendNotification(String message) {
         // Here you handle the actual Firestore saving logic
         Set<Integer> selected = adapter.getSelectedPositions();
+        if (selected.isEmpty()) {
+            android.widget.Toast.makeText(this, "Please select at least one user", android.widget.Toast.LENGTH_SHORT).show();;
+            return;
+        }
+
         for (Integer pos : selected) {
             String userId = waitlist.get(pos);
             sendToFirestore(userId, message);
@@ -127,12 +138,23 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
     }
 
     private void sendToFirestore(String userId, String message) {
+        // Get the sender's device ID
+        String senderID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
         Map<String, Object> notif = new HashMap<>();
+        notif.put("sender", senderID);
         notif.put("recipient", userId);
         notif.put("text", message);
         notif.put("date", com.google.firebase.Timestamp.now());
-        notif.put("event", "Waitlist Update"); // Or actual event name
+        notif.put("event", eventName != null ? eventName : "Waitlist Update");
 
-        db.collection("notifications").add(notif);
+        db.collection("notifications").add(notif)
+        .addOnSuccessListener(documentReference -> {
+            Log.d("Notification", "Notification stored with ID: " + documentReference.getId());
+        })
+        .addOnFailureListener(e -> {
+            Log.w("Firestore", "Error adding notification", e);
+        });
+
     }
 }
