@@ -93,10 +93,26 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         // Load the current notification status from Firestore
         db.loadUserProfile(deviceID, globalUser.getRole()).addOnSuccessListener(documentSnapshot -> {
             if (documentSnapshot.exists()) {
-                boolean notificationEnabled = documentSnapshot.getBoolean("notificationEnabled");
-                // default to true if the field doesn't exist yet
-                swtchNotification.setChecked(notificationEnabled);
+                Boolean notificationEnabled = documentSnapshot.getBoolean("notificationEnabled");
+
+                // If the field doesn't exist yet
+                if (notificationEnabled == null) {
+                    Map<String, Object> initialUpdate = new HashMap<>();
+                    initialUpdate.put("notificationEnabled", true); // set the field to true by default
+                    db.updateUserProfile(deviceID, initialUpdate, globalUser.getRole()).addOnSuccessListener(unused -> {
+                        // If default setting was successfully made, set the switch to true
+                        swtchNotification.setChecked(true);
+                    }).addOnFailureListener(e -> {
+                        Log.e("PROFILE", "Failed to update notification status", e);
+                        Toast.makeText(this, "Failed to update notification status", Toast.LENGTH_SHORT).show();
+                        // Revert the switch visual state if the database update failed
+                        swtchNotification.setChecked(false);
+                    });
+                } else {
+                    swtchNotification.setChecked(notificationEnabled);
+                }
             }
+
         });
 
         // Save the status immediately when the user toggles the switch
@@ -120,6 +136,9 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         });
 
     }
+
+
+
 
     /**
      * Loads the users profile from firestore.
