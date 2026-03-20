@@ -17,6 +17,7 @@ import androidx.constraintlayout.widget.ConstraintLayout;
 import com.example.projecteventlotteryapp.Models.CreateNotificationDialogFragment;
 import com.example.projecteventlotteryapp.OrganizerEntrantListAdapter;
 import com.example.projecteventlotteryapp.R;
+import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -25,6 +26,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import static com.example.projecteventlotteryapp.dbUtils.FirestoreUtils.storeNotificationInFirestore;
+
 
 /**
  * Provides an organizer with the waitlist of entrants that have entered to join their event
@@ -125,6 +129,8 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
     @Override
     public void onSendNotification(String message) {
         // Here you handle the actual Firestore saving logic
+        String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
         Set<Integer> selected = adapter.getSelectedPositions();
         if (selected.isEmpty()) {
             android.widget.Toast.makeText(this, "Please select at least one user", android.widget.Toast.LENGTH_SHORT).show();;
@@ -132,29 +138,9 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
         }
 
         for (Integer pos : selected) {
-            String userId = waitlist.get(pos);
-            sendToFirestore(userId, message);
+            String recipientId = waitlist.get(pos);
+            storeNotificationInFirestore(userId, recipientId, message, eventName, db);
         }
     }
 
-    private void sendToFirestore(String userId, String message) {
-        // Get the sender's device ID
-        String senderID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-
-        Map<String, Object> notif = new HashMap<>();
-        notif.put("sender", senderID);
-        notif.put("recipient", userId);
-        notif.put("text", message);
-        notif.put("date", com.google.firebase.Timestamp.now());
-        notif.put("event", eventName != null ? eventName : "Waitlist Update");
-
-        db.collection("notifications").add(notif)
-        .addOnSuccessListener(documentReference -> {
-            Log.d("Notification", "Notification stored with ID: " + documentReference.getId());
-        })
-        .addOnFailureListener(e -> {
-            Log.w("Firestore", "Error adding notification", e);
-        });
-
-    }
 }
