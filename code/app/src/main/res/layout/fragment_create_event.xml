@@ -97,7 +97,7 @@
         style="@style/HeaderRoundedEditTextStyle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Draw Date"
+        android:text="Start Date"
         app:layout_constraintBottom_toTopOf="@+id/et_event_edit_draw_date"
         app:layout_constraintEnd_toEndOf="@+id/et_event_edit_draw_date"
         app:layout_constraintHorizontal_bias="0.05"
