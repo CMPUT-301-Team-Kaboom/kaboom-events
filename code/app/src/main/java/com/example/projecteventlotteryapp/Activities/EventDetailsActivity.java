@@ -301,7 +301,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private void updateUi() {
         nameHeaderTextView.setText(event.getName());
         attendeesTV.setText(String.valueOf(event.getAttendeesLimit()));
-        waitListTV.setText(String.valueOf(event.getWaitlistSize()));
+        refreshWaitlistTV();
         descriptionTV.setText(event.getDescription());
         setupTags();
 
@@ -372,6 +372,8 @@ public class EventDetailsActivity extends AppCompatActivity {
      * @param user the current user
      */
     private void showRemoveWaitlistButtonState(User user) {
+        refreshWaitlistTV();
+
         entrantPrimaryButton.setText("Remove Waitlist");
         entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
         entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
@@ -393,6 +395,8 @@ public class EventDetailsActivity extends AppCompatActivity {
      * @param user the current user
      */
     private void showJoinWaitlistButtonState(User user) {
+        refreshWaitlistTV();
+
         entrantPrimaryButton.setText("Join Waitlist");
         entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.white));
         entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.secondaryBackground));
@@ -447,6 +451,19 @@ public class EventDetailsActivity extends AppCompatActivity {
                         Toast.makeText(this, "Failed to enroll in event", Toast.LENGTH_SHORT).show();
                     });
         });
+    }
+
+    /**
+     * Refreshes the waitlistTV to accurately reflect the amount of users on the waitlist
+     */
+    private void refreshWaitlistTV() {
+        eventUtils.getEntrantListSize(eventId, EntrantListType.WAITLIST)
+                .addOnSuccessListener(size -> {
+                    waitListTV.setText(String.valueOf(size));
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("refreshWaitlistTV", "Failed to get size", e);
+                });
     }
 
     /**
