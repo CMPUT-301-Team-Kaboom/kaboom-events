@@ -44,7 +44,7 @@
         <TextView
             style="@style/BodyListViewItem"
             android:id="@+id/tv_event_item_draw_date"
-            android:text="Drawn on dd/month/YYYY" />
+            android:text="Starts on dd/month/YYYY" />
 
         <TextView
             style="@style/BodyListViewItem"
