@@ -167,6 +167,10 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
         }
     }
 
+    /**
+     * Get the EventsListFragment to apply the filters.
+     * @param filter to apply
+     */
     @Override
     public void filterEvents(EventsFilter filter) {
         if (eventsListFragment != null) {
@@ -174,11 +178,17 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
         }
     }
 
+    /**
+     * Get the EventsListFragment to clear all the filters.
+     */
     @Override
     public void clearFilters() {
         eventsListFragment.clearFilters();
     }
 
+    /**
+     * Reset the EventsListFragment to reflect the changes of a newly created Event.
+     */
     @Override
     public void OnEventCreated() { eventsListFragment.refreshEventList(); }
 }

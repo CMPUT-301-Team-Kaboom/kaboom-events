@@ -32,9 +32,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * A simple {@link DialogFragment} subclass.
- * Use the {@link FilterEventsDialogFragment#newInstance} factory method to
- * create an instance of this fragment.
+ * A simple {@link DialogFragment} that allows the user to filter events.
  *
  * Citations:
  *      [1] Author: Kalyaganov Alexey https://stackoverflow.com/users/1979290/kalyaganov-alexey
@@ -46,10 +44,18 @@ import java.util.Map;
  */
 public class FilterEventsDialogFragment extends DialogFragment {
 
-    // (see citation [1])
+    //  interface for the EventsActivity to implement to get the filter changes (see citation [1])
     interface FilterEventsListener {
+        /**
+         * Filters events.
+         *
+         * @param filter to apply
+         */
         void filterEvents(EventsFilter filter);
 
+        /**
+         * Clears all filters.
+         */
         void clearFilters();
     }
 
@@ -59,6 +65,12 @@ public class FilterEventsDialogFragment extends DialogFragment {
     private ArrayList<String> tags;
     private ToggleButton enrolledToggleButton, declinedToggleButton, invitedToggleButton, onWaitListToggleButton;
 
+    /**
+     * Creates the dialog used to filter events.
+     *
+     * @param savedInstanceState saved instance state
+     * @return an AlertDialog with filter options
+     */
     @NonNull
     @Override
     public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
@@ -192,7 +204,12 @@ public class FilterEventsDialogFragment extends DialogFragment {
         return dialog;
     }
 
-    // make EventsListActivity implement the interface
+    /**
+     * Ensures that the EventsActivity implements the {@link FilterEventsListener} interface.
+     *
+     * @param context to attach to
+     * @throws ClassCastException if the activity doesn't implement the listener
+     */
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
@@ -204,6 +221,11 @@ public class FilterEventsDialogFragment extends DialogFragment {
 
     }
 
+    /**
+     * Attaches a date picker to an EditText field.
+     *
+     * @param editText to attach the DatePicker to
+     */
     private void attachDatePicker(EditText editText) {
         editText.setFocusable(false);
 
@@ -225,8 +247,9 @@ public class FilterEventsDialogFragment extends DialogFragment {
     }
 
     /**
-     * TODO: Find a more elegant solution than returning strings. This was a band aid
-     * @return
+     * Gets the status chosen from the toggle buttons.
+     *
+     * @return status as a String ("enrolled", "declined", "invited", "waitlist"), or null if none selected
      */
     private String getToggleStatus() {
         Map<ToggleButton, String> toggleMap = new HashMap<>();
@@ -244,6 +267,11 @@ public class FilterEventsDialogFragment extends DialogFragment {
         return null;
     }
 
+    /**
+     * Sets up the toggle buttons so only one can be checked at a time.
+     *
+     * @param buttons a list of toggle buttons
+     */
     private void setupToggleButtons(List<ToggleButton> buttons) {
         for (ToggleButton tb : buttons) {
             tb.setOnCheckedChangeListener(((buttonView, isChecked) -> {
@@ -260,6 +288,12 @@ public class FilterEventsDialogFragment extends DialogFragment {
         }
     }
 
+    /**
+     * Helper function to get the text from an EditText or null
+     *
+     * @param editText to extract from
+     * @return either a String or null
+     */
     private String getTextOrNull(EditText editText) {
         String text = editText.getText().toString().trim();
         if (text.isEmpty()) {
@@ -287,7 +321,7 @@ public class FilterEventsDialogFragment extends DialogFragment {
      * code adapted from AI prompt:
      * "How can I add a textview to a LinearLayout using Java code instead of XML"
      *
-     * @param tagText
+     * @param tagText to add
      */
     private void addNewTagBox(String tagText) {
         Log.d("FilterEventsDialogFragment", "new Tag fitler: " + tagText);
