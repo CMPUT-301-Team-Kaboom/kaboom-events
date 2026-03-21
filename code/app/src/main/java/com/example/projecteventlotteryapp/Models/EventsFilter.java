@@ -66,7 +66,7 @@ public class EventsFilter {
         }
 
         // check statuses
-        if (status != null && snapshot.exists()) {
+        if (status != null) {
             List<String> ids = (List<String>) snapshot.get(status);
             if (ids == null || !ids.contains(currentUserId)) {
                 return false;
@@ -87,12 +87,12 @@ public class EventsFilter {
 
         // check registration period
         if (regStart != null) {
-            if (event.getRegistrationEndDate() == null || event.getRegistrationEndDate().isBefore(regStart)) {
+            if (event.getRegistrationStartDate() == null || event.getRegistrationStartDate().isBefore(regStart)) {
                 return false;
             }
         }
         if (regEnd != null) {
-            if (event.getRegistrationStartDate() == null || event.getRegistrationStartDate().isAfter(regEnd)) {
+            if (event.getRegistrationEndDate() == null || event.getRegistrationEndDate().isAfter(regEnd)) {
                 return false;
             }
         }
