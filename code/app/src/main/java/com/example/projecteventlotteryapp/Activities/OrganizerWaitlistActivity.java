@@ -40,7 +40,6 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
     private ListView waitlistView;
     private ImageButton backBtn;
     private Button selectBtn;
-    private Button notificationBtn;
     private Button doneBtn;
     private Button sendNotifBtn;
     private ConstraintLayout floatingActionsContainer;
@@ -60,7 +59,6 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
         eventName = intent.getStringExtra("eventName");
 
         selectBtn = findViewById(R.id.btn_organizer_waitlist_select);
-        notificationBtn = findViewById(R.id.btn_send_notification);
         doneBtn = findViewById(R.id.btn_done);
         floatingActionsContainer = findViewById(R.id.cl_floating_actions);
         backBtn = findViewById(R.id.btn_organizer_waitlist_back);
@@ -128,7 +126,7 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
 
     @Override
     public void onSendNotification(String message) {
-        // Here you handle the actual Firestore saving logic
+        // handle the sending logic
         String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         Set<Integer> selected = adapter.getSelectedPositions();
