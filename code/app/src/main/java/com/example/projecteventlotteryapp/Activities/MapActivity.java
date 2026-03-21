@@ -16,6 +16,7 @@ import com.google.android.gms.maps.model.LatLng;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
+    String eventId = getIntent().getStringExtra("eventId");
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
