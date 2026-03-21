@@ -261,7 +261,11 @@ public class EventDetailsActivity extends AppCompatActivity {
                         });
             });
 
-            mapButton.setOnClickListener(v -> Log.d("EventDetails", "Clicked Map Button"));
+            mapButton.setOnClickListener(v -> {
+                Intent intent = new Intent(this, MapActivity.class);
+                intent.putExtra("eventId", eventId);
+                startActivity(intent);
+            });
         } else if (user.getRole() == Role.ENTRANT) {
             entrantController.setVisibility(View.VISIBLE);
             organizerController.setVisibility(View.GONE);
