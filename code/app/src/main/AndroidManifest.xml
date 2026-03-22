@@ -18,7 +18,8 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.ProjectEventLotteryApp">
+        android:theme="@style/Theme.ProjectEventLotteryApp"
+        tools:replace="android:allowBackup,android:fullBackupContent,android:dataExtractionRules">
         <activity
             android:name=".Activities.RegistrationActivity"
             android:exported="true"
@@ -39,13 +40,13 @@
             android:exported="false" />
         <activity
             android:name=".MainActivity"
-            android:exported="true"/>
+            android:exported="false" />
         <activity
             android:name=".Activities.CriteriaAppGuideActivity"
             android:exported="false" />
         <activity
             android:name=".Activities.AdminImagesActivity"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".Activities.AdminHomeActivity"
             android:exported="false" />
@@ -57,10 +58,10 @@
             android:exported="false" />
         <activity
             android:name=".Activities.AdminProfilesListActivity"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".Activities.AdminOrganizersListActivity"
-            android:exported="true" />
+            android:exported="false" />
         <activity
             android:name=".Activities.AdminEventsActivity"
             android:exported="false" />
@@ -87,9 +88,13 @@
             android:exported="false"/>
         <activity android:name=".Activities.MapActivity"
             android:exported="false"/>
+        <activity
+            android:name=".Activities.NotificationsListActivity"
+            android:exported="false" />
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="${MAPS_KEY}" />
+            android:value="YOUR_API_KEY_HERE" />
     </application>
 
 </manifest>
