@@ -54,9 +54,9 @@ public class AdminEventArrayAdapter extends ArrayAdapter<Event> {
         if (event.getDrawDate() != null) {
             DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("MMMM d, yyyy 'at' h:mm a");
             String formattedDate = event.getDrawDate().format(datePattern);
-            drawDateTextView.setText("Drawn on " + formattedDate);
+            drawDateTextView.setText("Starts on " + formattedDate);
         } else {
-            drawDateTextView.setText("Draw date TBD");
+            drawDateTextView.setText("Start date TBD");
         }
         
         attendeesTextView.setText("Attendees: " + event.getAttendeesLimit());
