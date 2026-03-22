@@ -45,6 +45,7 @@ dependencies {
     implementation("com.google.firebase:firebase-storage")
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-firestore")
+    implementation(libs.cardview)
 
     // JUnit5 unit testing
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
