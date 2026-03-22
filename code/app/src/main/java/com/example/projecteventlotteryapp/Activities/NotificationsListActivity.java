@@ -56,6 +56,17 @@ public class NotificationsListActivity extends AppCompatActivity {
 
         if (notificationsListView != null) {
             notificationsListView.setAdapter(adapter);
+            notificationsListView.setOnItemClickListener((parent, view, position, id) -> {
+                // Handle item click
+                Map<String, Object> item = notificationsList.get(position);
+                String title = (String) item.get("title");
+                String sender = (String) item.get("organizerName");
+                String body = (String) item.get("notificationText");
+
+                // Create and show fragment
+                FullNotificationWindowFragment.newInstance(title, sender, body)
+                        .show(getSupportFragmentManager(), "FullNotificationWindow");
+            });
         }
 
         fetchNotifications();
