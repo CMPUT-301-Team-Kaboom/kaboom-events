@@ -14,6 +14,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.projecteventlotteryapp.Activities.CriteriaAppGuideActivity;
 import com.example.projecteventlotteryapp.Activities.EntrantSettingsActivity;
+import com.example.projecteventlotteryapp.Activities.NotificationsListActivity;
 import com.example.projecteventlotteryapp.Enums.Role;
 import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.Models.User;
@@ -126,6 +127,7 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
             } else if (id == R.id.scan_qrcode){
                 return true;
             } else if (id == R.id.notification){
+                startActivity(new Intent(this, NotificationsListActivity.class));
                 return true;
             }
             return false;

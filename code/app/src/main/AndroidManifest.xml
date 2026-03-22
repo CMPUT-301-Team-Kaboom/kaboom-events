@@ -5,6 +5,10 @@
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
+    <queries>
+        <package android:name="com.google.android.gms" />
+    </queries>
+
     <application
         android:name=".Models.MyApp"
         android:allowBackup="true"
@@ -79,8 +83,8 @@
             android:name=".Activities.OrganizerDeclinedActivity"
             android:exported="false"/>
         <activity
-            android:name=".Activities.EventCommentsActivity"
-            android:exported="false"/>
+            android:name=".Activities.NotificationsListActivity"
+            android:exported="false" />
     </application>
 
 </manifest>
