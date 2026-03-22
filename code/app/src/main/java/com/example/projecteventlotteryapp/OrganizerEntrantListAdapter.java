@@ -43,6 +43,10 @@ public class OrganizerEntrantListAdapter extends ArrayAdapter<String> {
         notifyDataSetChanged();
     }
 
+    public Set<Integer> getSelectedPositions() {
+        return selectedPositions;
+    }
+
     public OrganizerEntrantListAdapter(@NonNull Context context, ArrayList<String> entrantList) {
         super(context, 0, entrantList);
         this.context = context;
@@ -56,7 +60,6 @@ public class OrganizerEntrantListAdapter extends ArrayAdapter<String> {
         if (view == null) {
             view = LayoutInflater.from(context).inflate(R.layout.organizer_entrant_list_item, parent, false);
         }
-
 
         TextView itemCount = view.findViewById(R.id.tv_organizer_entrantList_item_number);
         TextView entrantName = view.findViewById(R.id.tv_organizer_entrantList_item_name);

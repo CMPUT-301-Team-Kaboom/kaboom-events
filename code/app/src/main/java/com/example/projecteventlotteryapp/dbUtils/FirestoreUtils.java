@@ -1,14 +1,20 @@
 package com.example.projecteventlotteryapp.dbUtils;
 
+import android.provider.Settings;
+import android.util.Log;
+
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Helper class for Firestore actions
@@ -150,5 +156,31 @@ public class FirestoreUtils {
             result.add((String) item);
         }
         return result;
+    }
+
+    /**
+     * Stores a notification in the database
+     * @param userId
+     * @param recipientID
+     * @param message
+     * @param eventName
+     */
+    public static void storeNotificationInFirestore(String userId, String recipientID, String message, String eventName, FirebaseFirestore db) {
+        // Get the sender's device ID
+        Map<String, Object> notif = new HashMap<>();
+        notif.put("sender", userId);
+        notif.put("recipient", recipientID);
+        notif.put("text", message);
+        notif.put("date", com.google.firebase.Timestamp.now());
+        notif.put("event", eventName != null ? eventName : "Waitlist Update");
+
+        db.collection("notifications").add(notif)
+                .addOnSuccessListener(documentReference -> {
+                    Log.d("Notification", "Notification stored with ID: " + documentReference.getId());
+                })
+                .addOnFailureListener(e -> {
+                    Log.w("Firestore", "Error adding notification", e);
+                });
+
     }
 }

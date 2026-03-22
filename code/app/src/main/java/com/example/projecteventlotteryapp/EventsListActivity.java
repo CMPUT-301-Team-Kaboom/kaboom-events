@@ -16,6 +16,7 @@ import com.example.projecteventlotteryapp.Activities.CriteriaAppGuideActivity;
 import com.example.projecteventlotteryapp.Activities.EntrantSettingsActivity;
 import com.example.projecteventlotteryapp.Activities.NotificationsListActivity;
 import com.example.projecteventlotteryapp.Enums.Role;
+import com.example.projecteventlotteryapp.Models.EventsFilter;
 import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.Models.User;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -44,6 +45,13 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
      * <p>This function is the entry point of the Activity. It sets up the db instance and UI for
      * the event.</p>
      *
+     * Citations:
+     *      [1] Title: "Create a fragment | App architecture | Android Developers"
+     *          Source: https://developer.android.com/guide/fragments/create#java
+     *          Date: 2026-02-26
+     *          Retrieved: 2026-02-28
+     *      [2] https://www.geeksforgeeks.org/android/how-to-implement-bottom-navigation-with-activities-in-android/
+     *
      * @param savedInstanceState If the activity is being re-initialized after
      *     previously being shut down then this Bundle contains the data it most
      *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
@@ -68,14 +76,7 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
 
         configureUIForRole(globalUser);
 
-        // create EventListFragment
-        /*
-        The following code is adapted from...
-        Title: "Create a fragment | App architecture | Android Developers"
-        Source: https://developer.android.com/guide/fragments/create#java
-        Date: 2026-02-26
-        Retrieved: 2026-02-28
-        */
+        // create EventListFragment (see citation [1])
         if (savedInstanceState == null) {
             eventsListFragment = new EventsListFragment();
             getSupportFragmentManager().beginTransaction()
@@ -91,7 +92,7 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
         // find button
         ImageButton infoButton = findViewById(R.id.btn_info);
 
-        // Set click listener
+        // set click listener
         infoButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -115,9 +116,7 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
 
         BottomNavigationView bottomNavigation = findViewById(R.id.bn_events_list_menu);
 
-        /*
-        the following is adapter from https://www.geeksforgeeks.org/android/how-to-implement-bottom-navigation-with-activities-in-android/
-         */
+        // (see citation [2])
         bottomNavigation.setOnItemSelectedListener(item -> {
             int id = item.getItemId();
 
@@ -170,18 +169,28 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
         }
     }
 
+    /**
+     * Get the EventsListFragment to apply the filters.
+     * @param filter to apply
+     */
     @Override
-    public void filterEvents(String name, String status, ArrayList<String> tags, LocalDate startDate, LocalDate endDate, LocalDate drawDate) {
+    public void filterEvents(EventsFilter filter) {
         if (eventsListFragment != null) {
-            eventsListFragment.applyFilters(name, status, tags, startDate, endDate, drawDate);
+            eventsListFragment.applyFilters(filter);
         }
     }
 
+    /**
+     * Get the EventsListFragment to clear all the filters.
+     */
     @Override
     public void clearFilters() {
         eventsListFragment.clearFilters();
     }
 
+    /**
+     * Reset the EventsListFragment to reflect the changes of a newly created Event.
+     */
     @Override
     public void OnEventCreated() { eventsListFragment.refreshEventList(); }
 }
