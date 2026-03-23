@@ -16,12 +16,14 @@ import com.google.android.gms.maps.model.LatLng;
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
-    String eventId = getIntent().getStringExtra("eventId");
+    private String eventId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        eventId = getIntent().getStringExtra("eventId");
 
         FragmentManager fragmentManager = getSupportFragmentManager();
         SupportMapFragment mapFragment =

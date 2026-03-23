@@ -18,19 +18,22 @@ import com.example.projecteventlotteryapp.R;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.google.android.gms.tasks.Task;
-import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
+/**
+ * Displays all comments that were posted under the event
+ *
+ * This event allows both entrants and the event organizer to post new comments and view
+ * other users' comments under the event.
+ */
 public class EventCommentsActivity extends AppCompatActivity {
     private String eventId;
     private ArrayList<String> commentsList;
@@ -74,7 +77,7 @@ public class EventCommentsActivity extends AppCompatActivity {
             }
 
             commentsList = (ArrayList<String>) eventDoc.get("comments");
-            adapter = new EventCommentArrayAdapter(this, commentsList, globalUser.getRole(), eventId);
+            adapter = new EventCommentArrayAdapter(this, commentsList, globalUser.getRole());
 
             commentsLV.setAdapter(adapter);
         });
@@ -83,19 +86,26 @@ public class EventCommentsActivity extends AppCompatActivity {
         postCommentBtn.setOnClickListener(v -> postComment());
     }
 
+    /**
+     * Handles posting a new comment
+     *
+     * <p>Fetches the comment information for the new comment and creates the new Map object to add
+     * to the database. Adds the new commentID to the ArrayList and prompts the adapter to update
+     * the UI.</p>
+     *
+     * @see EventCommentArrayAdapter
+     */
     private void postComment(){
         String text = String.valueOf(commentTextbox.getText());
         String userID = globalUser.getUserId();
         LocalDateTime timestamp = LocalDateTime.now();
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM. dd, yyyy HH:mm");
-
-        String timestampString = formatter.format(timestamp);
-
         Map<String, Object> newComment = new HashMap<>();
         newComment.put("text", text);
         newComment.put("userID", userID);
         newComment.put("timestamp", FirestoreUtils.localDateTimeToTimestamp(timestamp, ZoneId.systemDefault()));
+
+        commentTextbox.getText().clear();
 
         Task<DocumentReference> uploadTask = eventUtils.addCommentToEvent(eventId, newComment);
 

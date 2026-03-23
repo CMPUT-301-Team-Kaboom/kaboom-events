@@ -1,5 +1,6 @@
 package com.example.projecteventlotteryapp.Activities;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -40,9 +41,16 @@ public class AdminProfilesListActivity extends AppCompatActivity {
         profileDataList = new ArrayList<>();
 
         profileAdapter = new ProfileArrayAdapter(this, profileDataList, user -> {
-            db.collection("entrants").document(user.getUserId()).delete();
-            profileDataList.remove(user);
-            profileAdapter.notifyDataSetChanged();
+            new AlertDialog.Builder(this, R.style.DeleteGuard)
+                    .setTitle("Delete Entrant")
+                    .setMessage("Are you sure you want to delete this entrant?")
+                    .setPositiveButton("Delete", ((dialog, which) -> {
+                        db.collection("entrants").document(user.getUserId()).delete();
+                        profileDataList.remove(user);
+                        profileAdapter.notifyDataSetChanged();
+                    }))
+                    .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                    .show();
         });
         profileListView.setAdapter(profileAdapter);
 

@@ -1,7 +1,9 @@
 package com.example.projecteventlotteryapp.Activities;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageButton;
 import android.widget.ListView;
 
@@ -43,9 +45,16 @@ public class AdminOrganizersListActivity extends AppCompatActivity {
 
         organizerAdapter = new OrganizerArrayAdapter(this, organizerDataList,
                 user -> { // Delete Listener
-                    db.collection("organizers").document(user.getUserId()).delete();
-                    organizerDataList.remove(user);
-                    organizerAdapter.notifyDataSetChanged();
+                    new AlertDialog.Builder(this, R.style.DeleteGuard)
+                            .setTitle("Delete Organizer")
+                            .setMessage("Are you sure you want to delete this organizer?")
+                            .setPositiveButton("Delete", ((dialog, which) -> {
+                                db.collection("organizers").document(user.getUserId()).delete();
+                                organizerDataList.remove(user);
+                                organizerAdapter.notifyDataSetChanged();
+                            }))
+                            .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                            .show();
                 },
                 user -> { // Notify Listener (New)
                     Intent intent = new Intent(AdminOrganizersListActivity.this, adminNotificationsActivity.class);
