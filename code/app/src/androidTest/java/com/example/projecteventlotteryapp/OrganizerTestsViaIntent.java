@@ -89,7 +89,8 @@ public class OrganizerTestsViaIntent {
                 LocalDate.now().minusDays(1),
                 LocalDate.now().plusDays(1),
                 LocalDateTime.now().plusDays(7),
-                10
+                100,
+                false
         );
         event.setDescription("Test Description");
         event.setWaitlistLimit(20);
@@ -138,7 +139,8 @@ public class OrganizerTestsViaIntent {
                 LocalDate.now().minusDays(1),
                 LocalDate.now().plusDays(1),
                 LocalDateTime.now().plusDays(7),
-                10
+                10,
+                false
         );
 
         // Act
