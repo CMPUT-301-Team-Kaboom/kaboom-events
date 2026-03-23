@@ -32,7 +32,7 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
     testOptions{
-        unitTests.isReturnDefaultValues = true;
+        unitTests.isReturnDefaultValues = true
     }
 }
 
@@ -41,18 +41,17 @@ dependencies {
     implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-storage")
-    
-    // Use compileOnly for the SDK platform jars to avoid dexing errors while allowing Javadoc generation
-    compileOnly(fileTree(mapOf<String, Any>(
-        "dir" to "/Users/kevincao/Library/Android/sdk/platforms/android-36",
-        "include" to listOf("*.aar", "*.jar"),
-        "exclude" to emptyList<String>()
-    )))
+    implementation(libs.play.services.location)
+    implementation(libs.play.services.maps)
 
     // JUnit5 unit testing
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
     testImplementation("com.google.android.gms:play-services-tasks:18.0.2")
+
+    //map dependencies
+    implementation("com.google.android.gms:play-services-maps:20.0.0")
+    implementation("com.google.android.gms:play-services-location:21.3.0")
 
     //    Glide dependency (image loading)
     implementation ("com.github.bumptech.glide:glide:4.16.0")
