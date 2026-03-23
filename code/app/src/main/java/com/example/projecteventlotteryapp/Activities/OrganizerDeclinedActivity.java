@@ -1,15 +1,22 @@
 package com.example.projecteventlotteryapp.Activities;
 
+import static com.example.projecteventlotteryapp.dbUtils.FirestoreUtils.storeNotificationInFirestore;
+
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.example.projecteventlotteryapp.Models.CreateNotificationDialogFragment;
 import com.example.projecteventlotteryapp.OrganizerEntrantListAdapter;
 import com.example.projecteventlotteryapp.R;
 import com.google.firebase.firestore.DocumentReference;
@@ -17,23 +24,43 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.Set;
 
-public class OrganizerDeclinedActivity extends AppCompatActivity {
+public class OrganizerDeclinedActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {
     private String eventId;
+    private String eventName;
     private OrganizerEntrantListAdapter adapter;
-    private ListView declinedListView;
+    private ListView declinedView;
     private ImageButton backBtn;
+    private Button selectBtn;
+    private Button doneBtn;
+    private Button sendNotifBtn;
+    private ConstraintLayout floatingActionsContainer;
     private ArrayList<String> declined;
     private FirebaseFirestore db;
+    private boolean isSelectionMode = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_organizer_declined);
 
-        declinedListView = findViewById(R.id.lv_organizer_declined_list);
+        // finding ui elements
+        declinedView = findViewById(R.id.lv_organizer_declined_list);
         Intent intent  = getIntent();
         eventId = intent.getStringExtra("eventID");
+        eventName = intent.getStringExtra("eventName");
+
+        selectBtn = findViewById(R.id.btn_organizer_declined_select);
+        doneBtn = findViewById(R.id.btn_done);
+        floatingActionsContainer = findViewById(R.id.cl_floating_actions);
+        backBtn = findViewById(R.id.btn_organizer_declined_back);
+        backBtn.setOnClickListener(v -> finish());
+        sendNotifBtn = findViewById(R.id.btn_send_notification);
+
+
+        // hide notification buttons container initially
+        floatingActionsContainer.setVisibility(View.GONE);
 
         db = FirebaseFirestore.getInstance();
         DocumentReference eventDoc = db.collection("events").document(eventId);
@@ -42,20 +69,67 @@ public class OrganizerDeclinedActivity extends AppCompatActivity {
             if (task.isSuccessful()){
                 DocumentSnapshot doc = task.getResult();
                 if(doc.exists()){
+                    if (eventName == null) {
+                        eventName = doc.getString("name");
+                    }
                     declined = (ArrayList<String>) doc.get("declined");
 
                     adapter = new OrganizerEntrantListAdapter(this, declined);
-                    declinedListView.setAdapter(adapter);
+                    declinedView.setAdapter(adapter);
 
-                    TextView declinedSize = findViewById(R.id.tv_organizer_declined_size);
-                    declinedSize.setText(String.valueOf(declined.size()));
                 }
             } else {
-                Log.d("OrganizerInvited", "Document retrieval failed", task.getException());
+                Log.d("OrganizerDeclined", "Document retrieval failed", task.getException());
             }
         });
 
-        backBtn = findViewById(R.id.btn_organizer_declined_back);
-        backBtn.setOnClickListener(v -> finish());
+        selectBtn.setOnClickListener(v -> {
+            if (!isSelectionMode) {
+                // Enter selection mode
+                isSelectionMode = true;
+                selectBtn.setText("Select All");
+                floatingActionsContainer.setVisibility(View.VISIBLE);
+                adapter.setSelectionMode(true);
+            } else {
+                // select all otherwise
+                adapter.selectAll();
+            }
+        });
+
+        doneBtn.setOnClickListener(v -> {
+            // Exit Selection Mode
+            isSelectionMode = false;
+            selectBtn.setText("Select");
+            floatingActionsContainer.setVisibility(View.GONE);
+            adapter.setSelectionMode(false);
+            adapter.clearSelection();
+        });
+
+        sendNotifBtn.setOnClickListener(v -> {
+            // Only show if users are selected
+            if (!adapter.getSelectedPositions().isEmpty()) {
+                CreateNotificationDialogFragment.newInstance()
+                        .show(getSupportFragmentManager(), "create_notification");
+            }
+        });
+
     }
+
+    @Override
+    public void onSendNotification(String message) {
+        // handle the sending logic
+        String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        Set<Integer> selected = adapter.getSelectedPositions();
+        if (selected.isEmpty()) {
+            android.widget.Toast.makeText(this, "Please select at least one user", android.widget.Toast.LENGTH_SHORT).show();;
+            return;
+        }
+
+        for (Integer pos : selected) {
+            String recipientId = declined.get(pos);
+            storeNotificationInFirestore(userId, recipientId, message, eventName, db);
+        }
+    }
+
 }
