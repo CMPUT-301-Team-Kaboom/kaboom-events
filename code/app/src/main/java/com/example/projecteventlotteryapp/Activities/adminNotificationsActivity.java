@@ -1,5 +1,6 @@
 package com.example.projecteventlotteryapp.Activities;
 
+import android.app.AlertDialog;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -13,7 +14,9 @@ import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.projecteventlotteryapp.Models.Image;
 import com.example.projecteventlotteryapp.R;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -117,18 +120,26 @@ public class adminNotificationsActivity extends AppCompatActivity {
                                     }
                                 }
                                 deleteBtn.setOnClickListener(v -> {
-                                    String docId = data.get(position).get("id");
-                                    db.collection("notifications").document(docId).delete()
-                                            .addOnSuccessListener(aVoid -> {
-                                                data.remove(position);
-                                                reNumber(data);
-                                                notifyDataSetChanged();
-                                                Toast.makeText(adminNotificationsActivity.this, "Notification deleted", Toast.LENGTH_SHORT).show();
-                                            })
-                                            .addOnFailureListener(e -> {
-                                                Log.e("FIRESTORE", "Error deleting notification", e);
-                                                Toast.makeText(adminNotificationsActivity.this, "Failed to delete notification", Toast.LENGTH_SHORT).show();
-                                            });
+                                    new AlertDialog.Builder(parent.getContext(), R.style.DeleteGuard)
+                                            .setTitle("Delete Notification")
+                                            .setMessage("Are you sure you want to delete this notification?")
+                                            .setPositiveButton("Delete", ((dialog, which) -> {
+                                                String docId = data.get(position).get("id");
+                                                db.collection("notifications").document(docId).delete()
+                                                        .addOnSuccessListener(aVoid -> {
+                                                            data.remove(position);
+                                                            reNumber(data);
+                                                            notifyDataSetChanged();
+                                                            Toast.makeText(adminNotificationsActivity.this, "Notification deleted", Toast.LENGTH_SHORT).show();
+                                                        })
+                                                        .addOnFailureListener(e -> {
+                                                            Log.e("FIRESTORE", "Error deleting notification", e);
+                                                            Toast.makeText(adminNotificationsActivity.this, "Failed to delete notification", Toast.LENGTH_SHORT).show();
+                                                        });
+                                            }))
+                                            .setNegativeButton("Cancel", ((dialog, which) -> dialog.dismiss()))
+                                            .show();
+
                                 });
                                 return view;
                             }

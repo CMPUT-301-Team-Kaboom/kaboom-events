@@ -4,8 +4,11 @@ import android.provider.Settings;
 import android.util.Log;
 
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.auth.FirebaseAuthCredentialsProvider;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,6 +28,34 @@ import java.util.Map;
  * Example usage: var = FirestoreUtils.LocalDate(date, zoneId);
  */
 public class FirestoreUtils {
+    /**
+     * This function authenticates an anonymous user with the Firestore db
+     *
+     * <p>This function authenticates with the Firestore db. It will technically return immediately
+     * despite the actions being asynchronous. As such, it is incredibly important that this
+     * function is NOT called immediately before a database operation. Ideally, this is only called
+     * once in the onCreate method of the RegistrationActivity or LogInActivity</p>
+     *
+     * References:
+     *      The following method has been adapted from https://firebase.google.com/docs/auth/android/anonymous-auth
+     */
+    public static void anonymousAuth() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        if (auth.getCurrentUser() != null) {
+            return;
+        }
+
+        auth.signInAnonymously()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("Auth", "signInAnonymously: Success");
+                    } else {
+                        Log.e("Auth", "signInAnonymously: Failure, " + task.getException());
+                    }
+                });
+    }
+
     /**
      * Converts a LocalDate to a Firestore Timestamp at the start of the day in the given time zone.
      *
