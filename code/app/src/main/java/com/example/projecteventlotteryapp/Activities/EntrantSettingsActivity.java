@@ -1,6 +1,7 @@
 package com.example.projecteventlotteryapp.Activities;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
@@ -88,7 +89,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         db = new UserUtils(FirebaseFirestore.getInstance());
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        getLastLocation();
+        getCurrentUserLocation();
 
         // Get the device ID
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
@@ -247,30 +248,55 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         });
     }
 
-    private void getLastLocation() {
-        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, FINE_PERMISSION_CODE);
+    @SuppressLint("MissingPermission")
+    private void getCurrentUserLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    FINE_PERMISSION_CODE);
             return;
         }
-        Task<Location> locationTask = fusedLocationProviderClient.getLastLocation();
-        locationTask.addOnSuccessListener(new OnSuccessListener<Location>() {
-            @Override
-            public void onSuccess(Location location) {
-                if (location != null) {
-                    currentLocation = location;
-                }
-            }
-        });
+
+        fusedLocationProviderClient.getCurrentLocation(
+                        com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY,
+                        null
+                )
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        Log.d("LOCATION_DEBUG", "Fresh Lat: " + location.getLatitude()
+                                + ", Lng: " + location.getLongitude());
+
+                        saveLocationToFirestore(deviceID, location);
+                    } else {
+                        Log.e("LOCATION_DEBUG", "Current location returned null");
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Log.e("LOCATION_DEBUG", "Failed to get current location", e));
     }
 
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == FINE_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getLastLocation();
+                getCurrentUserLocation();
             } else {
                 Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+
+    private void saveLocationToFirestore(String entrantId, android.location.Location location) {
+        if (location == null) return;
+
+        GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+
+        FirebaseFirestore.getInstance()
+                .collection("entrants")
+                .document(entrantId)
+                .update("location", geoPoint)
+                .addOnSuccessListener(unused -> Log.d("MAP", "Location saved"))
+                .addOnFailureListener(e -> Log.e("MAP", "Failed to save location", e));
     }
 }
