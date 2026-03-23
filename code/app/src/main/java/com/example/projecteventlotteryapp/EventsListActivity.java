@@ -185,12 +185,14 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
      */
     @Override
     public void clearFilters() {
-        eventsListFragment.clearFilters();
+        if (eventsListFragment != null) {
+            eventsListFragment.clearFilters();
+        }
     }
 
     /**
      * Reset the EventsListFragment to reflect the changes of a newly created Event.
      */
     @Override
-    public void OnEventCreated() { eventsListFragment.refreshEventList(); }
+    public void OnEventCreated() { if (eventsListFragment != null) eventsListFragment.refreshEventList(); }
 }

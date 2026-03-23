@@ -9,6 +9,9 @@ import android.widget.SimpleAdapter;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.example.projecteventlotteryapp.Enums.Role;
+import com.example.projecteventlotteryapp.Models.MyApp;
+import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.R;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
@@ -27,11 +30,16 @@ public class NotificationsListActivity extends AppCompatActivity {
     private List<Map<String, Object>> notificationsList;
     private SimpleAdapter adapter;
     private ImageButton backButton;
+    private User globalUser;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notifications_list);
+
+        MyApp app = (MyApp) getApplication();
+        globalUser = app.getCurrentUser();
 
         // find UI elements
         notificationsListView = findViewById(R.id.lv_notificationsListView);
@@ -72,65 +80,139 @@ public class NotificationsListActivity extends AppCompatActivity {
         fetchNotifications();
     }
 
+
+    /**
+     * Function to fetch notifications from DB
+     * Formats the notification items based on the user's role, and updates the adapter
+     */
     private void fetchNotifications() {
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        db.collection("notifications")
-                .whereEqualTo("recipient", deviceId)
-                .addSnapshotListener((value, error) -> {
-                    if (error != null) {
-                        Log.w("NotificationsList", "Listen failed", error);
-                        return;
-                    }
+        if (globalUser.getRole() == Role.ENTRANT){
 
-                    if (value != null) {
-                        List<QueryDocumentSnapshot> docs = new ArrayList<>();
-                        for (QueryDocumentSnapshot doc : value) {
-                            docs.add(doc);
+            db.collection("notifications")
+                    .whereEqualTo("recipient", deviceId)
+                    .addSnapshotListener((value, error) -> {
+                        if (error != null) {
+                            Log.w("NotificationsList", "Listen failed", error);
+                            return;
                         }
 
-                        // Sort locally by date descending to avoid requiring a composite index
-                        Collections.sort(docs, (d1, d2) -> {
-                            java.util.Date date1 = d1.getDate("date");
-                            java.util.Date date2 = d2.getDate("date");
-                            if (date1 == null && date2 == null) return 0;
-                            if (date1 == null) return 1;
-                            if (date2 == null) return -1;
-                            return date2.compareTo(date1);
-                        });
+                        if (value != null) {
+                            List<QueryDocumentSnapshot> docs = new ArrayList<>();
+                            for (QueryDocumentSnapshot doc : value) {
+                                docs.add(doc);
+                            }
 
-                        notificationsList.clear();
-                        for (QueryDocumentSnapshot document : docs) {
+                            // Sort locally by date descending to avoid requiring a composite index
+                            Collections.sort(docs, (d1, d2) -> {
+                                java.util.Date date1 = d1.getDate("date");
+                                java.util.Date date2 = d2.getDate("date");
+                                if (date1 == null && date2 == null) return 0;
+                                if (date1 == null) return 1;
+                                if (date2 == null) return -1;
+                                return date2.compareTo(date1);
+                            });
 
-                            db.collection("organizers")
-                                    .document(document.getString("sender")).get()
-                                    .addOnSuccessListener(organizerDocument -> {
-                                        Map<String, Object> item = new HashMap<>();
-                                        // fetch organizer name
-                                        String name = organizerDocument.getString("name");
+                            notificationsList.clear();
+                            for (QueryDocumentSnapshot document : docs) {
 
-                                        item.put("title", document.getString("event"));
-                                        item.put("organizerName", name );
-                                        item.put("notificationText", document.getString("text"));
-                                        notificationsList.add(item);
+                                db.collection("organizers")
+                                        .document(document.getString("sender")).get()
+                                        .addOnSuccessListener(organizerDocument -> {
+                                            Map<String, Object> item = new HashMap<>();
+                                            // fetch organizer name
+                                            String name = organizerDocument.getString("name");
 
-                                        if (notificationsList.size() == docs.size()) {
-                                            adapter.notifyDataSetChanged();
-                                        }
-                                    })
-                                    .addOnFailureListener(e -> {
-                                    // Handle failure by using the ID as a fallback
-                                    Map<String, Object> item = new HashMap<>();
-                                    item.put("title", document.getString("event"));
-                                    item.put("organizerName", "ID: " + document.getString("sender"));
-                                    item.put("notificationText", document.getString("text"));
-                                    notificationsList.add(item);
-                                    if (notificationsList.size() == docs.size()) {
-                                        adapter.notifyDataSetChanged();
-                                    }
-                                });
+                                            item.put("title", document.getString("event"));
+                                            item.put("organizerName", name );
+                                            item.put("notificationText", document.getString("text"));
+                                            notificationsList.add(item);
+
+                                            if (notificationsList.size() == docs.size()) {
+                                                adapter.notifyDataSetChanged();
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            // Handle failure by using the ID as a fallback
+                                            Map<String, Object> item = new HashMap<>();
+                                            item.put("title", document.getString("event"));
+                                            item.put("organizerName", "ID: " + document.getString("sender"));
+                                            item.put("notificationText", document.getString("text"));
+                                            notificationsList.add(item);
+                                            if (notificationsList.size() == docs.size()) {
+                                                adapter.notifyDataSetChanged();
+                                            }
+                                        });
                             }
                         }
                     });
         }
+        else{ // If the user is an organizer
+            // Grab notifications sent by the organizer
+            db.collection("notifications")
+                    .whereEqualTo("sender", deviceId)
+                    .addSnapshotListener((value, error) -> {
+                        if (error != null) {
+                            Log.w("NotificationsList", "Listen failed", error);
+                            return;
+                        }
+
+                        if (value != null) {
+                            List<QueryDocumentSnapshot> docs = new ArrayList<>();
+                            for (QueryDocumentSnapshot doc : value) {
+                                docs.add(doc);
+                            }
+
+                            // Sort locally by date descending to avoid requiring a composite index
+                            Collections.sort(docs, (d1, d2) -> {
+                                java.util.Date date1 = d1.getDate("date");
+                                java.util.Date date2 = d2.getDate("date");
+                                if (date1 == null && date2 == null) return 0;
+                                if (date1 == null) return 1;
+                                if (date2 == null) return -1;
+                                return date2.compareTo(date1);
+                            });
+
+                            notificationsList.clear();
+                            for (QueryDocumentSnapshot document : docs) {
+
+                                db.collection("entrants")
+                                        .document(document.getString("recipient")).get()
+                                        .addOnSuccessListener(organizerDocument -> {
+                                            Map<String, Object> item = new HashMap<>();
+                                            // fetch organizer name
+                                            String name = organizerDocument.getString("name");
+
+                                            item.put("title", document.getString("event"));
+                                            item.put("recipientName", name );
+                                            item.put("notificationText", document.getString("text"));
+                                            notificationsList.add(item);
+
+                                            if (notificationsList.size() == docs.size()) {
+                                                adapter.notifyDataSetChanged();
+                                            }
+                                        })
+                                        .addOnFailureListener(e -> {
+                                            // Handle failure by using the ID as a fallback
+                                            Map<String, Object> item = new HashMap<>();
+                                            item.put("title", document.getString("event"));
+                                            item.put("recipientName", "ID: " + document.getString("recipient"));
+                                            item.put("notificationText", document.getString("text"));
+                                            notificationsList.add(item);
+                                            if (notificationsList.size() == docs.size()) {
+                                                adapter.notifyDataSetChanged();
+                                            }
+                                        });
+                            }
+                        }
+                    });
+                    }
+
+
+
+    }
+
+
+
 }
