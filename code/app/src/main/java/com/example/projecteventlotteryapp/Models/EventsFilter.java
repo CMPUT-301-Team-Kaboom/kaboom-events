@@ -86,12 +86,15 @@ public class EventsFilter {
         }
 
         // check registration period
-        if (regStart != null) {
+        if (regStart != null && regEnd != null) {
+            if (event.getRegistrationStartDate() == null || event.getRegistrationStartDate().isAfter(regStart) || event.getRegistrationEndDate() == null || event.getRegistrationEndDate().isBefore(regEnd)) {
+                return false;
+            }
+        } else if (regStart != null) {
             if (event.getRegistrationStartDate() == null || event.getRegistrationStartDate().isBefore(regStart)) {
                 return false;
             }
-        }
-        if (regEnd != null) {
+        } else if (regEnd != null) {
             if (event.getRegistrationEndDate() == null || event.getRegistrationEndDate().isAfter(regEnd)) {
                 return false;
             }
@@ -107,9 +110,9 @@ public class EventsFilter {
         return true;
     }
 
-    public boolean isAvailable(Event event, QueryDocumentSnapshot snapshot) {
+    public boolean isAvailable(Event event, QueryDocumentSnapshot snapshot, LocalDate today) {
         // check registration period still available
-        if (event.getRegistrationEndDate() == null || event.getRegistrationEndDate().isAfter(regEnd)) {
+        if (today.isBefore(event.getRegistrationStartDate()) || today.isAfter(event.getRegistrationEndDate())) {
             return false;
         }
 

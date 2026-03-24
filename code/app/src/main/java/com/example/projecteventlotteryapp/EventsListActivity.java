@@ -105,6 +105,10 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
 
         // set click listener for filter button
         filterButton.setOnClickListener(view -> {
+            if (eventsListFragment != null) {
+                eventsListFragment.clearFilters();
+            }
+
             FilterEventsDialogFragment filterEventsDialogFragment = new FilterEventsDialogFragment();
             filterEventsDialogFragment.show(getSupportFragmentManager(), "Filter Events");
         });
@@ -182,9 +186,12 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
                         }
                     } else if (position == 1) { // get available events
                         if (eventsListFragment != null) {
-                            EventsFilter availableFilter = new EventsFilter();
-                            availableFilter.regEnd = LocalDate.now();
-                            eventsListFragment.applyFilters(availableFilter);
+                            EventsFilter filter = new EventsFilter();
+                            LocalDate today = LocalDate.now();
+                            filter.regStart = today;
+                            filter.regEnd = today;
+
+                            eventsListFragment.applyFilters(filter);
                         }
                     } else if (position == 2) { // get entrant's history of events
                         // todo
