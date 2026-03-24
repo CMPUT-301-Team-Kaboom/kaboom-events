@@ -184,22 +184,4 @@ public class FirestoreUtils {
                 });
 
     }
-
-    /**
-     * Saves a location to the database
-     * @param entrantId
-     * @param location
-     */
-    public static void saveLocationToFirestore(String entrantId, android.location.Location location) {
-        if (location == null) return;
-
-        GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-
-        FirebaseFirestore.getInstance()
-                .collection("entrants")
-                .document(entrantId)
-                .update("location", geoPoint)
-                .addOnSuccessListener(unused -> Log.d("MAP", "Location saved"))
-                .addOnFailureListener(e -> Log.e("MAP", "Failed to save location", e));
-    }
 }

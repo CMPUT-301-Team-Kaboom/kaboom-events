@@ -275,7 +275,12 @@ public class EntrantSettingsActivity extends AppCompatActivity {
                         Log.d("LOCATION_DEBUG", "Fresh Lat: " + location.getLatitude()
                                 + ", Lng: " + location.getLongitude());
 
-                        FirestoreUtils.saveLocationToFirestore(deviceID, location);
+                        GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+
+                        Map<String, Object> update = new HashMap<>();
+                        update.put("location", geoPoint);
+
+                        db.updateUserProfile(deviceID, update, globalUser.getRole());
                     } else {
                         Log.e("LOCATION_DEBUG", "Current location returned null");
                     }
