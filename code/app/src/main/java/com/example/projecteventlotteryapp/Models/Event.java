@@ -31,7 +31,7 @@ public class Event {
     private String description;
     private String organizerId;
     private String organizerName;
-    // private QRCode
+    private String qrCodeUrl;
     // private location
     // private map
     private String poster;
@@ -329,5 +329,13 @@ public class Event {
 
     public void setPrivate(boolean privacy) {
         isPrivate = privacy;
+    }
+
+    public String getQrCodeUrl() {
+        return qrCodeUrl;
+    }
+
+    public void setQrCodeUrl(String qrCodeUrl) {
+        this.qrCodeUrl = qrCodeUrl;
     }
 }

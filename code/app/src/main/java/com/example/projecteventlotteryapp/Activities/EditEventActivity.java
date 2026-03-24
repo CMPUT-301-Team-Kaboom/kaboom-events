@@ -61,6 +61,7 @@ public class EditEventActivity extends AppCompatActivity {
     private Button saveButton;
     private ImageButton backButton;
     private ImageView editQRCode;
+    private Bitmap qrCodeBitmap;
     /////////////////////////////////////////////////////
     /// IMAGE UPLOAD VARIABLES
     ////////////////////////////////////////////////////
@@ -160,12 +161,12 @@ public class EditEventActivity extends AppCompatActivity {
         try {
             BitMatrix bitMatrix = multiFormatWriter.encode(eventId, BarcodeFormat.QR_CODE, 500, 500);
             BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
-            Bitmap bitmap = barcodeEncoder.createBitmap(bitMatrix);
-            editQRCode.setImageBitmap(bitmap);
+            qrCodeBitmap = barcodeEncoder.createBitmap(bitMatrix);
+            editQRCode.setImageBitmap(qrCodeBitmap);
             Toast.makeText(this, "QR Code Generated!", Toast.LENGTH_SHORT).show();
         } catch (WriterException e) {
             e.printStackTrace();
-            Toast.makeText(this, "Failed to generate QR Code!", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Failed to generate Code!", Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -256,6 +257,9 @@ public class EditEventActivity extends AppCompatActivity {
         // TODO: update the event object and database
         // TODO: figure out image and QR code, as well as location
         posterImageHandler.uploadPoster(eventId, eventPosterFilepath);
+        if (qrCodeBitmap != null) {
+            posterImageHandler.uploadQRCode(eventId, qrCodeBitmap);
+        }
 
         ZoneId zoneId = ZoneId.systemDefault();
 
