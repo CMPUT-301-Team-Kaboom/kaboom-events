@@ -155,7 +155,7 @@ public class EditEventActivity extends AppCompatActivity {
 
             builder.setPositiveButton(android.R.string.ok, (dialog, which) -> {
                 dialog.dismiss();
-                String newTag = input.getText().toString().trim();
+                String newTag = input.getText().toString().trim().toUpperCase();
                 if (newTag.isEmpty()) {
                     tagView.setText("None");
                 } else {
@@ -247,7 +247,7 @@ public class EditEventActivity extends AppCompatActivity {
     private void addTagToList(ArrayList<String> list, TextView tagView) {
         String tag = tagView.getText().toString().trim();
         if (!tag.isEmpty() && !tag.equalsIgnoreCase("None") && !tag.equalsIgnoreCase("Tag 1") && !tag.equalsIgnoreCase("Tag 2") && !tag.equalsIgnoreCase("Tag 3")) {
-            list.add(tag);
+            list.add(tag.toUpperCase());
         }
     }
 
