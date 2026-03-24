@@ -88,11 +88,11 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         // Initialize Firebase Firestore
         db = new UserUtils(FirebaseFirestore.getInstance());
 
-        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        getCurrentUserLocation();
-
         // Get the device ID
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        getCurrentUserLocation();
         // connects the variables to their UI elements in the xml
         nameEditText = findViewById(R.id.et_name);
         emailEditText = findViewById(R.id.et_edit_email);
