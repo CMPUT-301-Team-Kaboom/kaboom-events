@@ -32,47 +32,42 @@ android {
         targetCompatibility = JavaVersion.VERSION_11
     }
     testOptions{
-        unitTests.isReturnDefaultValues = true;
+        unitTests.isReturnDefaultValues = true
     }
 }
 
 dependencies {
-    //      Firebase dependencies
-    implementation(platform("com.google.firebase:firebase-bom:34.9.0"))
+    // Firebase dependencies
+    implementation(platform("com.google.firebase:firebase-bom:33.7.0"))
     implementation("com.google.firebase:firebase-analytics")
+    implementation("com.google.firebase:firebase-auth")
     implementation("com.google.firebase:firebase-storage")
-    
-    // Use compileOnly for the SDK platform jars to avoid dexing errors while allowing Javadoc generation
-    compileOnly(fileTree(mapOf<String, Any>(
-        "dir" to "/Users/kevincao/Library/Android/sdk/platforms/android-36",
-        "include" to listOf("*.aar", "*.jar"),
-        "exclude" to emptyList<String>()
-    )))
+    implementation("com.google.firebase:firebase-database")
+    implementation("com.google.firebase:firebase-firestore")
+    implementation(libs.cardview)
 
     // JUnit5 unit testing
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.0.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.0.1")
-    testImplementation("com.google.android.gms:play-services-tasks:18.0.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.10.2")
+    testImplementation("com.google.android.gms:play-services-tasks:18.1.0")
 
-    //    Glide dependency (image loading)
+    // Glide dependency (image loading)
     implementation ("com.github.bumptech.glide:glide:4.16.0")
+    annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")
 
-    //    Mockito dependencies
+    // Mockito dependencies
     testImplementation("org.mockito:mockito-core:5.12.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.12.0")
-    testImplementation("org.mockito:mockito-inline:5.2.0")
-    testImplementation("org.mockito:mockito-android:5.5.0")
+    testImplementation("org.mockito:mockito-android:5.12.0")
 
-    //    default dependencies
+    // Default dependencies
     implementation(libs.appcompat)
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-    implementation(libs.firebase.storage)
-    implementation(libs.firebase.database)
-    implementation(libs.firebase.firestore)
-    implementation(libs.google.maps)
+    implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation(libs.recyclerview)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)

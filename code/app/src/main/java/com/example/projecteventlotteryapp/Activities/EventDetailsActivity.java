@@ -223,24 +223,28 @@ public class EventDetailsActivity extends AppCompatActivity {
                 Log.d("EventDetails", "[TEMP] Open waitlist");
                 Intent intent = new Intent(EventDetailsActivity.this, OrganizerWaitlistActivity.class);
                 intent.putExtra("eventID", eventId);
+                intent.putExtra("eventName", event.getName());
                 startActivity(intent);
             });
             invitedButton.setOnClickListener(v -> {
                 Log.d("EventDetails", "[TEMP] Open invited list");
                 Intent intent = new Intent(EventDetailsActivity.this, OrganizerInvitedActivity.class);
                 intent.putExtra("eventID", eventId);
+                intent.putExtra("eventName", event.getName());
                 startActivity(intent);
             });
             enrolledButton.setOnClickListener(v -> {
                 Log.d("EventDetails", "[TEMP] Open enrolled List");
                 Intent intent = new Intent(EventDetailsActivity.this, OrganizerEnrolledActivity.class);
                 intent.putExtra("eventID", eventId);
+                intent.putExtra("eventName", event.getName());
                 startActivity(intent);
             });
             declinedButton.setOnClickListener(v -> {
                 Log.d("EventDetails", "[TEMP] Open declined list");
                 Intent intent = new Intent(EventDetailsActivity.this, OrganizerDeclinedActivity.class);
                 intent.putExtra("eventID", eventId);
+                intent.putExtra("eventName", event.getName());
                 startActivity(intent);
             });
 
@@ -543,4 +547,3 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 }
-

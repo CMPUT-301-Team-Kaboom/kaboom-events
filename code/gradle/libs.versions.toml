@@ -13,7 +13,7 @@ firebaseStorage = "22.0.1"
 firebaseDatabase = "22.0.1"
 firebaseFirestore = "26.1.0"
 recyclerview = "1.4.0"
-zxing = "3.5.3"
+cardview = "1.0.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -29,7 +29,7 @@ firebase-storage = { group = "com.google.firebase", name = "firebase-storage", v
 firebase-database = { group = "com.google.firebase", name = "firebase-database", version.ref = "firebaseDatabase" }
 firebase-firestore = { group = "com.google.firebase", name = "firebase-firestore", version.ref = "firebaseFirestore" }
 recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version.ref = "recyclerview" }
-zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
+cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

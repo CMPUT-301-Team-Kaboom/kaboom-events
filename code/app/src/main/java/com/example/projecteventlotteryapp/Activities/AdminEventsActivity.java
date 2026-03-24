@@ -1,5 +1,6 @@
 package com.example.projecteventlotteryapp.Activities;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -62,12 +63,19 @@ public class AdminEventsActivity extends AppCompatActivity {
         eventDataList = new ArrayList<>();
 
         eventAdapter = new AdminEventArrayAdapter(this, eventDataList, event -> {
-            db.collection("events").document(event.getEventId()).delete()
-                    .addOnSuccessListener(aVoid -> {
-                        eventDataList.remove(event);
-                        eventAdapter.notifyDataSetChanged();
-                    })
-                    .addOnFailureListener(e -> Log.e("AdminEvents", "Error deleting event", e));
+            new AlertDialog.Builder(this, R.style.DeleteGuard)
+                    .setTitle("Delete Event")
+                    .setMessage("Are you sure you want to delete this event?")
+                    .setPositiveButton("Delete", ((dialog, which) -> {
+                        db.collection("events").document(event.getEventId()).delete()
+                                .addOnSuccessListener(aVoid -> {
+                                    eventDataList.remove(event);
+                                    eventAdapter.notifyDataSetChanged();
+                                })
+                                .addOnFailureListener(e -> Log.e("AdminEvents", "Error deleting event", e));
+                    }))
+                    .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                    .show();
         });
         eventListView.setAdapter(eventAdapter);
 
