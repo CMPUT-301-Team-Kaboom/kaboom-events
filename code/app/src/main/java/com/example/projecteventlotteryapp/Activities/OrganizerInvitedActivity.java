@@ -18,6 +18,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.projecteventlotteryapp.Models.CreateNotificationDialogFragment;
+import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.OrganizerEntrantListAdapter;
 import com.example.projecteventlotteryapp.R;
 import com.google.firebase.firestore.DocumentReference;
@@ -124,7 +125,9 @@ public class OrganizerInvitedActivity extends AppCompatActivity implements Creat
     @Override
     public void onSendNotification(String message) {
         // handle the sending logic
-        String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        // fetch userID from global app state
+        String userId = ((MyApp) getApplication()).getCurrentUser().getUserId();
 
         Set<Integer> selected = adapter.getSelectedPositions();
         if (selected.isEmpty()) {

@@ -11,12 +11,14 @@ import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
 import com.example.projecteventlotteryapp.Models.CreateNotificationDialogFragment;
+import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.OrganizerEntrantListAdapter;
 import com.example.projecteventlotteryapp.R;
 import com.google.firebase.firestore.DocumentReference;
@@ -118,7 +120,9 @@ public class OrganizerDeclinedActivity extends AppCompatActivity implements Crea
     @Override
     public void onSendNotification(String message) {
         // handle the sending logic
-        String userId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        // fetch userID from global app state
+        String userId = ((MyApp) getApplication()).getCurrentUser().getUserId();
 
         Set<Integer> selected = adapter.getSelectedPositions();
         if (selected.isEmpty()) {
@@ -130,6 +134,15 @@ public class OrganizerDeclinedActivity extends AppCompatActivity implements Crea
             String recipientId = declined.get(pos);
             storeNotificationInFirestore(userId, recipientId, message, eventName, db);
         }
+
+        Toast.makeText(this, "Notifications sent", Toast.LENGTH_SHORT).show();
+
+        // Clear selection after sending
+        isSelectionMode = false;
+        selectBtn.setText("Select");
+        floatingActionsContainer.setVisibility(View.GONE);
+        adapter.setSelectionMode(false);
+        adapter.clearSelection();
     }
 
 }
