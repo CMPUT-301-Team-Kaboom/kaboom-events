@@ -22,6 +22,7 @@ import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.Filter;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -176,7 +177,10 @@ public class EventsListFragment extends Fragment {
         if (globalUser.getRole() == Role.ORGANIZER) {
             DocumentReference organizerRef = db.collection("organizers")
                     .document(globalUser.getUserId());
-            query = query.whereEqualTo("organizer", organizerRef);
+            query = query.where(Filter.or(
+                    Filter.equalTo("organizer", organizerRef),
+                    Filter.arrayContains("coorganizers", globalUser.getUserId())
+            ));
         }
 
         // get events
@@ -275,7 +279,10 @@ public class EventsListFragment extends Fragment {
             Log.d("EventsListFragment", "filter organizer: " + globalUser.getUserId());
             DocumentReference organizerRef = db.collection("organizers")
                     .document(globalUser.getUserId());
-            query = query.whereEqualTo("organizer", organizerRef);
+            query = query.where(Filter.or(
+                    Filter.equalTo("organizer", organizerRef),
+                    Filter.arrayContains("coorganizers", globalUser.getUserId())
+            ));
         }
 
         // filter by name
