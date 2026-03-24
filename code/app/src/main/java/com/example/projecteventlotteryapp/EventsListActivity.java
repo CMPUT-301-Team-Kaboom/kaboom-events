@@ -143,6 +143,14 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
      * tabs for filtering the event list based on an entrant's status for an event. Organizer
      * controls are hidden.</p>
      *
+     * Code Citation:
+     *      [1] Author: Ahmad Sabeh https://stackoverflow.com/users/8614703/ahmad-sabeh
+     *                  Title: "How to add tab listener to the tabs"
+     *                  Answer: https://stackoverflow.com/a/57358785
+     *                  Date: 2019-08-05
+     *                  Retrieved: 2026-03-23
+     *                  License: CC-BY-SA 4.0
+     *
      * @param user the User interacting with the app
      */
     private void configureUIForRole(User user) {
@@ -159,13 +167,40 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
             organizerController.setVisibility(View.GONE);
             entrantController.setVisibility(View.VISIBLE);
 
+            entrantController.addTab(entrantController.newTab().setText("All"));
             entrantController.addTab(entrantController.newTab().setText("Available"));
-            entrantController.addTab(entrantController.newTab().setText("WaitList"));
-            entrantController.addTab(entrantController.newTab().setText("Enrolled"));
-            entrantController.addTab(entrantController.newTab().setText("Declined"));
             entrantController.addTab(entrantController.newTab().setText("History"));
 
-            // todo: add filtering with the tabs might need to refactor code
+            // (see code citation [1])
+            entrantController.addOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
+                @Override
+                public void onTabSelected(TabLayout.Tab tab) {
+                    int position = tab.getPosition();
+                    if (position == 0) { // get all events
+                        if (eventsListFragment != null) {
+                            eventsListFragment.refreshEventList();
+                        }
+                    } else if (position == 1) { // get available events
+                        if (eventsListFragment != null) {
+                            EventsFilter availableFilter = new EventsFilter();
+                            availableFilter.regEnd = LocalDate.now();
+                            eventsListFragment.applyFilters(availableFilter);
+                        }
+                    } else if (position == 2) { // get entrant's history of events
+                        // todo
+                    }
+                }
+
+                @Override
+                public void onTabUnselected(TabLayout.Tab tab) {
+
+                }
+
+                @Override
+                public void onTabReselected(TabLayout.Tab tab) {
+
+                }
+            });
         }
     }
 

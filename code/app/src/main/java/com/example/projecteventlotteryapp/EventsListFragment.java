@@ -271,6 +271,64 @@ public class EventsListFragment extends Fragment {
     }
 
     /**
+     * Fetch events user has attended from the database and display status.
+     *
+     * Code Citation:
+     *     [1] Title: "Perform simple and compound queries in Cloud Firestore"
+     *         Source: https://firebase.google.com/docs/firestore/query-data/
+     *         Retrieved: 2026-03-11
+     *
+     *     [2] Author: Alex Mamo https://stackoverflow.com/users/5246885/alex-mamo
+     *         Title: "Check if Firestore query is empty"
+     *         Answer: https://stackoverflow.com/a/56847476
+     *         Date: 2019-07-02
+     *         Retrieved: 2026-03-12
+     *         License: CC-BY-SA 4.0
+     *
+     */
+    private void getEventsHistory() {
+        Query query = eventsRef;
+        String userId = globalUser.getUserId();
+
+        // filter by list (see citation [1])
+        query = query.whereArrayContains("enrolled", userId);
+        query = query.whereArrayContains("declined", userId);
+        query = query.whereArrayContains("invited", userId);
+        query = query.whereArrayContains("waitlist", userId);
+
+        // todo: store which list entrant is on so can display the status
+
+        // get events
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            eventsArrayList.clear();
+
+            //  handle empty query (see citation [2])
+            if (queryDocumentSnapshots.isEmpty()) {
+                eventsArrayAdapter.notifyDataSetChanged();
+                return;
+            }
+
+            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                Event event = eventUtils.fetchEventFromSnapshot(snapshot);
+                Log.d("EventsListFragment", "Event: " + event.getName());
+                // get organizer
+                DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
+                if (organizerRef != null) {
+                    eventUtils.fetchOrganizerForEvent(event, organizerRef)
+                            .addOnSuccessListener(aVoid -> {
+                                eventsArrayList.add(event);
+                                eventsArrayAdapter.notifyDataSetChanged();
+                            });
+                } else {
+                    eventsArrayList.add(event);
+                    eventsArrayAdapter.notifyDataSetChanged();
+                }
+            }
+            eventsArrayAdapter.notifyDataSetChanged();
+        });
+    }
+
+    /**
      * Get all events again.
      */
     public void refreshEventList(){
