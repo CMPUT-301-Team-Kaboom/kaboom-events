@@ -23,6 +23,11 @@ import com.google.firebase.firestore.GeoPoint;
 
 import java.util.List;
 
+/**
+ * This class handles all the logic and UI support for displaying the map of the event.
+ *
+ * <p>The screen includes a map of the event and a list of entrants in the waitlist.</p>
+ */
 public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
@@ -34,6 +39,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private LatLngBounds.Builder boundsBuilder;
 
 
+    /**
+     * Entry point of the activity.
+     *
+     * <p>This function is the entry point of the Activity. It sets up the db instance and UI for
+     * the event.</p>
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,12 +66,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Called when the map is ready to be used.
+     * @param googleMap
+     */
     @Override
     public void onMapReady(@NonNull GoogleMap googleMap) {
         mMap = googleMap;
         loadWaitlistMarkers();
     }
 
+    /**
+     * Loads the waitlist markers for the map.
+     */
     private void loadWaitlistMarkers(){
         db.collection("events").document(eventId).get()
                 .addOnSuccessListener(eventDoc -> {
@@ -89,6 +111,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 });
     }
 
+    /**
+     * Loads the location of an entrant and adds a marker to the map.
+     * @param entrantId
+     */
     private void loadEntrantLocation(String entrantId){
         db.collection("entrants").document(entrantId).get()
                 .addOnSuccessListener(entrantDoc -> {
@@ -105,6 +131,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 });
     }
 
+    /**
+     *  Adds a marker for an entrant to the map.
+     * @param entrantDoc
+     */
     private void addMarkerForEntrant(DocumentSnapshot entrantDoc) {
         GeoPoint location = entrantDoc.getGeoPoint("location");
         String name = entrantDoc.getString("name");
@@ -119,13 +149,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         addedMarkers++;
     }
 
+    /**
+     * Finishes loading the map.
+     */
     private void finishLoading() {
         if (loadedEntrants == totalEntrants) {
             if (addedMarkers > 0) {
                 if (addedMarkers == 1) {
-                    // If only one marker, bounds zoom can be weird, so just zoom directly
-                    // You could store the last LatLng if you want, but simplest is leave as-is
-                    // or set a default close zoom manually in addMarkerForEntrant.
                     try {
                         LatLngBounds bounds = boundsBuilder.build();
                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(bounds.getCenter(), 12f));
@@ -146,6 +176,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
     }
 
+    /**
+     * Shows the default location on the map.
+     * if there are no entrants in the waitlist then the map shows Edmonton.
+     */
     private void showDefaultLocation(){
         LatLng defaultLocation = new LatLng(53.5461, -113.4938);
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(defaultLocation, 12f));

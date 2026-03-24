@@ -24,6 +24,7 @@ import androidx.core.content.ContextCompat;
 import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.R;
+import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.example.projecteventlotteryapp.dbUtils.UserUtils;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -34,7 +35,6 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -226,6 +226,10 @@ public class EntrantSettingsActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Deletes the users profile from firestore.
+     * Deletes the corresponding Firestore document.
+     */
     private void deleteProfileFromFirestore() {
         // TODO: Delete profile from everywhere in database (inside waitlists etc.)
 
@@ -248,6 +252,10 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * Gets the current location of the user
+     * Asks for permission if not granted already
+     */
     @SuppressLint("MissingPermission")
     private void getCurrentUserLocation() {
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
@@ -267,7 +275,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
                         Log.d("LOCATION_DEBUG", "Fresh Lat: " + location.getLatitude()
                                 + ", Lng: " + location.getLongitude());
 
-                        saveLocationToFirestore(deviceID, location);
+                        FirestoreUtils.saveLocationToFirestore(deviceID, location);
                     } else {
                         Log.e("LOCATION_DEBUG", "Current location returned null");
                     }
@@ -276,6 +284,16 @@ public class EntrantSettingsActivity extends AppCompatActivity {
                         Log.e("LOCATION_DEBUG", "Failed to get current location", e));
     }
 
+    /**
+     * Handles the result of the permission request
+     *
+     * @param requestCode The integer request code originally supplied to
+     *                    requestPermissions(), allowing you to identify who this
+     *                    result came from.
+     * @param permissions The requested permissions. Never null
+     * @param grantResults The grant results for the corresponding permissions
+     *                     which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null
+     */
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == FINE_PERMISSION_CODE) {
@@ -287,16 +305,5 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         }
     }
 
-    private void saveLocationToFirestore(String entrantId, android.location.Location location) {
-        if (location == null) return;
 
-        GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
-
-        FirebaseFirestore.getInstance()
-                .collection("entrants")
-                .document(entrantId)
-                .update("location", geoPoint)
-                .addOnSuccessListener(unused -> Log.d("MAP", "Location saved"))
-                .addOnFailureListener(e -> Log.e("MAP", "Failed to save location", e));
-    }
 }
