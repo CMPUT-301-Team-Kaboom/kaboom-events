@@ -77,4 +77,5 @@ dependencies {
 
     // qr code generation
     implementation(libs.zxing.core)
+    implementation(libs.zxing.android.embedded)
 }
