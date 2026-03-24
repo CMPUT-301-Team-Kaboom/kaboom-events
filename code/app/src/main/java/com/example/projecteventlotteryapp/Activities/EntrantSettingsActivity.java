@@ -1,6 +1,10 @@
 package com.example.projecteventlotteryapp.Activities;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -10,14 +14,27 @@ import android.widget.ImageButton;
 import android.widget.Switch;
 import android.widget.Toast;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
 import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.R;
+import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.example.projecteventlotteryapp.dbUtils.UserUtils;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
+import com.google.android.gms.tasks.CancellationTokenSource;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
-
+import com.google.firebase.firestore.GeoPoint;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -50,6 +67,10 @@ public class EntrantSettingsActivity extends AppCompatActivity {
     private Button btnDelete;
     private Switch swtchNotification;
     private User globalUser;
+    private final int FINE_PERMISSION_CODE = 1;
+    Location currentLocation;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+
 
     /**
      * Entry point of the activity
@@ -69,6 +90,9 @@ public class EntrantSettingsActivity extends AppCompatActivity {
 
         // Get the device ID
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        getCurrentUserLocation();
         // connects the variables to their UI elements in the xml
         nameEditText = findViewById(R.id.et_name);
         emailEditText = findViewById(R.id.et_edit_email);
@@ -137,9 +161,6 @@ public class EntrantSettingsActivity extends AppCompatActivity {
 
     }
 
-
-
-
     /**
      * Loads the users profile from firestore.
      *retrieves the device's unique ANDROID_ID.
@@ -205,6 +226,10 @@ public class EntrantSettingsActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * Deletes the users profile from firestore.
+     * Deletes the corresponding Firestore document.
+     */
     private void deleteProfileFromFirestore() {
         // TODO: Delete profile from everywhere in database (inside waitlists etc.)
 
@@ -226,5 +251,64 @@ public class EntrantSettingsActivity extends AppCompatActivity {
             Toast.makeText(this, "Failed to delete profile", Toast.LENGTH_SHORT).show();
         });
     }
+
+    /**
+     * Gets the current location of the user
+     * Asks for permission if not granted already
+     */
+    @SuppressLint("MissingPermission")
+    private void getCurrentUserLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    FINE_PERMISSION_CODE);
+            return;
+        }
+
+        fusedLocationProviderClient.getCurrentLocation(
+                        com.google.android.gms.location.Priority.PRIORITY_HIGH_ACCURACY,
+                        null
+                )
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        Log.d("LOCATION_DEBUG", "Fresh Lat: " + location.getLatitude()
+                                + ", Lng: " + location.getLongitude());
+
+                        GeoPoint geoPoint = new GeoPoint(location.getLatitude(), location.getLongitude());
+
+                        Map<String, Object> update = new HashMap<>();
+                        update.put("location", geoPoint);
+
+                        db.updateUserProfile(deviceID, update, globalUser.getRole());
+                    } else {
+                        Log.e("LOCATION_DEBUG", "Current location returned null");
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Log.e("LOCATION_DEBUG", "Failed to get current location", e));
+    }
+
+    /**
+     * Handles the result of the permission request
+     *
+     * @param requestCode The integer request code originally supplied to
+     *                    requestPermissions(), allowing you to identify who this
+     *                    result came from.
+     * @param permissions The requested permissions. Never null
+     * @param grantResults The grant results for the corresponding permissions
+     *                     which is either PERMISSION_GRANTED or PERMISSION_DENIED. Never null
+     */
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == FINE_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getCurrentUserLocation();
+            } else {
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
 
 }
