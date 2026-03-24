@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
-
 import com.example.projecteventlotteryapp.Activities.EventDetailsActivity;
 import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.Enums.Role;
@@ -27,6 +26,8 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass used to display a list of events based off certain conditions.
@@ -38,13 +39,12 @@ import java.util.ArrayList;
 public class EventsListFragment extends Fragment {
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
-
     private EventUtils eventUtils;
     private User globalUser;
     private ListView eventsListView;
     private ArrayList<Event> eventsArrayList;
-    private ArrayAdapter<Event> eventsArrayAdapter;
-
+    private EventArrayAdapter eventsArrayAdapter;
+    private Map<String, String> eventStatuses;
     private EventsFilter currentFilter;
 
     public EventsListFragment() {
@@ -75,6 +75,8 @@ public class EventsListFragment extends Fragment {
         // get user role
         MyApp app = (MyApp) getActivity().getApplication();
         globalUser = app.getCurrentUser();
+
+         eventStatuses = new HashMap<>();
     }
 
     /**
@@ -112,7 +114,7 @@ public class EventsListFragment extends Fragment {
         // setup ListView and EventArrayAdapter (see citation [1])
         eventsListView = view.findViewById(R.id.lv_events_list);
         eventsArrayList = new ArrayList<Event>();
-        eventsArrayAdapter = new EventArrayAdapter(getActivity(), eventsArrayList);
+        eventsArrayAdapter = new EventArrayAdapter(getActivity(), eventsArrayList, eventStatuses);
         eventsListView.setAdapter(eventsArrayAdapter);
 
         // listener for a ListView event items
@@ -266,12 +268,12 @@ public class EventsListFragment extends Fragment {
                     }
                 }
             }
-            eventsArrayAdapter.notifyDataSetChanged();
+            eventsArrayAdapter.setEventStatuses(new HashMap<>());
         });
     }
 
     /**
-     * Fetch events user has attended from the database and display status.
+     * Fetch events user has attended from the database and status.
      *
      * Code Citation:
      *     [1] Title: "Perform simple and compound queries in Cloud Firestore"
@@ -286,21 +288,13 @@ public class EventsListFragment extends Fragment {
      *         License: CC-BY-SA 4.0
      *
      */
-    private void getEventsHistory() {
+    public void getEventsHistory(String userId) {
         Query query = eventsRef;
-        String userId = globalUser.getUserId();
-
-        // filter by list (see citation [1])
-        query = query.whereArrayContains("enrolled", userId);
-        query = query.whereArrayContains("declined", userId);
-        query = query.whereArrayContains("invited", userId);
-        query = query.whereArrayContains("waitlist", userId);
-
-        // todo: store which list entrant is on so can display the status
 
         // get events
         query.get().addOnSuccessListener(queryDocumentSnapshots -> {
             eventsArrayList.clear();
+            eventStatuses.clear();
 
             //  handle empty query (see citation [2])
             if (queryDocumentSnapshots.isEmpty()) {
@@ -310,21 +304,37 @@ public class EventsListFragment extends Fragment {
 
             for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
                 Event event = eventUtils.fetchEventFromSnapshot(snapshot);
-                Log.d("EventsListFragment", "Event: " + event.getName());
-                // get organizer
-                DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
-                if (organizerRef != null) {
-                    eventUtils.fetchOrganizerForEvent(event, organizerRef)
-                            .addOnSuccessListener(aVoid -> {
-                                eventsArrayList.add(event);
-                                eventsArrayAdapter.notifyDataSetChanged();
-                            });
-                } else {
-                    eventsArrayList.add(event);
-                    eventsArrayAdapter.notifyDataSetChanged();
+
+                // get status (assume user can only be in one list at a time)
+                String status = null;
+                if (snapshot.get("enrolled") != null && ((ArrayList<String>) snapshot.get("enrolled")).contains(userId)) {
+                    status = "enrolled";
+                } else if (snapshot.get("declined") != null && ((ArrayList<String>) snapshot.get("declined")).contains(userId)) {
+                    status = "declined";
+                } else if (snapshot.get("invited") != null && ((ArrayList<String>) snapshot.get("invited")).contains(userId)) {
+                    status = "invited";
+                } else if (snapshot.get("waitlist") != null && ((ArrayList<String>) snapshot.get("waitlist")).contains(userId)) {
+                    status = "waitlist";
+                }
+
+                if (status != null) {
+                    eventStatuses.put(event.getEventId(), status);
+
+                    // get organizer
+                    DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
+                    if (organizerRef != null) {
+                        eventUtils.fetchOrganizerForEvent(event, organizerRef)
+                                .addOnSuccessListener(aVoid -> {
+                                    eventsArrayList.add(event);
+                                    eventsArrayAdapter.notifyDataSetChanged();
+                                });
+                    } else {
+                        eventsArrayList.add(event);
+                        eventsArrayAdapter.notifyDataSetChanged();
+                    }
                 }
             }
-            eventsArrayAdapter.notifyDataSetChanged();
+            eventsArrayAdapter.setEventStatuses(eventStatuses);
         });
     }
 

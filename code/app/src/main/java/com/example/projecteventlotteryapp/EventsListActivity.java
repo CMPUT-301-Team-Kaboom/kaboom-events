@@ -194,7 +194,9 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
                             eventsListFragment.applyFilters(filter);
                         }
                     } else if (position == 2) { // get entrant's history of events
-                        // todo
+                        if (eventsListFragment != null) {
+                            eventsListFragment.getEventsHistory(globalUser.getUserId());
+                        }
                     }
                 }
 
