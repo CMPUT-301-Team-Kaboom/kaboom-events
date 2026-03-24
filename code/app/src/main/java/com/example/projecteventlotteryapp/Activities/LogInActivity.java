@@ -17,6 +17,7 @@ import com.example.projecteventlotteryapp.EventsListActivity;
 import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.R;
+import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -47,6 +48,10 @@ public class LogInActivity extends AppCompatActivity {
 
         // FIX: Retrieve deviceID so it is not null
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        // TODO: enable if db rules have changed
+        // authenticate with firestore db
+        // FirestoreUtils.anonymousAuth();
 
         ImageButton btnBack = findViewById(R.id.BackButton);
         Button btnLogIn = findViewById(R.id.btn_registration_login);

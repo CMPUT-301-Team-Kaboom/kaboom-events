@@ -19,7 +19,9 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.DialogFragment;
 
+import com.example.projecteventlotteryapp.AdminRegistrationFragment;
 import com.example.projecteventlotteryapp.Enums.Role;
 import com.example.projecteventlotteryapp.EventsListActivity;
 import com.example.projecteventlotteryapp.Models.User;
@@ -34,8 +36,8 @@ import com.google.firebase.firestore.GeoPoint;
 
 import java.util.HashMap;
 
-public class RegistrationActivity extends AppCompatActivity {
-
+public class RegistrationActivity extends AppCompatActivity implements AdminRegistrationFragment.AdminRegistrationDialogListener {
+    private final String ADMIN_PASS = "kaboom";
     private FirebaseFirestore db;
     private String deviceID;
     private EditText etName, etEmail, etPhone;
@@ -43,7 +45,6 @@ public class RegistrationActivity extends AppCompatActivity {
     private static final int FINE_PERMISSION_CODE = 1001;
     private FusedLocationProviderClient fusedLocationProviderClient;
     private Location currentLocation;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,20 +147,26 @@ public class RegistrationActivity extends AppCompatActivity {
             return;
         }
 
-        // Check if user already exists before allowing Sign Up
-        db.collection(collectionName).document(deviceID).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                if (task.getResult().exists()) {
-                    Toast.makeText(RegistrationActivity.this, "Account already exists. Please Log In instead.", Toast.LENGTH_LONG).show();
+        // Check if admin has been selected
+        if (collectionName.equals("admins")){
+            DialogFragment dialog = new AdminRegistrationFragment();
+            dialog.show(getSupportFragmentManager(), "AdminRegistrationDialogFragment");
+        } else {
+            // Check if user already exists before allowing Sign Up
+            db.collection(collectionName).document(deviceID).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    if (task.getResult().exists()) {
+                        Toast.makeText(RegistrationActivity.this, "Account already exists. Please Log In instead.", Toast.LENGTH_LONG).show();
+                    } else {
+                        // User doesn't exist in this role, proceed with creation
+                        processUserCreation(collectionName);
+                    }
                 } else {
-                    // User doesn't exist in this role, proceed with creation
-                    processUserCreation(collectionName);
+                    Log.e("AUTH", "Error checking existing user", task.getException());
+                    Toast.makeText(RegistrationActivity.this, "Connection failed. Check internet.", Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                Log.e("AUTH", "Error checking existing user", task.getException());
-                Toast.makeText(RegistrationActivity.this, "Connection failed. Check internet.", Toast.LENGTH_SHORT).show();
-            }
-        });
+            });
+        }
     }
 
     private void processUserCreation(String collectionName) {
@@ -267,5 +274,31 @@ public class RegistrationActivity extends AppCompatActivity {
                 Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
             }
         }
+    @Override
+    public void OnConfirmedClick(String passkey, DialogFragment dialog) {
+        if (passkey.equals(ADMIN_PASS)){
+            // if the passkey is correct, allow user to continue with admin account creation
+            db.collection("admins").document(deviceID).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    if (task.getResult().exists()) {
+                        Toast.makeText(RegistrationActivity.this, "Account already exists. Please Log In instead.", Toast.LENGTH_LONG).show();
+                    } else {
+                        // User doesn't exist in this role, proceed with creation
+                        processUserCreation("admins");
+                    }
+                } else {
+                    Log.e("AUTH", "Error checking existing user", task.getException());
+                    Toast.makeText(RegistrationActivity.this, "Connection failed. Check internet.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Toast.makeText(this, "Passkey invalid!", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        }
+    }
+
+    @Override
+    public void OnCancelledClick(DialogFragment dialog) {
+        dialog.dismiss();
     }
 }
