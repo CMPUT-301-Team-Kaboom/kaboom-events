@@ -274,6 +274,8 @@ public class RegistrationActivity extends AppCompatActivity implements AdminRegi
                 Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+    
     @Override
     public void OnConfirmedClick(String passkey, DialogFragment dialog) {
         if (passkey.equals(ADMIN_PASS)){
