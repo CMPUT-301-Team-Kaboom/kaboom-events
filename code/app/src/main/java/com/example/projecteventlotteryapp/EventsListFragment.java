@@ -151,11 +151,13 @@ public class EventsListFragment extends Fragment {
     private void getEventsForRole() {
         Query query = eventsRef;
 
-        // filter by role
-        if (globalUser.getRole() == Role.ORGANIZER) {
+        // base filtering
+        if (globalUser.getRole() == Role.ORGANIZER) { // filter by role
             DocumentReference organizerRef = db.collection("organizers")
                     .document(globalUser.getUserId());
             query = query.whereEqualTo("organizer", organizerRef);
+        } else { // filter by private
+            query = query.whereEqualTo("isPrivate", false);
         }
 
         // get events
@@ -238,12 +240,13 @@ public class EventsListFragment extends Fragment {
     private void getFilteredEvents() {
         Query query = eventsRef;
 
-        // filter by role (see citation [1])
-        if (globalUser.getRole() == Role.ORGANIZER) {
-            Log.d("EventsListFragment", "filter organizer: " + globalUser.getUserId());
+        // base filtering
+        if (globalUser.getRole() == Role.ORGANIZER) { // filter by role
             DocumentReference organizerRef = db.collection("organizers")
                     .document(globalUser.getUserId());
             query = query.whereEqualTo("organizer", organizerRef);
+        } else { // filter by private
+            query = query.whereEqualTo("isPrivate", false);
         }
 
         // get events
