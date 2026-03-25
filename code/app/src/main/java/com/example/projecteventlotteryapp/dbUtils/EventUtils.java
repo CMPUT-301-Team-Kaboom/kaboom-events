@@ -192,6 +192,7 @@ public class EventUtils {
     public Task<Void> fetchOrganizerForEvent(Event event, DocumentReference organizerRef) {
         if (organizerRef == null) return Tasks.forResult(null);
 
+        Log.d("EventUtils", "Fetching organizer for event: " + event.getEventId());
         return organizerRef.get().continueWith(task -> {
             if (task.isSuccessful() && task.getResult().exists()) {
                 /*
@@ -203,6 +204,31 @@ public class EventUtils {
                 DocumentSnapshot organizerDoc = task.getResult();
                 event.setOrganizerId(organizerDoc.getId());
                 event.setOrganizerName(organizerDoc.getString("name"));
+            }
+            return null;
+        });
+    }
+
+    /**
+     * Fetches the poster document from Firestore and updates the given Event with poster info.
+     *
+     * @param event the Event to update
+     * @param posterRef the DocumentReference to the poster
+     * @return a {@link Task} representing the asynchronous Firestore update operation
+     */
+    public Task<Void> fetchPosterForEvent(Event event, DocumentReference posterRef) {
+        if (posterRef == null) return Tasks.forResult(null);
+
+        return posterRef.get().continueWith(task -> {
+            if (task.isSuccessful() && task.getResult().exists()) {
+                /*
+                The following code is adapted from...
+                Source: https://firebase.google.com/docs/firestore/query-data/get-data
+                Title: "Get data with Cloud Firestore"
+                Retrieved: 2026-03-03
+                */
+                DocumentSnapshot posterDoc = task.getResult();
+                event.setPoster(posterDoc.getString("url"));
             }
             return null;
         });

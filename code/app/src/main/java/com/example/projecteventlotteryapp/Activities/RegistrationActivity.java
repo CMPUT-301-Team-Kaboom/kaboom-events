@@ -275,6 +275,7 @@ public class RegistrationActivity extends AppCompatActivity implements AdminRegi
             }
         }
     }
+    
     @Override
     public void OnConfirmedClick(String passkey, DialogFragment dialog) {
         if (passkey.equals(ADMIN_PASS)){
