@@ -66,7 +66,11 @@ public class EntrantSettingsActivity extends AppCompatActivity {
     private Button btnSave;
     private Button btnDelete;
     private Switch swtchNotification;
+
+    private Switch swtchLocation;
+
     private User globalUser;
+    private boolean locationSwitch = false;
     private final int FINE_PERMISSION_CODE = 1;
     Location currentLocation;
     private FusedLocationProviderClient fusedLocationProviderClient;
@@ -92,7 +96,6 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
         fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        getCurrentUserLocation();
         // connects the variables to their UI elements in the xml
         nameEditText = findViewById(R.id.et_name);
         emailEditText = findViewById(R.id.et_edit_email);
@@ -100,6 +103,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         btnSave = findViewById(R.id.btn_save_profile);
         btnDelete = findViewById(R.id.btn_delete_profile);
         swtchNotification = findViewById((R.id.s_switch));
+        swtchLocation = findViewById(R.id.s_location_switch);
         ImageButton btnBack = findViewById(R.id.btn_entrant_back);
 
         btnBack.setOnClickListener(v -> finish());
@@ -159,6 +163,76 @@ public class EntrantSettingsActivity extends AppCompatActivity {
 
         });
 
+        // Load the current location status from Firestore
+        db.loadUserProfile(deviceID, globalUser.getRole()).addOnSuccessListener(documentSnapshot -> {
+            if (documentSnapshot.exists()) {
+                Boolean locationEnabled = documentSnapshot.getBoolean("locationEnabled");
+
+                // If the field doesn't exist yet
+                if (locationEnabled == null) {
+                    Map<String, Object> initialUpdate = new HashMap<>();
+                    initialUpdate.put("locationEnabled", false); // set the field to false by default
+                    db.updateUserProfile(deviceID, initialUpdate, globalUser.getRole()).addOnSuccessListener(unused -> {
+                        // If default setting was successfully made, set the switch to true
+                        swtchLocation.setChecked(true);
+                    }).addOnFailureListener(e -> {
+                        Log.e("PROFILE", "Failed to update location status", e);
+                        Toast.makeText(this, "Failed to update location status", Toast.LENGTH_SHORT).show();
+                        // Revert the switch visual state if the database update failed
+                        swtchLocation.setChecked(false);
+                    });
+                } else {
+                    swtchLocation.setChecked(locationEnabled);
+                }
+            }
+
+        });
+
+        // Save the status immediately when the user toggles the switch
+        swtchLocation.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            if (isChecked) {
+
+                // if the user turned the location on then we need to ask for permission and
+                // update the firestore
+                if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
+                        == PackageManager.PERMISSION_GRANTED) {
+                    Map<String, Object> update = new HashMap<>();
+                    update.put("locationEnabled", true);
+
+                    // update the location status in firestore
+                    db.updateUserProfile(deviceID, update, globalUser.getRole())
+                            .addOnSuccessListener(unused -> {
+                                Toast.makeText(this, "Location enabled", Toast.LENGTH_SHORT).show();
+                                getCurrentUserLocation(); // save fresh location
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e("PROFILE", "Failed to update location status", e);
+                                Toast.makeText(this, "Failed to update location status", Toast.LENGTH_SHORT).show();
+                                swtchLocation.setChecked(false);
+                            });
+                } else {
+                    // ask for permission
+                    ActivityCompat.requestPermissions(this,
+                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                            FINE_PERMISSION_CODE);
+                }
+            } else {
+                // user turned the location off so we need to clear the location data
+                Map<String, Object> update = new HashMap<>();
+                update.put("locationEnabled", false);
+                update.put("location", null); // clear the GeoPoint
+
+                db.updateUserProfile(deviceID, update, globalUser.getRole())
+                        .addOnSuccessListener(unused -> {
+                            Toast.makeText(this, "Location disabled", Toast.LENGTH_SHORT).show();
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("PROFILE", "Failed to update location status", e);
+                            Toast.makeText(this, "Failed to update location status", Toast.LENGTH_SHORT).show();
+                            swtchLocation.setChecked(true);
+                        });
+            }
+        });
     }
 
     /**
@@ -303,8 +377,24 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == FINE_PERMISSION_CODE) {
             if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                getCurrentUserLocation();
+                Map<String, Object> update = new HashMap<>();
+                update.put("locationEnabled", true);
+
+                db.updateUserProfile(deviceID, update, globalUser.getRole())
+                        .addOnSuccessListener(unused ->{
+                            swtchLocation.setChecked(true);
+                            Toast.makeText(this, "Location permission granted", Toast.LENGTH_SHORT).show();
+                            getCurrentUserLocation();
+                        })
+                        .addOnFailureListener(e -> {
+                            Log.e("PROFILE", "Failed to update location status", e);
+                            Toast.makeText(this, "Failed to update location status", Toast.LENGTH_SHORT).show();
+                            swtchLocation.setChecked(false);
+                });
+
             } else {
+                // permission denied
+                swtchLocation.setChecked(false);
                 Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
             }
         }
