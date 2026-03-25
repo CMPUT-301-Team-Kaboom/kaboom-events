@@ -255,14 +255,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             });
 
             drawButton.setOnClickListener(v -> {
-                eventUtils.generateInvitationList(event.getEventId(), event.getAttendeesLimit())
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(this, "Draw Complete", Toast.LENGTH_SHORT).show();
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e("EventDetailsActivity", "Failed to generate invitationList. Error: " + e);
-                            Toast.makeText(this, "Could not complete Draw", Toast.LENGTH_SHORT).show();
-                        });
+                drawEntrantsForInvitationList();
             });
 
             mapButton.setOnClickListener(v -> {
