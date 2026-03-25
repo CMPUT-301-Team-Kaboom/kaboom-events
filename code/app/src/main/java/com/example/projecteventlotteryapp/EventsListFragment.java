@@ -271,7 +271,6 @@ public class EventsListFragment extends Fragment {
                     if (organizerRef != null) {
                         eventUtils.fetchOrganizerForEvent(event, organizerRef)
                                 .addOnSuccessListener(aVoid -> {
-                                    eventsArrayList.add(event);
                                     eventsArrayAdapter.notifyDataSetChanged();
                                 });
                     }
@@ -281,7 +280,6 @@ public class EventsListFragment extends Fragment {
                     if (posterRef != null) {
                         eventUtils.fetchPosterForEvent(event, posterRef)
                                 .addOnSuccessListener(aVoid -> {
-                                    eventsArrayList.add(event);
                                     eventsArrayAdapter.notifyDataSetChanged();
                                 });
                     }
@@ -348,13 +346,22 @@ public class EventsListFragment extends Fragment {
                     if (organizerRef != null) {
                         eventUtils.fetchOrganizerForEvent(event, organizerRef)
                                 .addOnSuccessListener(aVoid -> {
-                                    eventsArrayList.add(event);
                                     eventsArrayAdapter.notifyDataSetChanged();
                                 });
-                    } else {
-                        eventsArrayList.add(event);
-                        eventsArrayAdapter.notifyDataSetChanged();
                     }
+
+                    // get poster
+                    DocumentReference posterRef = snapshot.getDocumentReference("poster");
+                    if (posterRef != null) {
+                        eventUtils.fetchPosterForEvent(event, posterRef)
+                                .addOnSuccessListener(aVoid -> {
+                                    eventsArrayAdapter.notifyDataSetChanged();
+                                });
+                    }
+
+                    // update adapter
+                    eventsArrayList.add(event);
+                    eventsArrayAdapter.notifyDataSetChanged();
                 }
             }
             eventsArrayAdapter.setEventStatuses(eventStatuses);
