@@ -83,9 +83,9 @@ public class EventArrayAdapter extends ArrayAdapter<Event>  {
 
         nameTextView.setText(event.getName());
         organizerTextView.setText(event.getOrganizerName());
-        DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("MMMM d, yyyy 'at' h:mm a");
+        DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("MMM d, yyyy 'at' h:mm a");
         String formattedDate = event.getDrawDate().format(datePattern);
-        drawDateTextView.setText("Starts: " + formattedDate);
+        drawDateTextView.setText(formattedDate);
         attendeesTextView.setText("Attendees: " + event.getAttendeesLimit());
 
         // show status if on history tab (see code citation [1])
