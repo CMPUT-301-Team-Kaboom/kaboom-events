@@ -19,8 +19,6 @@ import java.util.List;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import android.util.Log;
-
 /**
  * Unit tests for the testing all filtering criteria (name, status, tags, dates).
  */
@@ -195,7 +193,7 @@ public class EventFilteringTest {
         when(mockEventDocumentSnapshot.get("registrationEndDate")).thenReturn(event1.getRegistrationEndDate()).thenReturn(event2.getRegistrationEndDate());
         when(mockEventDocumentSnapshot.get("drawDate")).thenReturn(event1.getDrawDate()).thenReturn(event2.getDrawDate());
 
-        // test a registration end date exact
+        // test a registration end date and previous exact
         filter.regEnd = LocalDate.of(2026, 4, 1);
         boolean isMatch1 = filter.isMatch(event1, mockEventDocumentSnapshot, "user111");
         boolean isMatch2 = filter.isMatch(event2, mockEventDocumentSnapshot, "user111");
