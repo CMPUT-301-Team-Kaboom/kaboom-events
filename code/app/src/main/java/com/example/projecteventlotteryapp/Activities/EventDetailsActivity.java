@@ -575,6 +575,10 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
     }
 
+    /**
+     * This is a helper function that wraps the eventUtils generateInvitationList function and
+     * provides contextual logging and Toasts based on active User role
+     */
     private void drawEntrantsForInvitationList() {
         eventUtils.generateInvitationList(event.getEventId(), event.getAttendeesLimit())
                 .addOnSuccessListener(aVoid -> {
