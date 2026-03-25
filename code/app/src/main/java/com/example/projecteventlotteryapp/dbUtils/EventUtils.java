@@ -135,15 +135,15 @@ public class EventUtils {
      * <p>This function updates the Firestore event document by removing an entrant's userID from
      * the corresponding list field using {@code FieldValue.arrayRemove}.</p>
      * @param listType the list to remove the entrant from
-     * @param entrant the entrant to add to the list
+     * @param entrantID the ID of the entrant to remove from the list
      * @return a {@link Task} representing the asynchronous Firestore update operation
      */
-    public Task<Void> removeFromEntrantList(EntrantListType listType, User entrant, String eventId) {
+    public Task<Void> removeFromEntrantList(EntrantListType listType, String entrantID, String eventId) {
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
         HashMap<String, Object> updates = new HashMap<>();
         String listField = getDbEntrantListFieldName(listType);
-        updates.put(listField, FieldValue.arrayRemove(entrant.getUserId()));
+        updates.put(listField, FieldValue.arrayRemove(entrantID));
         if (listField.equals("waitlist")) {
             updates.put("waitlistSize", FieldValue.increment(-1));
         }
