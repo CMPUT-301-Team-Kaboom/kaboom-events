@@ -209,6 +209,31 @@ public class EventUtils {
     }
 
     /**
+     * Fetches the poster document from Firestore and updates the given Event with poster info.
+     *
+     * @param event the Event to update
+     * @param posterRef the DocumentReference to the poster
+     * @return a {@link Task} representing the asynchronous Firestore update operation
+     */
+    public Task<Void> fetchPosterForEvent(Event event, DocumentReference posterRef) {
+        if (posterRef == null) return Tasks.forResult(null);
+
+        return posterRef.get().continueWith(task -> {
+            if (task.isSuccessful() && task.getResult().exists()) {
+                /*
+                The following code is adapted from...
+                Source: https://firebase.google.com/docs/firestore/query-data/get-data
+                Title: "Get data with Cloud Firestore"
+                Retrieved: 2026-03-03
+                */
+                DocumentSnapshot posterDoc = task.getResult();
+                event.setPoster(posterDoc.getString("url"));
+            }
+            return null;
+        });
+    }
+
+    /**
      * Creates an Event object from a Firestore document snapshot.
      *
      * <p>This method extracts fields from the snapshot and converts them into

@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.example.projecteventlotteryapp.Models.Event;
 
 import java.time.format.DateTimeFormatter;
@@ -64,7 +65,11 @@ public class EventArrayAdapter extends ArrayAdapter<Event>  {
         String formattedDate = event.getDrawDate().format(datePattern);
         drawDateTextView.setText("Starts: " + formattedDate);
         attendeesTextView.setText("Attendees: " + event.getAttendeesLimit());
-
+        if (event.getPoster() != null) {
+            Glide.with(context).load(event.getPoster()).into(posterImageView);
+        } else {
+            Glide.with(context).load(R.drawable.default_poster).into(posterImageView);
+        }
         return view;
     }
 }

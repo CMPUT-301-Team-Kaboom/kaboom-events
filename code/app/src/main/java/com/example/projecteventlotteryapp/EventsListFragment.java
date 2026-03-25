@@ -174,15 +174,18 @@ public class EventsListFragment extends Fragment {
                 // get organizer
                 DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
                 if (organizerRef != null) {
-                    eventUtils.fetchOrganizerForEvent(event, organizerRef)
-                            .addOnSuccessListener(aVoid -> {
-                                eventsArrayList.add(event);
-                                eventsArrayAdapter.notifyDataSetChanged();
-                            });
-                } else {
-                    eventsArrayList.add(event);
-                    eventsArrayAdapter.notifyDataSetChanged();
+                    eventUtils.fetchOrganizerForEvent(event, organizerRef);
                 }
+
+                // get poster
+                DocumentReference posterRef = snapshot.getDocumentReference("poster");
+                if (posterRef != null) {
+                    eventUtils.fetchPosterForEvent(event, posterRef);
+                }
+
+                // update adapter
+                eventsArrayList.add(event);
+                eventsArrayAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -255,15 +258,18 @@ public class EventsListFragment extends Fragment {
                     // get organizer
                     DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
                     if (organizerRef != null) {
-                        eventUtils.fetchOrganizerForEvent(event, organizerRef)
-                                .addOnSuccessListener(aVoid -> {
-                                    eventsArrayList.add(event);
-                                    eventsArrayAdapter.notifyDataSetChanged();
-                                });
-                    } else {
-                        eventsArrayList.add(event);
-                        eventsArrayAdapter.notifyDataSetChanged();
+                        eventUtils.fetchOrganizerForEvent(event, organizerRef);
                     }
+
+                    // get poster
+                    DocumentReference posterRef = snapshot.getDocumentReference("poster");
+                    if (posterRef != null) {
+                        eventUtils.fetchPosterForEvent(event, posterRef);
+                    }
+
+                    // update adapter
+                    eventsArrayList.add(event);
+                    eventsArrayAdapter.notifyDataSetChanged();
                 }
             }
             eventsArrayAdapter.notifyDataSetChanged();
