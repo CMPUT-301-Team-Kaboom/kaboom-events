@@ -202,12 +202,12 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
 
                 @Override
                 public void onTabUnselected(TabLayout.Tab tab) {
-
+                    // necessary for OnTabSelectedListener but does not do anything
                 }
 
                 @Override
                 public void onTabReselected(TabLayout.Tab tab) {
-
+                    // necessary for OnTabSelectedListener but does not do anything
                 }
             });
         }
