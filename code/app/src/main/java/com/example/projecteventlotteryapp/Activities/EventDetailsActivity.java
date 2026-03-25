@@ -142,7 +142,18 @@ public class EventDetailsActivity extends AppCompatActivity {
                     Log.d("EventActivity", "DocumentSnapshot data: " + document.getData());
                     event = eventUtils.fetchEventFromSnapshot(document);
 
-                    updateUi();
+                    // get and set organizer for this Event
+                    DocumentReference organizerRef = document.getDocumentReference("organizer");
+                    if (organizerRef != null) {
+                        eventUtils.fetchOrganizerForEvent(event, organizerRef)
+                                .addOnSuccessListener(aVoid -> {
+                                    updateUi();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.d("EventDetailsActivity", "Failed to set Organizer info for event: " + event.getEventId());
+                                    updateUi();
+                                });
+                    }
                 } else {
                     Log.d("EventActivity", "No such document");
                 }
@@ -281,6 +292,7 @@ public class EventDetailsActivity extends AppCompatActivity {
      */
     private void updateUi() {
         nameHeaderTextView.setText(event.getName());
+        organizerHeaderTextview.setText(event.getOrganizerName());
         attendeesTV.setText(String.valueOf(event.getAttendeesLimit()));
         refreshWaitlistTV();
         descriptionTV.setText(event.getDescription());

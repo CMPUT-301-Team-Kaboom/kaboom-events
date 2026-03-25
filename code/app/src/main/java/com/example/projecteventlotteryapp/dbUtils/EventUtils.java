@@ -192,6 +192,7 @@ public class EventUtils {
     public Task<Void> fetchOrganizerForEvent(Event event, DocumentReference organizerRef) {
         if (organizerRef == null) return Tasks.forResult(null);
 
+        Log.d("EventUtils", "Fetching organizer for event: " + event.getEventId());
         return organizerRef.get().continueWith(task -> {
             if (task.isSuccessful() && task.getResult().exists()) {
                 /*
