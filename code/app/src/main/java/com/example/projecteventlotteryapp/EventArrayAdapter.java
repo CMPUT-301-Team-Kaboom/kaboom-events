@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.example.projecteventlotteryapp.Models.Event;
 
 import java.time.format.DateTimeFormatter;
@@ -84,7 +85,7 @@ public class EventArrayAdapter extends ArrayAdapter<Event>  {
         organizerTextView.setText(event.getOrganizerName());
         DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("MMMM d, yyyy 'at' h:mm a");
         String formattedDate = event.getDrawDate().format(datePattern);
-        drawDateTextView.setText("Starts on " + formattedDate);
+        drawDateTextView.setText("Starts: " + formattedDate);
         attendeesTextView.setText("Attendees: " + event.getAttendeesLimit());
 
         // show status if on history tab (see code citation [1])
@@ -95,8 +96,12 @@ public class EventArrayAdapter extends ArrayAdapter<Event>  {
             statusTextView.setVisibility(View.GONE);
         }
 
+        if (event.getPoster() != null) {
+            Glide.with(context).load(event.getPoster()).into(posterImageView);
+        } else {
+            Glide.with(context).load(R.drawable.default_poster).into(posterImageView);
+        }
+
         return view;
     }
-
-
 }
