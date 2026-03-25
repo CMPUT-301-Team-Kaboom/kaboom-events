@@ -39,14 +39,12 @@ public class EventCommentArrayAdapter extends ArrayAdapter<String> {
     private FirebaseFirestore db;
     private UserUtils userUtils;
     private Role userRole;
-    private String eventId;
     private EventUtils eventUtils;
-    public EventCommentArrayAdapter(@NonNull Context context, ArrayList<String> comments, Role userRole, String eventId){
+    public EventCommentArrayAdapter(@NonNull Context context, ArrayList<String> comments, Role userRole){
         super(context, 0, comments);
         this.context = context;
         this.comments = comments;
         this.userRole = userRole;
-        this.eventId = eventId;
         this.db = FirebaseFirestore.getInstance();
         userUtils = new UserUtils(db);
         eventUtils = new EventUtils(db);
@@ -110,7 +108,7 @@ public class EventCommentArrayAdapter extends ArrayAdapter<String> {
                         .setTitle("Delete Comment")
                         .setMessage("Are you sure you want to delete this comment?")
                         .setPositiveButton("Delete", ((dialog, which) -> {
-                            eventUtils.deleteCommentFromEvent(eventId, comments.get(position));
+                            eventUtils.deleteCommentFromEvent(comments.get(position));
                             comments.remove(position);
                             notifyDataSetChanged();
                         }))

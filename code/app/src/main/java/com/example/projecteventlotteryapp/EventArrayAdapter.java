@@ -62,7 +62,7 @@ public class EventArrayAdapter extends ArrayAdapter<Event>  {
         organizerTextView.setText(event.getOrganizerName());
         DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("MMMM d, yyyy 'at' h:mm a");
         String formattedDate = event.getDrawDate().format(datePattern);
-        drawDateTextView.setText("Drawn on " + formattedDate);
+        drawDateTextView.setText("Starts: " + formattedDate);
         attendeesTextView.setText("Attendees: " + event.getAttendeesLimit());
 
         return view;

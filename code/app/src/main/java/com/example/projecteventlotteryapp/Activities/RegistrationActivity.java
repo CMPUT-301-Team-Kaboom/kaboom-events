@@ -1,6 +1,10 @@
 package com.example.projecteventlotteryapp.Activities;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.util.Log;
@@ -11,27 +15,36 @@ import android.widget.ToggleButton;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.fragment.app.DialogFragment;
 
+import com.example.projecteventlotteryapp.AdminRegistrationFragment;
 import com.example.projecteventlotteryapp.Enums.Role;
 import com.example.projecteventlotteryapp.EventsListActivity;
 import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.R;
+import com.google.android.gms.location.FusedLocationProviderClient;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.location.Priority;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 
 import java.util.HashMap;
 
-public class RegistrationActivity extends AppCompatActivity {
-
+public class RegistrationActivity extends AppCompatActivity implements AdminRegistrationFragment.AdminRegistrationDialogListener {
+    private final String ADMIN_PASS = "kaboom";
     private FirebaseFirestore db;
     private String deviceID;
     private EditText etName, etEmail, etPhone;
     private ToggleButton btnEntrant, btnOrganizer, btnAdmin;
-
+    private static final int FINE_PERMISSION_CODE = 1001;
+    private FusedLocationProviderClient fusedLocationProviderClient;
+    private Location currentLocation;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -44,6 +57,10 @@ public class RegistrationActivity extends AppCompatActivity {
 
         // Retrieve deviceID
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
+
+        //request the location before proceeding
+        fusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        getCurrentUserLocation();
 
         // Handle window insets
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
@@ -130,20 +147,26 @@ public class RegistrationActivity extends AppCompatActivity {
             return;
         }
 
-        // Check if user already exists before allowing Sign Up
-        db.collection(collectionName).document(deviceID).get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                if (task.getResult().exists()) {
-                    Toast.makeText(RegistrationActivity.this, "Account already exists. Please Log In instead.", Toast.LENGTH_LONG).show();
+        // Check if admin has been selected
+        if (collectionName.equals("admins")){
+            DialogFragment dialog = new AdminRegistrationFragment();
+            dialog.show(getSupportFragmentManager(), "AdminRegistrationDialogFragment");
+        } else {
+            // Check if user already exists before allowing Sign Up
+            db.collection(collectionName).document(deviceID).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    if (task.getResult().exists()) {
+                        Toast.makeText(RegistrationActivity.this, "Account already exists. Please Log In instead.", Toast.LENGTH_LONG).show();
+                    } else {
+                        // User doesn't exist in this role, proceed with creation
+                        processUserCreation(collectionName);
+                    }
                 } else {
-                    // User doesn't exist in this role, proceed with creation
-                    processUserCreation(collectionName);
+                    Log.e("AUTH", "Error checking existing user", task.getException());
+                    Toast.makeText(RegistrationActivity.this, "Connection failed. Check internet.", Toast.LENGTH_SHORT).show();
                 }
-            } else {
-                Log.e("AUTH", "Error checking existing user", task.getException());
-                Toast.makeText(RegistrationActivity.this, "Connection failed. Check internet.", Toast.LENGTH_SHORT).show();
-            }
-        });
+            });
+        }
     }
 
     private void processUserCreation(String collectionName) {
@@ -167,6 +190,16 @@ public class RegistrationActivity extends AppCompatActivity {
         userData.put("email", email);
         userData.put("phone", phone);
         userData.put("notificationEnabled", true);
+        if (currentLocation != null) {
+            GeoPoint geoPoint = new GeoPoint(
+                    currentLocation.getLatitude(),
+                    currentLocation.getLongitude()
+            );
+            userData.put("location", geoPoint);
+            userData.put("locationEnabled", true);
+        } else {
+            userData.put("locationEnabled", false);
+        }
 
         // Add data to Firestore
         userRef.set(userData)
@@ -198,5 +231,76 @@ public class RegistrationActivity extends AppCompatActivity {
                     Log.e("AUTH", "Error creating user", e);
                     Toast.makeText(this, "Failed to create profile", Toast.LENGTH_SHORT).show();
                 });
+    }
+
+    @SuppressLint("MissingPermission")
+    private void getCurrentUserLocation() {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED &&
+                ActivityCompat.checkSelfPermission(this, Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+
+            ActivityCompat.requestPermissions(
+                    this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                    FINE_PERMISSION_CODE
+            );
+            return;
+        }
+
+        fusedLocationProviderClient.getCurrentLocation(
+                        Priority.PRIORITY_HIGH_ACCURACY,
+                        null
+                )
+                .addOnSuccessListener(location -> {
+                    if (location != null) {
+                        currentLocation = location;
+                        Log.d("LOCATION_DEBUG", "Lat: " + location.getLatitude()
+                                + ", Lng: " + location.getLongitude());
+                    } else {
+                        Log.e("LOCATION_DEBUG", "Current location returned null");
+                    }
+                })
+                .addOnFailureListener(e ->
+                        Log.e("LOCATION_DEBUG", "Failed to get current location", e));
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == FINE_PERMISSION_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                getCurrentUserLocation();
+            } else {
+                Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+    
+    @Override
+    public void OnConfirmedClick(String passkey, DialogFragment dialog) {
+        if (passkey.equals(ADMIN_PASS)){
+            // if the passkey is correct, allow user to continue with admin account creation
+            db.collection("admins").document(deviceID).get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    if (task.getResult().exists()) {
+                        Toast.makeText(RegistrationActivity.this, "Account already exists. Please Log In instead.", Toast.LENGTH_LONG).show();
+                    } else {
+                        // User doesn't exist in this role, proceed with creation
+                        processUserCreation("admins");
+                    }
+                } else {
+                    Log.e("AUTH", "Error checking existing user", task.getException());
+                    Toast.makeText(RegistrationActivity.this, "Connection failed. Check internet.", Toast.LENGTH_SHORT).show();
+                }
+            });
+        } else {
+            Toast.makeText(this, "Passkey invalid!", Toast.LENGTH_SHORT).show();
+            dialog.dismiss();
+        }
+    }
+
+    @Override
+    public void OnCancelledClick(DialogFragment dialog) {
+        dialog.dismiss();
     }
 }

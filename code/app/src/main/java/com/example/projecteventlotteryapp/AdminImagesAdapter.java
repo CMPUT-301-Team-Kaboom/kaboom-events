@@ -1,5 +1,6 @@
 package com.example.projecteventlotteryapp;
 
+import android.app.AlertDialog;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -45,16 +46,23 @@ public class AdminImagesAdapter extends RecyclerView.Adapter<AdminImagesAdapter.
         Glide.with(context).load(model.getImageUrl()).into(holder.image);
 
         holder.deleteBtn.setOnClickListener(v -> {
-            int pos = holder.getBindingAdapterPosition();
+            new AlertDialog.Builder(context, R.style.DeleteGuard)
+                    .setTitle("Delete Poster")
+                    .setMessage("Are you sure you want to delete this event poster?")
+                    .setPositiveButton("Delete", ((dialog, which) -> {
+                        int pos = holder.getBindingAdapterPosition();
 
-            if (pos != RecyclerView.NO_POSITION) {
-                Image image = imageList.get(pos);
+                        if (pos != RecyclerView.NO_POSITION) {
+                            Image image = imageList.get(pos);
 
-                posterImageHandler.deletePoster(image);
+                            posterImageHandler.deletePoster(image);
 
-                imageList.remove(pos);
-                notifyItemRemoved(pos);
-            }
+                            imageList.remove(pos);
+                            notifyItemRemoved(pos);
+                        }
+                    }))
+                    .setNegativeButton("Cancel", ((dialog, which) -> dialog.dismiss()))
+                    .show();
         });
     }
 

@@ -538,8 +538,22 @@ public class EventUtils {
         });
     }
 
-    public void deleteCommentFromEvent(String eventId, String commentId){
+    /**
+     * Delete comment from database
+     *
+     * <p>This method deletes a comment from both the comments collection in the database and
+     * the comments array in the events. The comment MUST already exist in both cases</p>
+     *
+     * @param commentId Document ID of the comment to delete
+     */
+    public void deleteCommentFromEvent(String commentId){
         db.collection("comments").document(commentId).delete();
-        db.collection("events").document(eventId).update("comments", FieldValue.arrayRemove(commentId));
+        db.collection("events").whereArrayContains("comments", commentId).get().addOnSuccessListener(query -> {
+            for (DocumentSnapshot doc : query){
+                DocumentReference reference = doc.getReference();
+
+                reference.update("comments", FieldValue.arrayRemove(commentId));
+            }
+        });
     }
 }
