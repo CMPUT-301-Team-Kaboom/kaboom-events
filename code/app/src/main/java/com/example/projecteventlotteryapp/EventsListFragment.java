@@ -174,13 +174,19 @@ public class EventsListFragment extends Fragment {
                 // get organizer
                 DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
                 if (organizerRef != null) {
-                    eventUtils.fetchOrganizerForEvent(event, organizerRef);
+                    eventUtils.fetchOrganizerForEvent(event, organizerRef)
+                            .addOnSuccessListener(aVoid -> {
+                                eventsArrayAdapter.notifyDataSetChanged();
+                            });
                 }
 
                 // get poster
                 DocumentReference posterRef = snapshot.getDocumentReference("poster");
                 if (posterRef != null) {
-                    eventUtils.fetchPosterForEvent(event, posterRef);
+                    eventUtils.fetchPosterForEvent(event, posterRef)
+                            .addOnSuccessListener(aVoid -> {
+                                eventsArrayAdapter.notifyDataSetChanged();
+                            });
                 }
 
                 // update adapter
@@ -258,13 +264,21 @@ public class EventsListFragment extends Fragment {
                     // get organizer
                     DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
                     if (organizerRef != null) {
-                        eventUtils.fetchOrganizerForEvent(event, organizerRef);
+                        eventUtils.fetchOrganizerForEvent(event, organizerRef)
+                                .addOnSuccessListener(aVoid -> {
+                                    eventsArrayList.add(event);
+                                    eventsArrayAdapter.notifyDataSetChanged();
+                                });
                     }
 
                     // get poster
                     DocumentReference posterRef = snapshot.getDocumentReference("poster");
                     if (posterRef != null) {
-                        eventUtils.fetchPosterForEvent(event, posterRef);
+                        eventUtils.fetchPosterForEvent(event, posterRef)
+                                .addOnSuccessListener(aVoid -> {
+                                    eventsArrayList.add(event);
+                                    eventsArrayAdapter.notifyDataSetChanged();
+                                });
                     }
 
                     // update adapter
