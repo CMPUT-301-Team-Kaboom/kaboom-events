@@ -65,6 +65,7 @@ dependencies {
     // Mockito dependencies
     testImplementation("org.mockito:mockito-core:5.12.0")
     testImplementation("org.mockito:mockito-junit-jupiter:5.12.0")
+    testImplementation("org.mockito:mockito-inline:5.2.0")
     testImplementation("org.mockito:mockito-android:5.12.0")
 
     // Default dependencies
