@@ -486,6 +486,7 @@ public class EventUtils {
         return Tasks.whenAllSuccess(waitlistTask, invitedListTask)
             .continueWithTask(task -> {
                 if (!task.isSuccessful()) {
+                    Log.e("generateInvitationList", "Fetch tasks error: " + task.getException());
                     return Tasks.forException(task.getException());
                 }
 
