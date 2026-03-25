@@ -109,21 +109,4 @@ public class EventsFilter {
 
         return true;
     }
-
-    public boolean isAvailable(Event event, QueryDocumentSnapshot snapshot, LocalDate today) {
-        // check registration period still available
-        if (today.isBefore(event.getRegistrationStartDate()) || today.isAfter(event.getRegistrationEndDate())) {
-            return false;
-        }
-
-        // check waitlist limit not surpassed
-        int waitlistSize = (int) snapshot.get("waitlistSize");
-        int waitlistLimit = (int) snapshot.get("waitlistLimit");
-        if (waitlistSize >= waitlistLimit) {
-            return false;
-        }
-
-        return true;
-    }
-
 }
