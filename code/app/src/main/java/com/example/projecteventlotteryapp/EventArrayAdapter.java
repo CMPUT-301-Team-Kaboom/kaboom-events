@@ -25,13 +25,6 @@ public class EventArrayAdapter extends ArrayAdapter<Event>  {
     private Context context;
     private Map<String, String> eventStatuses;
 
-    public EventArrayAdapter(Context context, ArrayList<Event> events) {
-        super(context, 0, events);
-        this.events = events;
-        this.context = context;
-        this.eventStatuses = null;
-    }
-
     public EventArrayAdapter(Context context, ArrayList<Event> events, Map<String, String> eventStatuses) {
         super(context, 0, events);
         this.events = events;
@@ -39,6 +32,11 @@ public class EventArrayAdapter extends ArrayAdapter<Event>  {
         this.eventStatuses = eventStatuses;
     }
 
+    /**
+     * Updates the event status map and refreshes the event list.
+     *
+     * @param eventStatuses contains event IDs and their status values for an entrant
+     */
     public void setEventStatuses(Map<String, String> eventStatuses) {
         this.eventStatuses = eventStatuses;
         notifyDataSetChanged();
