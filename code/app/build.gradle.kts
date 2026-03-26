@@ -10,7 +10,7 @@ android {
 
     defaultConfig {
         applicationId = "com.example.projecteventlotteryapp"
-        minSdk = 26
+        minSdk = 29
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -57,7 +57,9 @@ dependencies {
     implementation("com.google.android.gms:play-services-maps:20.0.0")
     implementation("com.google.android.gms:play-services-location:21.3.0")
 
-    //    Glide dependency (image loading)
+    // OpenCsv
+    implementation ("com.opencsv:opencsv:5.3")
+
     // Glide dependency (image loading)
     implementation ("com.github.bumptech.glide:glide:4.16.0")
     annotationProcessor("com.github.bumptech.glide:compiler:4.16.0")

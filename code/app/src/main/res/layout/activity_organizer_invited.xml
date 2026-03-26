@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="32dp">
@@ -90,8 +92,12 @@
             android:layout_marginEnd="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/btn_organizer_invited_select" />
+            app:layout_constraintTop_toBottomOf="@+id/btn_organizer_invited_select"
+            app:layout_constraintVertical_bias="0.0">
+
+        </ListView>
     </androidx.constraintlayout.widget.ConstraintLayout>
 
     <!-- Floating Bottom Action Container -->
@@ -102,7 +108,7 @@
         android:background="@color/primaryBackground"
         android:padding="10dp"
         android:paddingBottom="24dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -118,8 +124,20 @@
             android:textAllCaps="false"
             android:textColor="@color/black"
             app:layout_constraintBottom_toTopOf="@+id/btn_done"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_organizer_invited_uninvite"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            android:id="@+id/btn_organizer_invited_uninvite"
+            style="@style/RoundedButton"
+            android:layout_width="157dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/red"
+            android:text="Uninvite"
+            app:layout_constraintBottom_toTopOf="@+id/btn_done"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btn_send_notification" />
 
         <Button
             android:id="@+id/btn_done"

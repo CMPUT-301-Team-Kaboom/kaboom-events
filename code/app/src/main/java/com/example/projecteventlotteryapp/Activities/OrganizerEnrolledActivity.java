@@ -2,8 +2,14 @@ package com.example.projecteventlotteryapp.Activities;
 
 import static com.example.projecteventlotteryapp.dbUtils.FirestoreUtils.storeNotificationInFirestore;
 
+import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
+import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
@@ -24,9 +30,17 @@ import com.example.projecteventlotteryapp.R;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.opencsv.CSVWriter;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.IOError;
+import java.io.IOException;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.util.ArrayList;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 public class OrganizerEnrolledActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {
     private String eventId;
@@ -37,6 +51,7 @@ public class OrganizerEnrolledActivity extends AppCompatActivity implements Crea
     private Button selectBtn;
     private Button doneBtn;
     private Button sendNotifBtn;
+    private Button exportBtn;
     private ConstraintLayout floatingActionsContainer;
     private ArrayList<String> enrolledList;
     private FirebaseFirestore db;
@@ -53,6 +68,7 @@ public class OrganizerEnrolledActivity extends AppCompatActivity implements Crea
         eventId = intent.getStringExtra("eventID");
         eventName = intent.getStringExtra("eventName");
 
+        exportBtn = findViewById(R.id.btn_organizer_enrolled_export);
         selectBtn = findViewById(R.id.btn_organizer_enrolled_select);
         doneBtn = findViewById(R.id.btn_done);
         floatingActionsContainer = findViewById(R.id.cl_floating_actions);
@@ -124,6 +140,46 @@ public class OrganizerEnrolledActivity extends AppCompatActivity implements Crea
             }
         });
 
+        exportBtn.setOnClickListener(v -> {
+            Set<Integer> selected = adapter.getSelectedPositions();
+            if (!selected.isEmpty()){
+                ArrayList<String[]> userData = new ArrayList<>();
+
+                userData.add(new String[] {"User ID", "Name", "Email", "Phone", "Location"});
+
+                AtomicInteger counter = new AtomicInteger(selected.size());
+                // formats and adds user data to array list
+                for (Integer pos : selected){
+                    db.collection("entrants").document(enrolledList.get(pos)).get().addOnSuccessListener(doc -> {
+                        if (doc.exists()){
+                            String userID = doc.getString("deviceID");
+                            String name = doc.getString("name");
+                            String email = doc.getString("email");
+                            String phone = (doc.getString("phone").isEmpty()) ? "N/A" : doc.getString("phone");
+                            String location = doc.getGeoPoint("location").getLatitude() + " " + doc.getGeoPoint("location").getLongitude();
+
+                            String[] line = {userID, name, email, phone, location};
+                            userData.add(line);
+                            Log.d("ExportCSV", userID + "," + name + "," + email + "," + phone + "," + location);
+                        }
+
+                        // write to CSV when all async calls are done
+                        if(counter.decrementAndGet() == 0){
+                            writeToCSV(userData);
+                        }
+                    });
+                }
+
+                // Exit Selection Mode
+                isSelectionMode = false;
+                selectBtn.setText("Select");
+                floatingActionsContainer.setVisibility(View.GONE);
+                adapter.setSelectionMode(false);
+                adapter.clearSelection();
+            } else {
+                Toast.makeText(this, "Please select at least one user", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -154,4 +210,34 @@ public class OrganizerEnrolledActivity extends AppCompatActivity implements Crea
         adapter.clearSelection();
     }
 
+    /**
+     * Exports a list of data to a CSV file in the user's downloads folder
+     *
+     * <p>This method uses OpenCSV to write a provided list of data to a CSV file and exports
+     * the CSV file to the user's downloads folder. <b><i>Note: User must be using API 29+ </i></b></p>
+     * @param enrolledList
+     */
+    private void writeToCSV(ArrayList<String[]> enrolledList){
+        ContentValues values = new ContentValues();
+        values.put(MediaStore.MediaColumns.DISPLAY_NAME, eventName + "_enrolled.csv");
+        values.put(MediaStore.MediaColumns.MIME_TYPE, "text/csv");
+        values.put(MediaStore.MediaColumns.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
+
+        ContentResolver resolver = getContentResolver();
+        Uri uri = resolver.insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, values);
+
+        if (uri == null) return;
+
+        try (OutputStream os = resolver.openOutputStream(uri);
+             CSVWriter writer = new CSVWriter(new OutputStreamWriter(os))) {
+
+            writer.writeAll(enrolledList);
+
+            writer.flush();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Toast.makeText(this, "Selected entrants exported to CSV", Toast.LENGTH_SHORT).show();
+    }
 }

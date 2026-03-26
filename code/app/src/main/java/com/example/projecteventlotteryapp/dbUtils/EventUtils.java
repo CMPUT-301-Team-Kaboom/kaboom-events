@@ -108,20 +108,20 @@ public class EventUtils {
      * If the user ID already exists in the list, Firestore will not add a duplicate.</p>
      *
      * @param listType the entrant list to which the user should be added
-     * @param entrant the user being added to the list
+     * @param entrantID the ID of the user being added to the list
      * @return a {@link Task} representing the asynchronous Firestore update operation
      */
-    public Task<Void> addToEntrantList(EntrantListType listType, User entrant, String eventId) {
+    public Task<Void> addToEntrantList(EntrantListType listType, String entrantID, String eventId) {
         Log.d("AddToEntrantList", String.format("Type: %s | userId: %s",
                 listType.toString(),
-                entrant.getUserId())
+                entrantID)
         );
 
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
         HashMap<String, Object> updates = new HashMap<>();
         String listField = getDbEntrantListFieldName(listType);
-        updates.put(listField, FieldValue.arrayUnion(entrant.getUserId()));
+        updates.put(listField, FieldValue.arrayUnion(entrantID));
 
         if (listField.equals("waitlist")) {
             updates.put("waitlistSize", FieldValue.increment(1));
@@ -135,15 +135,15 @@ public class EventUtils {
      * <p>This function updates the Firestore event document by removing an entrant's userID from
      * the corresponding list field using {@code FieldValue.arrayRemove}.</p>
      * @param listType the list to remove the entrant from
-     * @param entrant the entrant to add to the list
+     * @param entrantID the ID of the entrant to remove from the list
      * @return a {@link Task} representing the asynchronous Firestore update operation
      */
-    public Task<Void> removeFromEntrantList(EntrantListType listType, User entrant, String eventId) {
+    public Task<Void> removeFromEntrantList(EntrantListType listType, String entrantID, String eventId) {
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
         HashMap<String, Object> updates = new HashMap<>();
         String listField = getDbEntrantListFieldName(listType);
-        updates.put(listField, FieldValue.arrayRemove(entrant.getUserId()));
+        updates.put(listField, FieldValue.arrayRemove(entrantID));
         if (listField.equals("waitlist")) {
             updates.put("waitlistSize", FieldValue.increment(-1));
         }
@@ -487,6 +487,7 @@ public class EventUtils {
         return Tasks.whenAllSuccess(waitlistTask, invitedListTask)
             .continueWithTask(task -> {
                 if (!task.isSuccessful()) {
+                    Log.e("generateInvitationList", "Fetch tasks error: " + task.getException());
                     return Tasks.forException(task.getException());
                 }
 

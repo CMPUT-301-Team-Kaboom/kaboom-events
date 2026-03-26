@@ -266,14 +266,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             });
 
             drawButton.setOnClickListener(v -> {
-                eventUtils.generateInvitationList(event.getEventId(), event.getAttendeesLimit())
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(this, "Draw Complete", Toast.LENGTH_SHORT).show();
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e("EventDetailsActivity", "Failed to generate invitationList. Error: " + e);
-                            Toast.makeText(this, "Could not complete Draw", Toast.LENGTH_SHORT).show();
-                        });
+                drawEntrantsForInvitationList();
             });
 
             mapButton.setOnClickListener(v -> {
@@ -377,7 +370,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
         entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
         entrantPrimaryButton.setOnClickListener(v -> {
-            eventUtils.removeFromEntrantList(EntrantListType.WAITLIST, user, eventId)
+            eventUtils.removeFromEntrantList(EntrantListType.WAITLIST, user.getUserId(), eventId)
                     .addOnSuccessListener(aVoid -> {
                         Log.d("EventDetails", "Successfully Left Waitlist");
                         showJoinWaitlistButtonState(user);
@@ -416,7 +409,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
 
         entrantPrimaryButton.setOnClickListener(v -> {
-            eventUtils.addToEntrantList(EntrantListType.WAITLIST, user, eventId)
+            eventUtils.addToEntrantList(EntrantListType.WAITLIST, user.getUserId(), eventId)
                     .addOnSuccessListener(aVoid -> {
                         Log.d("EventDetails", "Successfully joined Waitlist");
                         showRemoveWaitlistButtonState(user);
@@ -495,6 +488,9 @@ public class EventDetailsActivity extends AppCompatActivity {
                                 .addOnSuccessListener(aVoid -> {
                                     Log.d("EventDetails", "Successfully declined user in event");
                                     showEnrolledDeclinedStatus(EntrantListType.DECLINED);
+
+                                    // draw a replacement Entrant for the user that declined
+                                    drawEntrantsForInvitationList();
                                 })
                                 .addOnFailureListener(e -> {
                                     Log.d("EventDetails", "Failed to decline user invitation for event. Error: " + e);
@@ -577,5 +573,24 @@ public class EventDetailsActivity extends AppCompatActivity {
         }).addOnFailureListener(e -> {
             Log.e("setupEntrantButtonsByEnrollmentStatus", "Failed to determine entrant status", e);
         });
+    }
+
+    /**
+     * This is a helper function that wraps the eventUtils generateInvitationList function and
+     * provides contextual logging and Toasts based on active User role
+     */
+    private void drawEntrantsForInvitationList() {
+        eventUtils.generateInvitationList(event.getEventId(), event.getAttendeesLimit())
+                .addOnSuccessListener(aVoid -> {
+                    if (globalUser.getRole() == Role.ORGANIZER) {
+                        Toast.makeText(this, "Draw Complete", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("EventDetailsActivity", "Failed to generate invitationList. Error: " + e);
+                    if (globalUser.getRole() == Role.ORGANIZER) {
+                        Toast.makeText(this, "Could not complete Draw", Toast.LENGTH_SHORT).show();
+                    }
+                });
     }
 }
