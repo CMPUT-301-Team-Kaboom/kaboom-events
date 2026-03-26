@@ -22,7 +22,7 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageButton
-        android:id="@+id/btn_edit_event_back"
+        android:id="@+id/ibtn_private_invitation_back"
         android:layout_width="51dp"
         android:layout_height="48dp"
         android:layout_marginStart="8dp"
