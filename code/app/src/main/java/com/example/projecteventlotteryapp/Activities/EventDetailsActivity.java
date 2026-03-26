@@ -266,15 +266,40 @@ public class EventDetailsActivity extends AppCompatActivity {
             });
 
             drawButton.setOnClickListener(v -> {
-                eventUtils.generateInvitationList(event.getEventId(), event.getAttendeesLimit())
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(this, "Draw Complete", Toast.LENGTH_SHORT).show();
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e("EventDetailsActivity", "Failed to generate invitationList. Error: " + e);
-                            Toast.makeText(this, "Could not complete Draw", Toast.LENGTH_SHORT).show();
-                        });
-            });
+                        eventUtils.generateInvitationList(event.getEventId(), event.getAttendeesLimit())
+                                .addOnSuccessListener(aVoid -> {
+                                    Toast.makeText(this, "Draw Complete", Toast.LENGTH_SHORT).show();
+
+                                    // fetch invitation list
+                                    db.collection("events").document(eventId).get()
+                                            .addOnSuccessListener(doc -> {
+                                                ArrayList<String> invited = (ArrayList<String>) doc.get("invited");
+
+                                                if (invited != null && !invited.isEmpty()) {
+                                                    String organizerId = globalUser.getUserId();
+
+                                                    String message = "Congrats! You are invited to this event";
+
+                                                    // iterate through invited list and send invitations
+                                                    for (String invitedId : invited) {
+                                                        FirestoreUtils.storeNotificationInFirestore(
+                                                                invitedId,
+                                                                organizerId,
+                                                                message,
+                                                                event.getName(),
+                                                                db
+                                                        );
+                                                        Log.d("EventDetails", "Automated notifications sent to " + invited.size() + " winners.");
+                                                    }
+                                                }
+
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Log.e("EventDetailsActivity", "Failed to generate invitationList. Error: " + e);
+                                                Toast.makeText(this, "Could not complete Draw", Toast.LENGTH_SHORT).show();
+                                            });
+                                });
+                    });
 
             mapButton.setOnClickListener(v -> {
                 Intent intent = new Intent(this, MapActivity.class);
