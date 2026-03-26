@@ -2,6 +2,7 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:fitsSystemWindows="true"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:paddingTop="32dp">
@@ -109,6 +110,19 @@
         app:layout_constraintStart_toStartOf="parent">
 
         <Button
+            android:id="@+id/btn_organizer_enrolled_export"
+            style="@style/RoundedButton"
+            android:layout_width="158dp"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="8dp"
+            android:backgroundTint="@color/white"
+            android:text="Export"
+            app:layout_constraintBottom_toTopOf="@+id/btn_done"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toEndOf="@+id/btn_send_notification"
+            tools:textColor="@color/black" />
+
+        <Button
             android:id="@+id/btn_send_notification"
             style="@style/RoundedButton"
             android:layout_width="wrap_content"
@@ -119,7 +133,7 @@
             android:textAllCaps="false"
             android:textColor="@color/black"
             app:layout_constraintBottom_toTopOf="@+id/btn_done"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintEnd_toStartOf="@+id/btn_organizer_enrolled_export"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
