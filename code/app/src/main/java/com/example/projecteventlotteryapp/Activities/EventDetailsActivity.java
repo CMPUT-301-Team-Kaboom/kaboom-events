@@ -377,7 +377,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
         entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
         entrantPrimaryButton.setOnClickListener(v -> {
-            eventUtils.removeFromEntrantList(EntrantListType.WAITLIST, user, eventId)
+            eventUtils.removeFromEntrantList(EntrantListType.WAITLIST, user.getUserId(), eventId)
                     .addOnSuccessListener(aVoid -> {
                         Log.d("EventDetails", "Successfully Left Waitlist");
                         showJoinWaitlistButtonState(user);
@@ -416,7 +416,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
 
         entrantPrimaryButton.setOnClickListener(v -> {
-            eventUtils.addToEntrantList(EntrantListType.WAITLIST, user, eventId)
+            eventUtils.addToEntrantList(EntrantListType.WAITLIST, user.getUserId(), eventId)
                     .addOnSuccessListener(aVoid -> {
                         Log.d("EventDetails", "Successfully joined Waitlist");
                         showRemoveWaitlistButtonState(user);

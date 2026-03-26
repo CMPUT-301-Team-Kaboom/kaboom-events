@@ -2,6 +2,7 @@ package com.example.projecteventlotteryapp.Activities;
 
 import static com.example.projecteventlotteryapp.dbUtils.FirestoreUtils.storeNotificationInFirestore;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -17,10 +18,12 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.example.projecteventlotteryapp.Enums.EntrantListType;
 import com.example.projecteventlotteryapp.Models.CreateNotificationDialogFragment;
 import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.OrganizerEntrantListAdapter;
 import com.example.projecteventlotteryapp.R;
+import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -31,12 +34,15 @@ import java.util.Set;
 public class OrganizerInvitedActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {
     private String eventId;
     private String eventName;
+    private EventUtils eventUtils;
     private OrganizerEntrantListAdapter adapter;
+    private TextView invitedSize;
     private ListView invitedListView;
     private ImageButton backBtn;
     private Button selectBtn;
     private Button doneBtn;
     private Button sendNotifBtn;
+    private Button uninviteBtn;
     private ConstraintLayout floatingActionsContainer;
     private ArrayList<String> invitedList;
     private FirebaseFirestore db;
@@ -53,19 +59,21 @@ public class OrganizerInvitedActivity extends AppCompatActivity implements Creat
         eventId = intent.getStringExtra("eventID");
         eventName = intent.getStringExtra("eventName");
 
+        invitedSize = findViewById(R.id.tv_organizer_invited_size);
         selectBtn = findViewById(R.id.btn_organizer_invited_select);
         doneBtn = findViewById(R.id.btn_done);
         floatingActionsContainer = findViewById(R.id.cl_floating_actions);
         backBtn = findViewById(R.id.btn_organizer_invited_back);
         backBtn.setOnClickListener(v -> finish());
         sendNotifBtn = findViewById(R.id.btn_send_notification);
-
+        uninviteBtn = findViewById(R.id.btn_organizer_invited_uninvite);
 
         // hide notification buttons container initially
         floatingActionsContainer.setVisibility(View.GONE);
 
         db = FirebaseFirestore.getInstance();
         DocumentReference eventDoc = db.collection("events").document(eventId);
+        eventUtils = new EventUtils(db);
 
         eventDoc.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()){
@@ -80,7 +88,6 @@ public class OrganizerInvitedActivity extends AppCompatActivity implements Creat
                     adapter = new OrganizerEntrantListAdapter(this, invitedList);
                     invitedListView.setAdapter(adapter);
 
-                    TextView invitedSize = findViewById(R.id.tv_organizer_invited_size);
                     invitedSize.setText(String.valueOf(invitedList.size()));
                 }
             } else {
@@ -120,6 +127,41 @@ public class OrganizerInvitedActivity extends AppCompatActivity implements Creat
             }
         });
 
+        uninviteBtn.setOnClickListener(v -> {
+            Set<Integer> selected = adapter.getSelectedPositions();
+            if (!selected.isEmpty()){
+                new AlertDialog.Builder(this, R.style.DeleteGuard)
+                        .setTitle("Uninvite Users")
+                        .setMessage("Are you sure you want to uninvite the selected users?")
+                        .setPositiveButton("Uninvite", ((dialog, which) -> {
+                            ArrayList<String> selectedList = new ArrayList<>();
+                            for (int i = 0; i < invitedList.size(); i++){
+                                if (selected.contains(i)){
+                                    selectedList.add(invitedList.get(i));
+                                }
+                            }
+
+                            for (String userID : selectedList){
+                                eventUtils.removeFromEntrantList(EntrantListType.INVITED, userID, eventId);
+                                invitedList.remove(userID);
+                            }
+
+                            adapter.notifyDataSetChanged();
+                            invitedSize.setText(String.valueOf(invitedList.size()));
+
+                            // Clear selection after uninviting
+                            isSelectionMode = false;
+                            selectBtn.setText("Select");
+                            floatingActionsContainer.setVisibility(View.GONE);
+                            adapter.setSelectionMode(false);
+                            adapter.clearSelection();
+                        }))
+                        .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
+                        .show();
+            } else {
+                Toast.makeText(this, "Please select at least one user", Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override

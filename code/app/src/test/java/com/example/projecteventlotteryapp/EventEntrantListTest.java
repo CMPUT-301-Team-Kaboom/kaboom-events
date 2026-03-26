@@ -89,7 +89,7 @@ public class EventEntrantListTest {
 
     @Test
     public void joinEntrantList(){
-        eventUtils.addToEntrantList(type, user, eventId);
+        eventUtils.addToEntrantList(type, user.getUserId(), eventId);
 
         verify(eventDoc).update(eq("waitlist"), argThat(arg ->
             arg.getClass().getSimpleName().contains("ArrayUnion")));
@@ -97,7 +97,7 @@ public class EventEntrantListTest {
 
     @Test
     public void leaveEntrantList(){
-        eventUtils.removeFromEntrantList(type, user, eventId);
+        eventUtils.removeFromEntrantList(type, user.getUserId(), eventId);
 
         verify(eventDoc).update(eq("waitlist"), argThat(arg->
                 arg.getClass().getSimpleName().contains("ArrayRemove")));
