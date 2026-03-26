@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/entrants_invite_item_main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="20dp"
+    android:layout_marginBottom="10dp"
+    android:background="@drawable/rounded_container">
+
+    <ImageView
+        android:id="@+id/iv_entrant_item_icon"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="8dp"
+        android:background="@drawable/rounded_container"
+        android:padding="6dp"
+        app:srcCompat="@drawable/profile_icon"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <LinearLayout
+        android:id="@+id/ll_entrant_item_info"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toEndOf="@id/iv_entrant_item_icon" >
+
+        <TextView
+            style="@style/HeaderListViewItem"
+            android:id="@+id/tv_entrant_item_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="First Last" />
+
+        <TextView
+            style="@style/BodyListViewItem"
+            android:id="@+id/tv_entrant_item_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="example@ualberta.ca" />
+
+        <TextView
+            style="@style/BodyListViewItem"
+            android:id="@+id/tv_entrant_item_phone"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(123) 456-7890" />
+    </LinearLayout>
+
+    <ImageButton
+        android:id="@+id/ibtn_entrant_item_invite"
+        android:layout_width="36dp"
+        android:layout_height="36dp"
+        android:background="@drawable/send_icon"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+    <TextView
+        style="@style/HeaderListViewItem"
+        android:id="@+id/tv_entrant_item_invited"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="INVITED"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

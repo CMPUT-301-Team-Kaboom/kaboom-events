@@ -36,7 +36,7 @@
         android:id="@+id/cl_search_entrant"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@drawable/rounded_container"
+        android:background="@drawable/rounded_backing_container"
         android:layout_marginTop="20dp"
         android:layout_marginStart="20dp"
         android:layout_marginEnd="20dp"
@@ -49,7 +49,7 @@
             android:id="@+id/tv_search_header"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="17dp"
+            android:layout_marginTop="16dp"
             android:layout_marginStart="17dp"
             android:text="Search:"
             android:textColor="@color/white"
@@ -97,17 +97,43 @@
 
         <EditText
             style="@style/BodyRoundedEditTextStyle"
-            android:id="@+id/et_filter_name"
+            android:id="@+id/et_search_entrant"
             android:layout_width="325dp"
             android:layout_height="30dp"
-            android:layout_marginTop="17dp"
-            android:layout_marginBottom="17dp"
+            android:layout_marginTop="10dp"
             android:background="@drawable/rounded_edittext"
             android:hint="Enter Entrant Information"
-            app:layout_constraintTop_toBottomOf="@id/tv_search_header"
-            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/tbtn_search_name"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent" />
+
+        <Button
+            style="@style/RoundedButton"
+            android:id="@+id/btn_search_confirm"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:backgroundTint="@color/secondaryAccent"
+            android:text="Confirm"
+            android:textColor="@color/primaryBackground"
+            app:layout_constraintTop_toBottomOf="@id/et_search_entrant"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toStartOf="@id/btn_search_clear" />
+
+        <Button
+            style="@style/RoundedButton"
+            android:id="@+id/btn_search_clear"
+            android:layout_width="150dp"
+            android:layout_height="40dp"
+            android:backgroundTint="@color/grey"
+            android:text="Clear"
+            android:textColor="@color/primaryBackground"
+            app:layout_constraintTop_toTopOf="@id/btn_search_confirm"
+            app:layout_constraintBottom_toBottomOf="@id/btn_search_confirm"
+            app:layout_constraintStart_toEndOf="@id/btn_search_confirm"
+            app:layout_constraintEnd_toEndOf="parent"/>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
