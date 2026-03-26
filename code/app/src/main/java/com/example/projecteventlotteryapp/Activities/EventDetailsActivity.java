@@ -416,7 +416,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
 
         entrantPrimaryButton.setOnClickListener(v -> {
-            eventUtils.addToEntrantList(EntrantListType.WAITLIST, user, eventId)
+            eventUtils.addToEntrantList(EntrantListType.WAITLIST, user.getUserId(), eventId)
                     .addOnSuccessListener(aVoid -> {
                         Log.d("EventDetails", "Successfully joined Waitlist");
                         showRemoveWaitlistButtonState(user);
