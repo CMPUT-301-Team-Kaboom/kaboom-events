@@ -1,14 +1,24 @@
 package com.example.projecteventlotteryapp.dbUtils;
 
+import android.provider.Settings;
+import android.util.Log;
+
 import com.google.firebase.Timestamp;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.auth.FirebaseAuthCredentialsProvider;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Helper class for Firestore actions
@@ -19,6 +29,34 @@ import java.util.List;
  * Example usage: var = FirestoreUtils.LocalDate(date, zoneId);
  */
 public class FirestoreUtils {
+    /**
+     * This function authenticates an anonymous user with the Firestore db
+     *
+     * <p>This function authenticates with the Firestore db. It will technically return immediately
+     * despite the actions being asynchronous. As such, it is incredibly important that this
+     * function is NOT called immediately before a database operation. Ideally, this is only called
+     * once in the onCreate method of the RegistrationActivity or LogInActivity</p>
+     *
+     * References:
+     *      The following method has been adapted from https://firebase.google.com/docs/auth/android/anonymous-auth
+     */
+    public static void anonymousAuth() {
+        FirebaseAuth auth = FirebaseAuth.getInstance();
+
+        if (auth.getCurrentUser() != null) {
+            return;
+        }
+
+        auth.signInAnonymously()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        Log.d("Auth", "signInAnonymously: Success");
+                    } else {
+                        Log.e("Auth", "signInAnonymously: Failure, " + task.getException());
+                    }
+                });
+    }
+
     /**
      * Converts a LocalDate to a Firestore Timestamp at the start of the day in the given time zone.
      *
@@ -150,5 +188,31 @@ public class FirestoreUtils {
             result.add((String) item);
         }
         return result;
+    }
+
+    /**
+     * Stores a notification in the database
+     * @param userId
+     * @param recipientID
+     * @param message
+     * @param eventName
+     */
+    public static void storeNotificationInFirestore(String userId, String recipientID, String message, String eventName, FirebaseFirestore db) {
+        // Get the sender's device ID
+        Map<String, Object> notif = new HashMap<>();
+        notif.put("sender", userId);
+        notif.put("recipient", recipientID);
+        notif.put("text", message);
+        notif.put("date", com.google.firebase.Timestamp.now());
+        notif.put("event", eventName != null ? eventName : "Waitlist Update");
+
+        db.collection("notifications").add(notif)
+                .addOnSuccessListener(documentReference -> {
+                    Log.d("Notification", "Notification stored with ID: " + documentReference.getId());
+                })
+                .addOnFailureListener(e -> {
+                    Log.w("Firestore", "Error adding notification", e);
+                });
+
     }
 }

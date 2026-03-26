@@ -11,10 +11,12 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.example.projecteventlotteryapp.Models.Event;
 
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Map;
 
 /**
  * Custom adapter class that handles displaying events as list items.
@@ -22,15 +24,35 @@ import java.util.ArrayList;
 public class EventArrayAdapter extends ArrayAdapter<Event>  {
     private ArrayList<Event> events;
     private Context context;
+    private Map<String, String> eventStatuses;
 
-    public EventArrayAdapter(Context context, ArrayList<Event> events) {
+    public EventArrayAdapter(Context context, ArrayList<Event> events, Map<String, String> eventStatuses) {
         super(context, 0, events);
         this.events = events;
         this.context = context;
+        this.eventStatuses = eventStatuses;
+    }
+
+    /**
+     * Updates the event status map and refreshes the event list.
+     *
+     * @param eventStatuses contains event IDs and their status values for an entrant
+     */
+    public void setEventStatuses(Map<String, String> eventStatuses) {
+        this.eventStatuses = eventStatuses;
+        notifyDataSetChanged();
     }
 
     /**
      * Handles the layout display of a list of events.
+     *
+     * Code Citation:
+     *      [1] Author: Jon Skeet https://stackoverflow.com/users/22656/jon-skeet
+     *          Title: "Key existence check in HashMap"
+     *          Answer: https://stackoverflow.com/a/3626779
+     *          Date: 2010-09-02
+     *          Retrieved: 2026-03-24
+     *          License: CC-BY-SA 2.5
      *
      * @param position The position of the item within the adapter's data set of the item whose view
      *        we want.
@@ -57,13 +79,28 @@ public class EventArrayAdapter extends ArrayAdapter<Event>  {
         TextView drawDateTextView = view.findViewById(R.id.tv_event_item_draw_date);
         TextView attendeesTextView = view.findViewById(R.id.tv_event_item_attendees);
         ImageView posterImageView = view.findViewById(R.id.iv_event_item_poster);
+        TextView statusTextView = view.findViewById(R.id.tv_event_item_status); // new TextView in item layout
 
         nameTextView.setText(event.getName());
         organizerTextView.setText(event.getOrganizerName());
-        DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("MMMM d, yyyy 'at' h:mm a");
+        DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("MMM d, yyyy 'at' h:mm a");
         String formattedDate = event.getDrawDate().format(datePattern);
-        drawDateTextView.setText("Drawn on " + formattedDate);
+        drawDateTextView.setText(formattedDate);
         attendeesTextView.setText("Attendees: " + event.getAttendeesLimit());
+
+        // show status if on history tab (see code citation [1])
+        if (eventStatuses != null && eventStatuses.containsKey(event.getEventId())) {
+            statusTextView.setVisibility(View.VISIBLE);
+            statusTextView.setText(eventStatuses.get(event.getEventId()).toUpperCase());
+        } else {
+            statusTextView.setVisibility(View.GONE);
+        }
+
+        if (event.getPoster() != null) {
+            Glide.with(context).load(event.getPoster()).into(posterImageView);
+        } else {
+            Glide.with(context).load(R.drawable.default_poster).into(posterImageView);
+        }
 
         return view;
     }

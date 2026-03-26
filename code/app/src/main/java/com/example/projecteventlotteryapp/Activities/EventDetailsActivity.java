@@ -1,5 +1,6 @@
 package com.example.projecteventlotteryapp.Activities;
 
+import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Layout;
@@ -108,8 +109,8 @@ public class EventDetailsActivity extends AppCompatActivity {
      * the event.</p>
      *
      * @param savedInstanceState If the activity is being re-initialized after
-     *     previously being shut down then this Bundle contains the data it most
-     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     * previously being shut down then this Bundle contains the data it most
+     * recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
      *
      */
     @Override
@@ -141,7 +142,18 @@ public class EventDetailsActivity extends AppCompatActivity {
                     Log.d("EventActivity", "DocumentSnapshot data: " + document.getData());
                     event = eventUtils.fetchEventFromSnapshot(document);
 
-                    updateUi();
+                    // get and set organizer for this Event
+                    DocumentReference organizerRef = document.getDocumentReference("organizer");
+                    if (organizerRef != null) {
+                        eventUtils.fetchOrganizerForEvent(event, organizerRef)
+                                .addOnSuccessListener(aVoid -> {
+                                    updateUi();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.d("EventDetailsActivity", "Failed to set Organizer info for event: " + event.getEventId());
+                                    updateUi();
+                                });
+                    }
                 } else {
                     Log.d("EventActivity", "No such document");
                 }
@@ -200,7 +212,6 @@ public class EventDetailsActivity extends AppCompatActivity {
      *  controls are hidden. The method queries Firestore to determine the entrant's
      *  current status in the event (invited or waitlisted) and updates the available
      *  actions accordingly.</p>
-     *
      *  TODO: simplify this function by creating sub functions and separating firestore actions
      *
      * @param user the User interacting with the app
@@ -223,24 +234,28 @@ public class EventDetailsActivity extends AppCompatActivity {
                 Log.d("EventDetails", "[TEMP] Open waitlist");
                 Intent intent = new Intent(EventDetailsActivity.this, OrganizerWaitlistActivity.class);
                 intent.putExtra("eventID", eventId);
+                intent.putExtra("eventName", event.getName());
                 startActivity(intent);
             });
             invitedButton.setOnClickListener(v -> {
                 Log.d("EventDetails", "[TEMP] Open invited list");
                 Intent intent = new Intent(EventDetailsActivity.this, OrganizerInvitedActivity.class);
                 intent.putExtra("eventID", eventId);
+                intent.putExtra("eventName", event.getName());
                 startActivity(intent);
             });
             enrolledButton.setOnClickListener(v -> {
                 Log.d("EventDetails", "[TEMP] Open enrolled List");
                 Intent intent = new Intent(EventDetailsActivity.this, OrganizerEnrolledActivity.class);
                 intent.putExtra("eventID", eventId);
+                intent.putExtra("eventName", event.getName());
                 startActivity(intent);
             });
             declinedButton.setOnClickListener(v -> {
                 Log.d("EventDetails", "[TEMP] Open declined list");
                 Intent intent = new Intent(EventDetailsActivity.this, OrganizerDeclinedActivity.class);
                 intent.putExtra("eventID", eventId);
+                intent.putExtra("eventName", event.getName());
                 startActivity(intent);
             });
 
@@ -251,17 +266,14 @@ public class EventDetailsActivity extends AppCompatActivity {
             });
 
             drawButton.setOnClickListener(v -> {
-                eventUtils.generateInvitationList(event.getEventId(), event.getAttendeesLimit())
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(this, "Draw Complete", Toast.LENGTH_SHORT).show();
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e("EventDetailsActivity", "Failed to generate invitationList. Error: " + e);
-                            Toast.makeText(this, "Could not complete Draw", Toast.LENGTH_SHORT).show();
-                        });
+                drawEntrantsForInvitationList();
             });
 
-            mapButton.setOnClickListener(v -> Log.d("EventDetails", "Clicked Map Button"));
+            mapButton.setOnClickListener(v -> {
+                Intent intent = new Intent(this, MapActivity.class);
+                intent.putExtra("eventId", eventId);
+                startActivity(intent);
+            });
         } else if (user.getRole() == Role.ENTRANT) {
             entrantController.setVisibility(View.VISIBLE);
             organizerController.setVisibility(View.GONE);
@@ -280,6 +292,7 @@ public class EventDetailsActivity extends AppCompatActivity {
      */
     private void updateUi() {
         nameHeaderTextView.setText(event.getName());
+        organizerHeaderTextview.setText(event.getOrganizerName());
         attendeesTV.setText(String.valueOf(event.getAttendeesLimit()));
         refreshWaitlistTV();
         descriptionTV.setText(event.getDescription());
@@ -296,13 +309,13 @@ public class EventDetailsActivity extends AppCompatActivity {
         );
         registrationPeriodTV.setText(registrationPeriodText);
 
-        db.collection("events").document(eventId).get().addOnSuccessListener(doc->{
-            if (doc.exists()){
+        db.collection("events").document(eventId).get().addOnSuccessListener(doc -> {
+            if (doc.exists()) {
                 DocumentReference posterRef = doc.getDocumentReference("poster");
 
                 if (posterRef != null) {
                     posterRef.get().addOnSuccessListener(posterDoc -> {
-                        if (posterDoc.exists()){
+                        if (posterDoc.exists()) {
                             Glide.with(this).load(posterDoc.getString("url")).into(posterIV);
                         } else {
                             Glide.with(this).load(R.drawable.default_poster).into(posterIV);
@@ -329,7 +342,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         TextView tag3 = findViewById(R.id.tv_eventDetails_tag3);
         List<TextView> tagsTVs = Arrays.asList(tag1, tag2, tag3);
 
-        for (TextView tv:tagsTVs) {
+        for (TextView tv : tagsTVs) {
             tv.setVisibility(View.GONE);
         }
 
@@ -338,7 +351,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             numTags = 3;
         }
 
-        for (int i=0; i < numTags; i++) {
+        for (int i = 0; i < numTags; i++) {
             TextView tagTv = tagsTVs.get(i);
             tagTv.setText(tags.get(i));
             tagTv.setVisibility(View.VISIBLE);
@@ -347,6 +360,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     /**
      * Sets the entrantPrimaryButton to Remove Waitlist functionality
+     *
      * @param user the current user
      */
     private void showRemoveWaitlistButtonState(User user) {
@@ -356,7 +370,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
         entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
         entrantPrimaryButton.setOnClickListener(v -> {
-            eventUtils.removeFromEntrantList(EntrantListType.WAITLIST, user, eventId)
+            eventUtils.removeFromEntrantList(EntrantListType.WAITLIST, user.getUserId(), eventId)
                     .addOnSuccessListener(aVoid -> {
                         Log.d("EventDetails", "Successfully Left Waitlist");
                         showJoinWaitlistButtonState(user);
@@ -370,6 +384,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     /**
      * Sets the entrantPrimaryButton to Join Waitlist functionality
+     *
      * @param user the current user
      */
     private void showJoinWaitlistButtonState(User user) {
@@ -394,7 +409,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
 
         entrantPrimaryButton.setOnClickListener(v -> {
-            eventUtils.addToEntrantList(EntrantListType.WAITLIST, user, eventId)
+            eventUtils.addToEntrantList(EntrantListType.WAITLIST, user.getUserId(), eventId)
                     .addOnSuccessListener(aVoid -> {
                         Log.d("EventDetails", "Successfully joined Waitlist");
                         showRemoveWaitlistButtonState(user);
@@ -408,13 +423,14 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     /**
      * Sets the entrantPrimaryButton to Enroll in event functionality
+     *
      * @param user the current user
      */
     private void showEnrollButton(User user) {
         entrantPrimaryButton.setText("Enroll");
         entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.secondaryAccent));
         entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
-        entrantPrimaryButton.setShadowLayer(10,0,0, R.color.black);
+        entrantPrimaryButton.setShadowLayer(10, 0, 0, R.color.black);
         entrantPrimaryButton.setOnClickListener(v -> {
             Log.d("EventDetails", "Attempting to enroll user in event. EventId: " + event.getEventId());
 
@@ -446,6 +462,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
     /**
      * Sets the entrantSecondaryButton to Decline event functionality.
+     *
      * @param user the current user
      */
     private void showDeclineButton(User user) {
@@ -454,18 +471,35 @@ public class EventDetailsActivity extends AppCompatActivity {
         entrantSecondaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
         entrantSecondaryButton.setVisibility(View.VISIBLE);
         entrantSecondaryButton.setOnClickListener(v -> {
-            Log.d("EventDetails", "Attempting to decline event. EventId: " + event.getEventId());
+            new AlertDialog.Builder(this, R.style.DeleteGuard)
+                    .setTitle("Are you sure you want to decline this event?")
+                    .setMessage("You will not be able to join this event later.")
 
-            // move user from INVITED to DECLINED
-            eventUtils.moveEntrantAcrossLists(event.getEventId(), user.getUserId(), EntrantListType.DECLINED, EntrantListType.INVITED)
-                    .addOnSuccessListener(aVoid -> {
-                        Log.d("EventDetails", "Successfully declined user in event");
-                        showEnrolledDeclinedStatus(EntrantListType.DECLINED);
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.d("EventDetails", "Failed to decline user invitation for event. Error: " + e);
-                        Toast.makeText(this, "Failed to decline event", Toast.LENGTH_SHORT).show();
-                    });
+                    .setPositiveButton("Decline", ((dialog, which) -> {
+                        Log.d("EventDetails", "Attempting to decline event. EventId: " + event.getEventId());
+
+                        // move user from INVITED to DECLINED
+                        eventUtils.moveEntrantAcrossLists(
+                                        event.getEventId(),
+                                        user.getUserId(),
+                                        EntrantListType.DECLINED,
+                                        EntrantListType.INVITED
+                                )
+                                .addOnSuccessListener(aVoid -> {
+                                    Log.d("EventDetails", "Successfully declined user in event");
+                                    showEnrolledDeclinedStatus(EntrantListType.DECLINED);
+
+                                    // draw a replacement Entrant for the user that declined
+                                    drawEntrantsForInvitationList();
+                                })
+                                .addOnFailureListener(e -> {
+                                    Log.d("EventDetails", "Failed to decline user invitation for event. Error: " + e);
+                                    Toast.makeText(this, "Failed to decline event", Toast.LENGTH_SHORT).show();
+                                });
+                    }))
+
+                    .setNegativeButton("Cancel", ((dialog, which) -> dialog.dismiss()))
+                    .show();
         });
     }
 
@@ -475,6 +509,7 @@ public class EventDetailsActivity extends AppCompatActivity {
      *
      * <p>This function takes in an EntrantListType and based on its value, updates the
      * entrantPrimaryButton to display their enrollment status.</p>
+     *
      * @param status the EntrantListType that represents the entrants enrollment status. Must be DECLINED or ENROLLED
      */
     private void showEnrolledDeclinedStatus(EntrantListType status) {
@@ -490,7 +525,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         if (status == EntrantListType.ENROLLED) {
             entrantPrimaryButton.setText("Enrolled");
             entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.secondaryAccent));
-            entrantPrimaryButton.setShadowLayer(10,0,0, R.color.black);
+            entrantPrimaryButton.setShadowLayer(10, 0, 0, R.color.black);
             entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
         } else {
             entrantPrimaryButton.setText("Declined");
@@ -506,6 +541,7 @@ public class EventDetailsActivity extends AppCompatActivity {
      * determine which buttons to show. The checks are executed in parallel and once all results
      * are available, the correct UI is applied.
      * If any of the fetching fails, an error is logged and nothing happens.</p>
+     *
      * @param user the current user
      */
     private void setupEntrantButtonsByEnrollmentStatus(User user) {
@@ -538,5 +574,23 @@ public class EventDetailsActivity extends AppCompatActivity {
             Log.e("setupEntrantButtonsByEnrollmentStatus", "Failed to determine entrant status", e);
         });
     }
-}
 
+    /**
+     * This is a helper function that wraps the eventUtils generateInvitationList function and
+     * provides contextual logging and Toasts based on active User role
+     */
+    private void drawEntrantsForInvitationList() {
+        eventUtils.generateInvitationList(event.getEventId(), event.getAttendeesLimit())
+                .addOnSuccessListener(aVoid -> {
+                    if (globalUser.getRole() == Role.ORGANIZER) {
+                        Toast.makeText(this, "Draw Complete", Toast.LENGTH_SHORT).show();
+                    }
+                })
+                .addOnFailureListener(e -> {
+                    Log.e("EventDetailsActivity", "Failed to generate invitationList. Error: " + e);
+                    if (globalUser.getRole() == Role.ORGANIZER) {
+                        Toast.makeText(this, "Could not complete Draw", Toast.LENGTH_SHORT).show();
+                    }
+                });
+    }
+}
