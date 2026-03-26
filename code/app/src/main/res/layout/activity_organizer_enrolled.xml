@@ -104,7 +104,7 @@
         android:background="@color/primaryBackground"
         android:padding="10dp"
         android:paddingBottom="24dp"
-        android:visibility="gone"
+        android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
@@ -115,12 +115,10 @@
             android:layout_width="158dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:backgroundTint="@color/white"
             android:text="Export"
             app:layout_constraintBottom_toTopOf="@+id/btn_done"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toEndOf="@+id/btn_send_notification"
-            tools:textColor="@color/black" />
+            app:layout_constraintStart_toEndOf="@+id/btn_send_notification" />
 
         <Button
             android:id="@+id/btn_send_notification"

@@ -142,39 +142,43 @@ public class OrganizerEnrolledActivity extends AppCompatActivity implements Crea
 
         exportBtn.setOnClickListener(v -> {
             Set<Integer> selected = adapter.getSelectedPositions();
-            ArrayList<String[]> userData = new ArrayList<>();
+            if (!selected.isEmpty()){
+                ArrayList<String[]> userData = new ArrayList<>();
 
-            userData.add(new String[] {"User ID", "Name", "Email", "Phone", "Location"});
+                userData.add(new String[] {"User ID", "Name", "Email", "Phone", "Location"});
 
-            AtomicInteger counter = new AtomicInteger(selected.size());
-            // formats and adds user data to array list
-            for (Integer pos : selected){
-                db.collection("entrants").document(enrolledList.get(pos)).get().addOnSuccessListener(doc -> {
-                    if (doc.exists()){
-                        String userID = doc.getString("deviceID");
-                        String name = doc.getString("name");
-                        String email = doc.getString("email");
-                        String phone = (doc.getString("phone").isEmpty()) ? "N/A" : doc.getString("phone");
-                        String location = doc.getGeoPoint("location").getLatitude() + " " + doc.getGeoPoint("location").getLongitude();
+                AtomicInteger counter = new AtomicInteger(selected.size());
+                // formats and adds user data to array list
+                for (Integer pos : selected){
+                    db.collection("entrants").document(enrolledList.get(pos)).get().addOnSuccessListener(doc -> {
+                        if (doc.exists()){
+                            String userID = doc.getString("deviceID");
+                            String name = doc.getString("name");
+                            String email = doc.getString("email");
+                            String phone = (doc.getString("phone").isEmpty()) ? "N/A" : doc.getString("phone");
+                            String location = doc.getGeoPoint("location").getLatitude() + " " + doc.getGeoPoint("location").getLongitude();
 
-                        String[] line = {userID, name, email, phone, location};
-                        userData.add(line);
-                        Log.d("ExportCSV", userID + "," + name + "," + email + "," + phone + "," + location);
-                    }
+                            String[] line = {userID, name, email, phone, location};
+                            userData.add(line);
+                            Log.d("ExportCSV", userID + "," + name + "," + email + "," + phone + "," + location);
+                        }
 
-                    // write to CSV when all async calls are done
-                    if(counter.decrementAndGet() == 0){
-                        writeToCSV(userData);
-                    }
-                });
+                        // write to CSV when all async calls are done
+                        if(counter.decrementAndGet() == 0){
+                            writeToCSV(userData);
+                        }
+                    });
+                }
+
+                // Exit Selection Mode
+                isSelectionMode = false;
+                selectBtn.setText("Select");
+                floatingActionsContainer.setVisibility(View.GONE);
+                adapter.setSelectionMode(false);
+                adapter.clearSelection();
+            } else {
+                Toast.makeText(this, "Please select at least one user", Toast.LENGTH_SHORT).show();
             }
-
-            // Exit Selection Mode
-            isSelectionMode = false;
-            selectBtn.setText("Select");
-            floatingActionsContainer.setVisibility(View.GONE);
-            adapter.setSelectionMode(false);
-            adapter.clearSelection();
         });
     }
 
