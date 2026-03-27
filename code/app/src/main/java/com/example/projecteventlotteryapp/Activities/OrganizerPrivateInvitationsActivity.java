@@ -30,16 +30,29 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * This class handles the logic and UI support for inviting entrants to private events.
+ *
+ */
 public class OrganizerPrivateInvitationsActivity extends AppCompatActivity {
     private ToggleButton nameToggleButton, emailToggleButton, phoneToggleButton;
 
     private FirebaseFirestore db;
-    private CollectionReference entrantsRef;
     private ListView entrantsListView;
     private ArrayList<User> entrantsArrayList;
     private PrivateInviteEntrantArrayAdapter entrantsArrayAdapter;
 
-    // todo: add javadocs
+    /**
+     * Entry point of the activity.
+     *
+     * <p>This function is the entry point of the Activity. It sets up the db instance and UI for
+     * the event.</p>
+     *
+     * @param savedInstanceState If the activity is being re-initialized after
+     *     previously being shut down then this Bundle contains the data it most
+     *     recently supplied in {@link #onSaveInstanceState}.  <b><i>Note: Otherwise it is null.</i></b>
+     *
+     */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,7 +66,6 @@ public class OrganizerPrivateInvitationsActivity extends AppCompatActivity {
 
         // setup db
         db = FirebaseFirestore.getInstance();
-        entrantsRef = db.collection("events");
 
         // setup ListView and ArrayAdapter
         entrantsListView = findViewById(R.id.lv_entrants_list);
@@ -116,6 +128,9 @@ public class OrganizerPrivateInvitationsActivity extends AppCompatActivity {
         getAllEntrants();
     }
 
+    /**
+     * Gets all entrants from the database and updates the ListView.
+     */
     private void getAllEntrants() {
         db.collection("entrants").get().addOnCompleteListener(task -> {
             if (task.isSuccessful() && task.getResult() != null) {
@@ -133,7 +148,12 @@ public class OrganizerPrivateInvitationsActivity extends AppCompatActivity {
         });
     }
 
-    // todo: add javadocs
+    /**
+     * Searches for entrants in the database based on the selected search type and input.
+     *
+     * @param searchType to perform ("name", "email", or "phone")
+     * @param search query entered by the user
+     */
     private void searchEntrants(String searchType, String search) {
         // get entrants
         db.collection("entrants").get().addOnCompleteListener(task -> {
