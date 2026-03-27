@@ -78,6 +78,29 @@ public class Event {
             LocalDate registrationEndDate,
             LocalDateTime drawDate,
             int attendeesLimit,
+            boolean isPrivate
+    ) {
+        this.name = name;
+        this.registrationStartDate = registrationStartDate;
+        this.registrationEndDate = registrationEndDate;
+        this.drawDate = drawDate;
+        this.attendeesLimit = attendeesLimit;
+        this.isPrivate = isPrivate;
+        this.geolocationEnabled = false;
+    }
+
+
+    /**
+     * Creates a new Event object with basic event information and includes geolocation.
+     * <p> This constructor is typically used when creating a new event before
+     * it has been stored in the database, this also includes geolocation.</p>
+     */
+    public Event(
+            String name,
+            LocalDate registrationStartDate,
+            LocalDate registrationEndDate,
+            LocalDateTime drawDate,
+            int attendeesLimit,
             boolean isPrivate,
             boolean geolocationEnabled
     ) {
