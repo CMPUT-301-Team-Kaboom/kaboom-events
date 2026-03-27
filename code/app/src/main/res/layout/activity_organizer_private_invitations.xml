@@ -6,9 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primaryBackground"
-    tools:context=".Activities.OrganizerPrivateInvitationsActivity"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools" >
+    tools:context=".Activities.OrganizerPrivateInvitationsActivity" >
 
     <TextView
         android:id="@+id/tv_private_invitations_header"
