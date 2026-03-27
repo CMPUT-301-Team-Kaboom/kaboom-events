@@ -217,7 +217,9 @@ public class EventDetailsActivity extends AppCompatActivity {
      * @param user the User interacting with the app
      */
     private void configureUIForRole(User user) {
-        if (user.getRole() == Role.ORGANIZER) {
+        boolean isCoorganizer = event.getCoorganizerIds() != null && event.getCoorganizerIds().contains(user.getUserId());
+
+        if (user.getRole() == Role.ORGANIZER || isCoorganizer) {
             entrantController.setVisibility(View.GONE);
             organizerController.setVisibility(View.VISIBLE);
             editButton.setVisibility(View.VISIBLE);
