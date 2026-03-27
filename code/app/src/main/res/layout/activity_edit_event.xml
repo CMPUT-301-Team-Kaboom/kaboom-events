@@ -71,7 +71,7 @@
                 android:layout_width="325dp"
                 android:layout_height="40dp"
                 android:layout_marginTop="16dp"
-                android:backgroundTint="@color/secondaryAccent"
+                android:backgroundTint="@color/primaryAccent"
                 android:text="Add Co-organizer"
                 android:textColor="@color/primaryBackground"
                 android:textSize="12sp"
