@@ -78,7 +78,7 @@ public class EventsListFragment extends Fragment {
         MyApp app = (MyApp) getActivity().getApplication();
         globalUser = app.getCurrentUser();
 
-         eventStatuses = new HashMap<>();
+        eventStatuses = new HashMap<>();
     }
 
     /**
