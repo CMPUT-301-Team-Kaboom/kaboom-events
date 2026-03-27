@@ -7,6 +7,7 @@ import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -50,7 +51,7 @@ public class EditEventActivity extends AppCompatActivity {
     private EditText editEntrantLimit, editWaitlistLimit, editLocation, editDescription;
     private TextView editTag1, editTag2, editTag3;
     private SwitchCompat switchGeolocation;
-    private Button saveButton;
+    private Button saveButton, addCoorganizerButton;
     private ImageButton backButton;
     /////////////////////////////////////////////////////
     /// IMAGE UPLOAD VARIABLES
@@ -81,6 +82,7 @@ public class EditEventActivity extends AppCompatActivity {
         editDescription = findViewById(R.id.et_edit_description);
         switchGeolocation = findViewById(R.id.switch_geolocation);
         saveButton = findViewById(R.id.btn_event_edit_save);
+        addCoorganizerButton = findViewById(R.id.btn_add_coorganizer);
         bannerEditButton = findViewById(R.id.btn_edit_event_edit_banner);
         editBanner = findViewById(R.id.iv_edit_banner);
         backButton = findViewById(R.id.btn_edit_event_back);
@@ -135,6 +137,9 @@ public class EditEventActivity extends AppCompatActivity {
         bannerEditButton.setOnClickListener(v -> {
             posterImageLauncher.launch("image/*");
         });
+
+        // set up add co-organizer button listener
+        addCoorganizerButton.setOnClickListener(v -> showAddCoorganizerDialog());
     }
 
     // reference https://developer.android.com/develop/ui/views/components/dialogs
@@ -166,6 +171,28 @@ public class EditEventActivity extends AppCompatActivity {
 
             builder.show();
         });
+    }
+
+    private void showAddCoorganizerDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add Co-organizer");
+
+        final EditText input = new EditText(this);
+        input.setHint("Enter User ID");
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        builder.setPositiveButton("Add", (dialog, which) -> {
+            String userId = input.getText().toString().trim();
+            if (!userId.isEmpty()) {
+                eventUtils.addCoorganizer(eventId, userId);
+            } else {
+                Toast.makeText(this, "User ID cannot be empty", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
     }
 
     private void saveEventDetails() {
