@@ -215,4 +215,42 @@ public class FirestoreUtils {
                 });
 
     }
+
+    public static void sendAutomatedRejections(String organizerId, FirebaseFirestore db){
+        Timestamp now = Timestamp.now();
+
+        // Find all events belonging to the organizer that have already started
+        db.collection("events")
+                .whereEqualTo("organizer", organizerId)
+                .whereLessThan("drawDate", now)
+                .get()
+                .addOnSuccessListener(queryDocumentSnapshots -> {
+                    // iterate through the found events
+                    for (DocumentSnapshot doc : queryDocumentSnapshots) {
+                        String eventName = doc.getString("name");
+                        if (eventName == null) {
+                            eventName = "Event";
+                        }
+
+                        // fetch both waitlist and invited list
+                        ArrayList<String> waitlist = fetchStringArrayList(doc, "waitlist");
+                        ArrayList<String> invitedList = fetchStringArrayList(doc, "invited");
+
+                        if (waitlist.isEmpty()) {
+                            continue;
+                        }
+
+                        String rejectionText = "We're sorry, you were not selected for the event: " + eventName;
+
+                        // iterate through waitlist to find users NOT in invited list
+                        for (String user : waitlist) {
+                            if (!invitedList.contains(user)) {
+                                storeNotificationInFirestore(organizerId, user, rejectionText, eventName, db);
+                            }
+                        }
+
+                    }
+                })
+                .addOnFailureListener(e -> Log.e("FirestoreUtils", "Error automated rejections", e));
+    }
 }

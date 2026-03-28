@@ -2,6 +2,7 @@ package com.example.projecteventlotteryapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -19,8 +20,10 @@ import com.example.projecteventlotteryapp.Enums.Role;
 import com.example.projecteventlotteryapp.Models.EventsFilter;
 import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.Models.User;
+import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -68,8 +71,15 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
             return insets;
         });
 
+
         MyApp app = (MyApp) getApplication();
         globalUser = app.getCurrentUser();
+
+        String currentUserId = globalUser.getUserId();
+
+        // Run the automated check in the background every time the organizer opens the app to send out automated rejections
+        FirestoreUtils.sendAutomatedRejections(currentUserId, FirebaseFirestore.getInstance());
+
 
         organizerController = findViewById(R.id.btn_create_event);
         entrantController = findViewById(R.id.tl_events_list);
