@@ -179,7 +179,7 @@ public class OrganizerInvitedActivity extends AppCompatActivity implements Creat
 
         for (Integer pos : selected) {
             String recipientId = invitedList.get(pos);
-            storeNotificationInFirestore(userId, recipientId, message, eventName, db);
+            storeNotificationInFirestore(userId, recipientId, message, eventName, eventId, db);
         }
 
         Toast.makeText(this, "Notifications sent", Toast.LENGTH_SHORT).show();
