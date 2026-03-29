@@ -18,12 +18,14 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SwitchCompat;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 
 import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.R;
+import com.example.projecteventlotteryapp.dbUtils.AccessibilityUtils;
 import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.example.projecteventlotteryapp.dbUtils.UserUtils;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -55,7 +57,7 @@ import java.util.Map;
  * the user to create one.
  * @author anna
  */
-public class EntrantSettingsActivity extends AppCompatActivity {
+public class EntrantSettingsActivity extends BaseActivity {
 
     private UserUtils db;
     private String deviceID;
@@ -65,6 +67,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
     private EditText phoneEditText;
     private Button btnSave;
     private Button btnDelete;
+    private Button btn_signOut;
     private Switch swtchNotification;
     private User globalUser;
     private final int FINE_PERMISSION_CODE = 1;
@@ -82,6 +85,11 @@ public class EntrantSettingsActivity extends AppCompatActivity {
      */
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        if (AccessibilityUtils.isAccessibilityEnabled(this)) {
+            setTheme(R.style.Theme_ProjectEventLotteryApp_Accessibility);
+        } else {
+            setTheme(R.style.Base_Theme_ProjectEventLotteryApp);
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_entrant);
 
@@ -101,8 +109,21 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         btnDelete = findViewById(R.id.btn_delete_profile);
         swtchNotification = findViewById((R.id.s_switch));
         ImageButton btnBack = findViewById(R.id.btn_entrant_back);
+        btn_signOut = findViewById(R.id.btn_sign_out);
+
+
+        //Setup accessibility Switch
+        SwitchCompat accessibilitySwitch = findViewById(R.id.s_accessibility_switch);
+        accessibilitySwitch.setChecked(AccessibilityUtils.isAccessibilityEnabled(this));
+        accessibilitySwitch.setOnCheckedChangeListener((buttonView, isChecked) -> {
+            AccessibilityUtils.setAccessibilityEnabled(this, isChecked);
+            recreate();
+        });
+
 
         btnBack.setOnClickListener(v -> finish());
+        btn_signOut.setOnClickListener(v -> signOut());
+
 
         MyApp app = (MyApp) getApplication();
         globalUser = app.getCurrentUser();
@@ -308,6 +329,14 @@ public class EntrantSettingsActivity extends AppCompatActivity {
                 Toast.makeText(this, "Location permission denied", Toast.LENGTH_SHORT).show();
             }
         }
+    }
+    private void signOut() {
+        // Clear any stored user data if needed
+        // e.g., SharedPreferences, Firebase auth, etc.
+
+        Intent intent = new Intent(EntrantSettingsActivity.this, RegistrationActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
     }
 
 

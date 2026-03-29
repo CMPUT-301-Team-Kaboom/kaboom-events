@@ -11,5 +11,15 @@
         <item name="colorOnSurface">@color/white</item>
     </style>
 
-    <style name="Theme.ProjectEventLotteryApp" parent="Base.Theme.ProjectEventLotteryApp" />
+    <style name="Theme.ProjectEventLotteryApp.Accessibility" parent="Base.Theme.ProjectEventLotteryApp">
+        <item name="colorPrimary">@color/accessibilityPrimary</item>
+        <item name="colorOnPrimary">@color/accessibilityOnPrimary</item>
+        <item name="colorSecondary">@color/accessibilityPrimary</item>
+        <item name="colorOnSecondary">@color/accessibilityOnPrimary</item>
+        <item name="android:windowBackground">@color/accessibilityBackground</item>
+        <item name="colorSurface">@color/accessibilitySurface</item>
+        <item name="colorOnSurface">@color/accessibilityText</item>
+        <item name="colorOnBackground">@color/accessibilityText</item>
+
+    </style>
 </resources>
