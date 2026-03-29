@@ -26,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
 import com.example.projecteventlotteryapp.Models.Event;
+import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.PosterImageHandler;
 import com.example.projecteventlotteryapp.R;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
@@ -218,7 +219,8 @@ public class EditEventActivity extends AppCompatActivity {
         builder.setPositiveButton("Add", (dialog, which) -> {
             String userId = input.getText().toString().trim();
             if (!userId.isEmpty()) {
-                eventUtils.addCoorganizer(eventId, userId);
+                String senderId = ((MyApp) getApplication()).getCurrentUser().getUserId();
+                eventUtils.addCoorganizer(eventId, userId, senderId);
             } else {
                 Toast.makeText(this, "User ID cannot be empty", Toast.LENGTH_SHORT).show();
             }
