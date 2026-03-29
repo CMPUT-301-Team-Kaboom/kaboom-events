@@ -197,14 +197,15 @@ public class FirestoreUtils {
      * @param message
      * @param eventName
      */
-    public static void storeNotificationInFirestore(String userId, String recipientID, String message, String eventName, FirebaseFirestore db) {
+    public static void storeNotificationInFirestore(String userId, String recipientID, String message, String eventName, String eventId, FirebaseFirestore db) {
         // Get the sender's device ID
         Map<String, Object> notif = new HashMap<>();
         notif.put("sender", userId);
         notif.put("recipient", recipientID);
         notif.put("text", message);
         notif.put("date", com.google.firebase.Timestamp.now());
-        notif.put("event", eventName != null ? eventName : "Waitlist Update");
+        notif.put("eventName", eventName != null ? eventName : "Waitlist Update");
+        notif.put("eventId", eventId);
 
         db.collection("notifications").add(notif)
                 .addOnSuccessListener(documentReference -> {

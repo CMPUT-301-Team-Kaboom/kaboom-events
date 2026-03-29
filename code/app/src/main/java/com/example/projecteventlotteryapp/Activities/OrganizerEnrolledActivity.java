@@ -197,7 +197,7 @@ public class OrganizerEnrolledActivity extends AppCompatActivity implements Crea
 
         for (Integer pos : selected) {
             String recipientId = enrolledList.get(pos);
-            storeNotificationInFirestore(userId, recipientId, message, eventName, db);
+            storeNotificationInFirestore(userId, recipientId, message, eventName, eventId, db);
         }
 
         Toast.makeText(this, "Notifications sent", Toast.LENGTH_SHORT).show();

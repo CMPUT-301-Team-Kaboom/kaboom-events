@@ -1,5 +1,6 @@
 package com.example.projecteventlotteryapp;
 
+import android.graphics.Bitmap;
 import android.net.Uri;
 
 import com.example.projecteventlotteryapp.Activities.EditEventActivity;
@@ -12,7 +13,9 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
+import com.google.firebase.storage.UploadTask;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -26,20 +29,24 @@ import java.util.function.Consumer;
 public class PosterImageHandler {
     private FirebaseFirestore db;
     private CollectionReference posterCollectionRef;
+    private CollectionReference qrCodeCollectionRef;
     private FirebaseStorage storage;
     private  final String STORAGE_DIR = "posters/";
+    private  final String QR_STORAGE_DIR = "qrcodes/";
 
     public PosterImageHandler(){
         db = FirebaseFirestore.getInstance();
         storage = FirebaseStorage.getInstance();
 
         posterCollectionRef = db.collection("posters");
+        qrCodeCollectionRef = db.collection("qrcodes");
     }
 
     public PosterImageHandler(FirebaseFirestore db, FirebaseStorage storage, CollectionReference posterCollectionRef){
         this.db = db;
         this.storage = storage;
         this.posterCollectionRef = posterCollectionRef;
+        this.qrCodeCollectionRef = db.collection("qrcodes");
     }
 
     /**
@@ -58,6 +65,42 @@ public class PosterImageHandler {
 
         return posterRef.putFile(uri)
                 .continueWithTask(uploadTask -> handleUploadResult(eventId, posterRef));
+    }
+
+    /**
+     * Uploads a generated QR code bitmap to Firebase Storage and updates the event document with a reference to the QR code.
+     * @param eventId ID of the event
+     * @param bitmap Bitmap of the QR code
+     * @return Task that resolves to the download URL
+     */
+    public Task<String> uploadQRCode(String eventId, Bitmap bitmap) {
+        if (bitmap == null) { return Tasks.forResult(null); }
+
+        StorageReference qrRef = storage.getReference().child(QR_STORAGE_DIR + eventId + "_qr.png");
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+        byte[] data = baos.toByteArray();
+
+        return qrRef.putBytes(data).continueWithTask(task -> {
+            if (!task.isSuccessful()) {
+                throw task.getException();
+            }
+            return qrRef.getDownloadUrl();
+        }).continueWithTask(task -> {
+            Uri downloadUri = task.getResult();
+            String qrCodeId = eventId + "_qr";
+
+            Map<String, Object> qrCodeData = new HashMap<>();
+            qrCodeData.put("url", downloadUri.toString());
+            qrCodeData.put("path", qrRef.getPath());
+
+            DocumentReference eventDoc = db.collection("events").document(eventId);
+            DocumentReference qrCodeDoc = qrCodeCollectionRef.document(qrCodeId);
+
+            return eventDoc.update("qrCode", qrCodeDoc)
+                    .continueWithTask(updateTask -> qrCodeDoc.set(qrCodeData))
+                    .continueWith(urlTask -> downloadUri.toString());
+        });
     }
 
     protected Task<String> handleUploadResult(String eventId, StorageReference posterRef) throws Exception {
