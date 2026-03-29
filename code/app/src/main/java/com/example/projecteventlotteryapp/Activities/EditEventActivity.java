@@ -221,6 +221,7 @@ public class EditEventActivity extends AppCompatActivity {
             if (!userId.isEmpty()) {
                 String senderId = ((MyApp) getApplication()).getCurrentUser().getUserId();
                 eventUtils.addCoorganizer(eventId, userId, senderId);
+                Toast.makeText(this, "Co-organizer added", Toast.LENGTH_SHORT).show();
             } else {
                 Toast.makeText(this, "User ID cannot be empty", Toast.LENGTH_SHORT).show();
             }
