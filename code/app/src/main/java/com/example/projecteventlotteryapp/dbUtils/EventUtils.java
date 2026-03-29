@@ -249,7 +249,6 @@ public class EventUtils {
         String description = snapshot.getString("description");
         String location = snapshot.getString("location");
         String name = snapshot.getString("name");
-        String qrcodePath = snapshot.getString("qrCodePath");
 
         // get number fields
         int attendeesLimit = FirestoreUtils.fetchInt(snapshot, "entrantsLimit", -1);
@@ -355,7 +354,7 @@ public class EventUtils {
         eventData.put("description", null);
         eventData.put("geoLocationEnabled", false);
         eventData.put("location", null);
-        eventData.put("qrCodePath", null);
+        eventData.put("qrCode", null);
         eventData.put("tags", null);
         eventData.put("waitlistLimit", -1);  // -1 indicates no limit
         eventData.put("waitlist", new ArrayList<>());
