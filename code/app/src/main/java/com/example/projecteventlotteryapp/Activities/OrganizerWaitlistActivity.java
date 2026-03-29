@@ -53,6 +53,7 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
     private ArrayList<String> waitlist;
     private FirebaseFirestore db;
     private boolean isSelectionMode = false;
+    private String limit;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -105,7 +106,13 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
                     waitlistView.setAdapter(adapter);
 
                     TextView waitlistSize = findViewById(R.id.tv_organizer_waitlist_size);
-                    waitlistSize.setText(waitlist.size() + "/" + doc.get("waitlistLimit"));
+                    limit = doc.get("waitlistLimit").toString();
+                    if (limit.equals("-1")) {
+                        waitlistSize.setText(String.valueOf(waitlist.size()));
+                    } else {
+                        // Concatenation naturally converts the whole expression to a String
+                        waitlistSize.setText(waitlist.size() + "/" + doc.get("waitlistLimit"));
+                    }
                 }
             } else {
                 Log.d("OrganizerWaitlist", "Document retrieval failed", task.getException());
