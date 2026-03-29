@@ -267,6 +267,9 @@
                     android:layout_height="35dp"
                     android:layout_margin="3dp"
                     android:layout_weight="1"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="6dp"
+
                     android:background="@drawable/rounded_button_transparent"
                     android:text="Waitlist"
                     android:textSize="12sp"
@@ -279,6 +282,9 @@
                     android:layout_height="35dp"
                     android:layout_margin="3dp"
                     android:layout_weight="1"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="6dp"
+
                     android:background="@drawable/rounded_button_transparent"
                     android:text="Invited"
                     android:textSize="12sp"
@@ -291,6 +297,9 @@
                     android:layout_height="35dp"
                     android:layout_margin="3dp"
                     android:layout_weight="1"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="6dp"
+
                     android:background="@drawable/rounded_button_transparent"
                     android:padding="2dp"
                     android:text="Declined"
@@ -304,6 +313,9 @@
                     android:layout_height="35dp"
                     android:layout_margin="3dp"
                     android:layout_weight="1"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="6dp"
+
                     android:background="@drawable/rounded_button_transparent"
                     android:text="Enrolled"
                     android:textSize="12sp"
@@ -374,7 +386,7 @@
             style="@style/DefaultTextStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/long_placeholder_text"
+            android:text="description"
             android:textAlignment="textStart"
             android:textSize="14sp"
             android:textStyle="normal" />
