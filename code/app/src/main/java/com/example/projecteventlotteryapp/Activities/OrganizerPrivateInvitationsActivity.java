@@ -1,6 +1,5 @@
 package com.example.projecteventlotteryapp.Activities;
 
-import static android.view.View.GONE;
 import static com.example.projecteventlotteryapp.dbUtils.FirestoreUtils.storeNotificationInFirestore;
 
 import android.app.AlertDialog;
@@ -26,16 +25,13 @@ import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.PrivateInviteEntrantArrayAdapter;
 import com.example.projecteventlotteryapp.R;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * This class handles the logic and UI support for inviting entrants to private events.
