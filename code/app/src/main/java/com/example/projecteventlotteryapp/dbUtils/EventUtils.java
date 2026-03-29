@@ -590,9 +590,10 @@ public class EventUtils {
      * Adds a co-organizer to an event.
      * @param eventId the ID of the event
      * @param userId the ID of the user to be added as a co-organizer
+     * @param senderId the ID of the current user adding the co-organizer
      * @return a Task representing the asynchronous operation
      */
-    public Task<Void> addCoorganizer(String eventId, String userId) {
+    public Task<Void> addCoorganizer(String eventId, String userId, String senderId) {
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
         HashMap<String, Object> updates = new HashMap<>();
@@ -602,7 +603,13 @@ public class EventUtils {
         updates.put("enrolled", FieldValue.arrayRemove(userId));
         updates.put("declined", FieldValue.arrayRemove(userId));
 
-        return eventDoc.update(updates);
+        return eventDoc.update(updates).addOnSuccessListener(aVoid -> {
+            eventDoc.get().addOnSuccessListener(snapshot -> {
+                String eventName = snapshot.getString("name");
+                String message = "You have been added as a co-organizer for " + eventName;
+                FirestoreUtils.storeNotificationInFirestore(senderId, userId, message, eventName, eventId, db);
+            });
+        });
     }
 
     /**
