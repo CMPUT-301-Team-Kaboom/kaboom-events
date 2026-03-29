@@ -217,7 +217,9 @@ public class EventDetailsActivity extends AppCompatActivity {
      * @param user the User interacting with the app
      */
     private void configureUIForRole(User user) {
-        if (user.getRole() == Role.ORGANIZER) {
+        boolean isCoorganizer = event.getCoorganizerIds() != null && event.getCoorganizerIds().contains(user.getUserId());
+
+        if (user.getRole() == Role.ORGANIZER || isCoorganizer) {
             entrantController.setVisibility(View.GONE);
             organizerController.setVisibility(View.VISIBLE);
             editButton.setVisibility(View.VISIBLE);
@@ -266,14 +268,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             });
 
             drawButton.setOnClickListener(v -> {
-                eventUtils.generateInvitationList(event.getEventId(), event.getAttendeesLimit())
-                        .addOnSuccessListener(aVoid -> {
-                            Toast.makeText(this, "Draw Complete", Toast.LENGTH_SHORT).show();
-                        })
-                        .addOnFailureListener(e -> {
-                            Log.e("EventDetailsActivity", "Failed to generate invitationList. Error: " + e);
-                            Toast.makeText(this, "Could not complete Draw", Toast.LENGTH_SHORT).show();
-                        });
+                drawEntrantsForInvitationList();
             });
 
             mapButton.setOnClickListener(v -> {
@@ -377,7 +372,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         entrantPrimaryButton.setTextColor(ContextCompat.getColor(this, R.color.white));
         entrantPrimaryButton.setBackgroundColor(ContextCompat.getColor(this, R.color.red));
         entrantPrimaryButton.setOnClickListener(v -> {
-            eventUtils.removeFromEntrantList(EntrantListType.WAITLIST, user, eventId)
+            eventUtils.removeFromEntrantList(EntrantListType.WAITLIST, user.getUserId(), eventId)
                     .addOnSuccessListener(aVoid -> {
                         Log.d("EventDetails", "Successfully Left Waitlist");
                         showJoinWaitlistButtonState(user);
@@ -416,7 +411,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         }
 
         entrantPrimaryButton.setOnClickListener(v -> {
-            eventUtils.addToEntrantList(EntrantListType.WAITLIST, user, eventId)
+            eventUtils.addToEntrantList(EntrantListType.WAITLIST, user.getUserId(), eventId)
                     .addOnSuccessListener(aVoid -> {
                         Log.d("EventDetails", "Successfully joined Waitlist");
                         showRemoveWaitlistButtonState(user);
@@ -495,6 +490,9 @@ public class EventDetailsActivity extends AppCompatActivity {
                                 .addOnSuccessListener(aVoid -> {
                                     Log.d("EventDetails", "Successfully declined user in event");
                                     showEnrolledDeclinedStatus(EntrantListType.DECLINED);
+
+                                    // draw a replacement Entrant for the user that declined
+                                    drawEntrantsForInvitationList();
                                 })
                                 .addOnFailureListener(e -> {
                                     Log.d("EventDetails", "Failed to decline user invitation for event. Error: " + e);
@@ -578,4 +576,53 @@ public class EventDetailsActivity extends AppCompatActivity {
             Log.e("setupEntrantButtonsByEnrollmentStatus", "Failed to determine entrant status", e);
         });
     }
+
+    /**
+     * This is a helper function that wraps the eventUtils generateInvitationList function and
+     * provides contextual logging and Toasts based on active User role
+     */
+    private void drawEntrantsForInvitationList() {
+        eventUtils.generateInvitationList(event.getEventId(), event.getAttendeesLimit())
+                .addOnSuccessListener(aVoid -> {
+                    if (globalUser.getRole() == Role.ORGANIZER) {
+                        Toast.makeText(this, "Draw Complete", Toast.LENGTH_SHORT).show();
+                    }
+
+                    // fetch invitation list
+                    db.collection("events").document(eventId).get()
+                            .addOnSuccessListener(doc -> {
+                                ArrayList<String> invited = (ArrayList<String>) doc.get("invited");
+
+                                if (invited != null && !invited.isEmpty()) {
+                                    String organizerId = globalUser.getUserId();
+
+                                    String message = "Congrats! You are invited to this event";
+
+                                    // iterate through invited list and send invitations
+                                    for (String invitedId : invited) {
+                                        FirestoreUtils.storeNotificationInFirestore(
+                                                organizerId,
+                                                invitedId,
+                                                message,
+                                                event.getName(),
+                                                event.getEventId(),
+                                                db
+                                        );
+                                        Log.d("EventDetails", "Automated notifications sent to " + invited.size() + " winners.");
+                                    }
+                                }
+
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e("EventDetailsActivity", "Failed to generate invitationList. Error: " + e);
+                                if (globalUser.getRole() == Role.ORGANIZER) {
+                                    Toast.makeText(this, "Could not complete Draw", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                });
+
+    }
+
 }
+
+
