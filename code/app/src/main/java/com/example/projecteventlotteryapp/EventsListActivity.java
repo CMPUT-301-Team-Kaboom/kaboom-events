@@ -75,12 +75,6 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
         MyApp app = (MyApp) getApplication();
         globalUser = app.getCurrentUser();
 
-        String currentUserId = globalUser.getUserId();
-
-        // Run the automated check in the background every time the organizer opens the app to send out automated rejections
-        FirestoreUtils.sendAutomatedRejections(currentUserId, FirebaseFirestore.getInstance());
-
-
         organizerController = findViewById(R.id.btn_create_event);
         entrantController = findViewById(R.id.tl_events_list);
 

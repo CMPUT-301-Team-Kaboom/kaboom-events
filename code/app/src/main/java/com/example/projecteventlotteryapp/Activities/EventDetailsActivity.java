@@ -83,6 +83,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     private Button editButton;
     private Button drawButton;
     private Button mapButton;
+    private Button notifyRejectedButton;
+
 
     // entrant buttons
     private Button entrantPrimaryButton;
@@ -191,6 +193,8 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         editButton      = findViewById(R.id.btn_eventDetails_edit);
         drawButton      = findViewById(R.id.btn_eventDetails_Draw);
+        notifyRejectedButton = findViewById(R.id.btn_eventDetails_Reject);
+
         commentButton   = findViewById(R.id.btn_eventDetails_view_comments);
         commentButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, EventCommentsActivity.class);
@@ -227,6 +231,12 @@ public class EventDetailsActivity extends AppCompatActivity {
                 drawButton.setVisibility(View.VISIBLE);
             } else {
                 drawButton.setVisibility(View.GONE);
+            }
+
+            if (event.getDrawDate().isBefore(LocalDateTime.now())) {
+                notifyRejectedButton.setVisibility(View.VISIBLE);
+            } else {
+                notifyRejectedButton.setVisibility(View.GONE);
             }
 
             // TODO: set onClickListeners for Organizer specific buttons
@@ -269,6 +279,10 @@ public class EventDetailsActivity extends AppCompatActivity {
                 drawEntrantsForInvitationList();
             });
 
+            notifyRejectedButton.setOnClickListener(v -> {
+                FirestoreUtils.sendRejections(globalUser.getUserId(), eventId, db, this);
+            });
+
             mapButton.setOnClickListener(v -> {
                 Intent intent = new Intent(this, MapActivity.class);
                 intent.putExtra("eventId", eventId);
@@ -281,6 +295,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             editButton.setVisibility(View.GONE);
             drawButton.setVisibility(View.GONE);
             mapButton.setVisibility(View.GONE);
+            notifyRejectedButton.setVisibility(View.GONE);
 
             setupEntrantButtonsByEnrollmentStatus(user);
         }
@@ -618,9 +633,5 @@ public class EventDetailsActivity extends AppCompatActivity {
                                 }
                             });
                 });
-
     }
-
 }
-
-
