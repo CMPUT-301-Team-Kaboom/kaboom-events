@@ -90,5 +90,13 @@
                 android:textSize="16sp" />
         </ScrollView>
 
+        <Button
+            android:id="@+id/btn_go_to_event"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_gravity="center"
+            android:text="Go to Event" />
+
     </LinearLayout>
 </com.google.android.material.card.MaterialCardView>
