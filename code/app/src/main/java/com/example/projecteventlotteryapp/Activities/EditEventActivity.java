@@ -1,10 +1,13 @@
 // references: https://www.geeksforgeeks.org/android/how-to-generate-qr-code-in-android/
+// https://stackoverflow.com/questions/46065310/how-to-create-a-qr-code-generator-for-android-using-fragments
 
 package com.example.projecteventlotteryapp.Activities;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
@@ -28,6 +31,11 @@ import com.example.projecteventlotteryapp.R;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
+import com.journeyapps.barcodescanner.BarcodeEncoder;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -53,6 +61,8 @@ public class EditEventActivity extends AppCompatActivity {
     private SwitchCompat switchGeolocation;
     private Button saveButton, addCoorganizerButton;
     private ImageButton backButton;
+    private ImageView editQRCode;
+    private Bitmap qrCodeBitmap;
     /////////////////////////////////////////////////////
     /// IMAGE UPLOAD VARIABLES
     ////////////////////////////////////////////////////
@@ -86,6 +96,7 @@ public class EditEventActivity extends AppCompatActivity {
         bannerEditButton = findViewById(R.id.btn_edit_event_edit_banner);
         editBanner = findViewById(R.id.iv_edit_banner);
         backButton = findViewById(R.id.btn_edit_event_back);
+        editQRCode = findViewById(R.id.iv_edit_qr_code);
 
         editTag1 = findViewById(R.id.tv_edit_tag1);
         editTag2 = findViewById(R.id.tv_edit_tag2);
@@ -140,6 +151,28 @@ public class EditEventActivity extends AppCompatActivity {
 
         // set up add co-organizer button listener
         addCoorganizerButton.setOnClickListener(v -> showAddCoorganizerDialog());
+
+        // set up qr code click listener
+        editQRCode.setOnClickListener(v -> generateQRCode());
+    }
+
+    private void generateQRCode() {
+        if (eventId == null || eventId.isEmpty()) {
+            Toast.makeText(this, "Event ID is missing!", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
+        try {
+            BitMatrix bitMatrix = multiFormatWriter.encode(eventId, BarcodeFormat.QR_CODE, 500, 500);
+            BarcodeEncoder barcodeEncoder = new BarcodeEncoder();
+            qrCodeBitmap = barcodeEncoder.createBitmap(bitMatrix);
+            editQRCode.setImageBitmap(qrCodeBitmap);
+            Toast.makeText(this, "QR Code Generated!", Toast.LENGTH_SHORT).show();
+        } catch (WriterException e) {
+            e.printStackTrace();
+            Toast.makeText(this, "Failed to generate Code!", Toast.LENGTH_SHORT).show();
+        }
     }
 
     // reference https://developer.android.com/develop/ui/views/components/dialogs
@@ -251,6 +284,9 @@ public class EditEventActivity extends AppCompatActivity {
         // TODO: update the event object and database
         // TODO: figure out image and QR code, as well as location
         posterImageHandler.uploadPoster(eventId, eventPosterFilepath);
+        if (qrCodeBitmap != null) {
+            posterImageHandler.uploadQRCode(eventId, qrCodeBitmap);
+        }
 
         ZoneId zoneId = ZoneId.systemDefault();
 

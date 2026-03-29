@@ -84,4 +84,8 @@ dependencies {
     
     // espresso intents
     androidTestImplementation("androidx.test.espresso:espresso-intents:3.6.1")
+
+    // qr code generation
+    implementation(libs.zxing.core)
+    implementation(libs.zxing.android.embedded)
 }

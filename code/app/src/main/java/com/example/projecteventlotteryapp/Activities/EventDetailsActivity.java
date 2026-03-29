@@ -605,6 +605,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                 invitedId,
                                                 message,
                                                 event.getName(),
+                                                event.getEventId(),
                                                 db
                                         );
                                         Log.d("EventDetails", "Automated notifications sent to " + invited.size() + " winners.");

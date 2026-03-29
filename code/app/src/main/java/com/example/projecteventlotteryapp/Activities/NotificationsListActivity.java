@@ -88,7 +88,7 @@ public class NotificationsListActivity extends AppCompatActivity {
     private void fetchNotifications() {
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        if (globalUser.getRole() == Role.ENTRANT){
+        if (globalUser.getRole() == Role.ENTRANT) {
 
             db.collection("notifications")
                     .whereEqualTo("recipient", deviceId)
@@ -124,8 +124,8 @@ public class NotificationsListActivity extends AppCompatActivity {
                                             // fetch organizer name
                                             String name = organizerDocument.getString("name");
 
-                                            item.put("title", document.getString("event"));
-                                            item.put("organizerName", name );
+                                            item.put("title", document.getString("eventName"));
+                                            item.put("organizerName", name);
                                             item.put("notificationText", document.getString("text"));
                                             notificationsList.add(item);
 
@@ -136,7 +136,7 @@ public class NotificationsListActivity extends AppCompatActivity {
                                         .addOnFailureListener(e -> {
                                             // Handle failure by using the ID as a fallback
                                             Map<String, Object> item = new HashMap<>();
-                                            item.put("title", document.getString("event"));
+                                            item.put("title", document.getString("eventName"));
                                             item.put("organizerName", "ID: " + document.getString("sender"));
                                             item.put("notificationText", document.getString("text"));
                                             notificationsList.add(item);
@@ -147,8 +147,7 @@ public class NotificationsListActivity extends AppCompatActivity {
                             }
                         }
                     });
-        }
-        else{ // If the user is an organizer
+        } else { // If the user is an organizer
             // Grab notifications sent by the organizer
             db.collection("notifications")
                     .whereEqualTo("sender", deviceId)
@@ -176,43 +175,40 @@ public class NotificationsListActivity extends AppCompatActivity {
 
                             notificationsList.clear();
                             for (QueryDocumentSnapshot document : docs) {
+                                String recipientId = document.getString("recipient");
 
-                                db.collection("entrants")
-                                        .document(document.getString("recipient")).get()
-                                        .addOnSuccessListener(organizerDocument -> {
-                                            Map<String, Object> item = new HashMap<>();
-                                            // fetch organizer name
-                                            String name = organizerDocument.getString("name");
+                                if (recipientId != null) {
+                                    db.collection("entrants")
+                                            .document(recipientId).get()
+                                            .addOnSuccessListener(entrantDocument -> {
+                                                Map<String, Object> item = new HashMap<>();
+                                                String name = entrantDocument.getString("name");
 
-                                            item.put("title", document.getString("event"));
-                                            item.put("recipientName", name );
-                                            item.put("notificationText", document.getString("text"));
-                                            notificationsList.add(item);
+                                                item.put("title", document.getString("eventName"));
+                                                // Mapping recipient name to organizerName slot for UI consistency
+                                                item.put("organizerName", name != null ? name : "Recipient: " + recipientId);
+                                                item.put("notificationText", document.getString("text"));
+                                                notificationsList.add(item);
 
-                                            if (notificationsList.size() == docs.size()) {
-                                                adapter.notifyDataSetChanged();
-                                            }
-                                        })
-                                        .addOnFailureListener(e -> {
-                                            // Handle failure by using the ID as a fallback
-                                            Map<String, Object> item = new HashMap<>();
-                                            item.put("title", document.getString("event"));
-                                            item.put("recipientName", "ID: " + document.getString("recipient"));
-                                            item.put("notificationText", document.getString("text"));
-                                            notificationsList.add(item);
-                                            if (notificationsList.size() == docs.size()) {
-                                                adapter.notifyDataSetChanged();
-                                            }
-                                        });
+                                                if (notificationsList.size() == docs.size()) {
+                                                    adapter.notifyDataSetChanged();
+                                                }
+                                            })
+                                            .addOnFailureListener(e -> {
+                                                Map<String, Object> item = new HashMap<>();
+                                                String titleFallback = document.getString("eventName");
+                                                item.put("title", titleFallback != null ? titleFallback : "ID: " + document.getString("EventId"));
+                                                item.put("organizerName", "ID: " + recipientId);
+                                                item.put("notificationText", document.getString("text"));
+                                                notificationsList.add(item);
+                                                if (notificationsList.size() == docs.size()) {
+                                                    adapter.notifyDataSetChanged();
+                                                }
+                                            });
+                                }
                             }
                         }
                     });
-                    }
-
-
-
+        }
     }
-
-
-
 }

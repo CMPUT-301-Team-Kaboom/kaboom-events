@@ -33,6 +33,7 @@ public class Event {
     private String organizerName;
     private ArrayList<String> coorganizerIds = new ArrayList<>();
     // private QRCode
+    private String qrCodeUrl;
     // private location
     // private map
     private String poster;
@@ -338,5 +339,13 @@ public class Event {
 
     public void setCoorganizerIds(ArrayList<String> coorganizerIds) {
         this.coorganizerIds = coorganizerIds;
+    }
+
+    public String getQrCodeUrl() {
+        return qrCodeUrl;
+    }
+
+    public void setQrCodeUrl(String qrCodeUrl) {
+        this.qrCodeUrl = qrCodeUrl;
     }
 }
