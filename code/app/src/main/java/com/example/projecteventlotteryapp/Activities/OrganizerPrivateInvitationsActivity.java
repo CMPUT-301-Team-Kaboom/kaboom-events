@@ -78,7 +78,7 @@ public class OrganizerPrivateInvitationsActivity extends AppCompatActivity imple
         db = FirebaseFirestore.getInstance();
 
         Intent intent  = getIntent();
-        eventId = intent.getStringExtra("eventID");
+        eventId = intent.getStringExtra("eventId");
         eventName = intent.getStringExtra("eventName");
 
         // setup ListView and ArrayAdapter
@@ -90,7 +90,6 @@ public class OrganizerPrivateInvitationsActivity extends AppCompatActivity imple
                     .setTitle("Invite Entrant")
                     .setMessage("Are you sure you want to invite this entrant?")
                     .setPositiveButton("Invite", ((dialog, which) -> {
-                        // TODO: invite entrant
                         CreateNotificationDialogFragment.newInstance().show(getSupportFragmentManager(), "send_private_invite");
                         Log.d("OrganizerPrivateInvitationsActivity", "invited entrant");
                     }))
@@ -163,7 +162,7 @@ public class OrganizerPrivateInvitationsActivity extends AppCompatActivity imple
         String recipientId = selectedEntrant.getUserId();
 
         // store the notification
-        storeNotificationInFirestore(organizerId, recipientId, message, eventName, db);
+        storeNotificationInFirestore(organizerId, recipientId, message, eventName, eventId, db);
 
         // Show a confirmation message
         Toast.makeText(this, "Invite sent to " + selectedEntrant.getName(), Toast.LENGTH_SHORT).show();
