@@ -53,6 +53,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -83,7 +84,6 @@ public class EventDetailsActivity extends AppCompatActivity {
     private Button editButton;
     private Button drawButton;
     private Button mapButton;
-    private Button notifyRejectedButton;
 
 
     // entrant buttons
@@ -193,7 +193,6 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         editButton      = findViewById(R.id.btn_eventDetails_edit);
         drawButton      = findViewById(R.id.btn_eventDetails_Draw);
-        notifyRejectedButton = findViewById(R.id.btn_eventDetails_Reject);
 
         commentButton   = findViewById(R.id.btn_eventDetails_view_comments);
         commentButton.setOnClickListener(v -> {
@@ -231,12 +230,6 @@ public class EventDetailsActivity extends AppCompatActivity {
                 drawButton.setVisibility(View.VISIBLE);
             } else {
                 drawButton.setVisibility(View.GONE);
-            }
-
-            if (event.getDrawDate().isBefore(LocalDateTime.now())) {
-                notifyRejectedButton.setVisibility(View.VISIBLE);
-            } else {
-                notifyRejectedButton.setVisibility(View.GONE);
             }
 
             // TODO: set onClickListeners for Organizer specific buttons
@@ -277,9 +270,6 @@ public class EventDetailsActivity extends AppCompatActivity {
 
             drawButton.setOnClickListener(v -> {
                 drawEntrantsForInvitationList();
-            });
-
-            notifyRejectedButton.setOnClickListener(v -> {
                 FirestoreUtils.sendRejections(globalUser.getUserId(), eventId, db, this);
             });
 
@@ -295,7 +285,6 @@ public class EventDetailsActivity extends AppCompatActivity {
             editButton.setVisibility(View.GONE);
             drawButton.setVisibility(View.GONE);
             mapButton.setVisibility(View.GONE);
-            notifyRejectedButton.setVisibility(View.GONE);
 
             setupEntrantButtonsByEnrollmentStatus(user);
         }
@@ -601,7 +590,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                         Toast.makeText(this, "Draw Complete", Toast.LENGTH_SHORT).show();
                     }
 
-                    // fetch invitation list
+                    // fetch invitation list to send notifications
                     db.collection("events").document(eventId).get()
                             .addOnSuccessListener(doc -> {
                                 ArrayList<String> invited = (ArrayList<String>) doc.get("invited");
@@ -609,29 +598,56 @@ public class EventDetailsActivity extends AppCompatActivity {
                                 if (invited != null && !invited.isEmpty()) {
                                     String organizerId = globalUser.getUserId();
 
-                                    String message = "Congrats! You are invited to this event";
+                                String message = "Congrats! You are invited to this event";
 
-                                    // iterate through invited list and send invitations
-                                    for (String invitedId : invited) {
-                                        FirestoreUtils.storeNotificationInFirestore(
-                                                organizerId,
-                                                invitedId,
-                                                message,
-                                                event.getName(),
-                                                event.getEventId(),
-                                                db
-                                        );
-                                        Log.d("EventDetails", "Automated notifications sent to " + invited.size() + " winners.");
+                                List<Task<?>> tasks = new ArrayList<>();
+                                AtomicBoolean anySent = new AtomicBoolean(false);
+                                AtomicBoolean alreadyNotified = new AtomicBoolean(false);
+
+                                for (String invitedId : invited) {
+                                    // check if invitation already exists to avoid duplicates
+                                    tasks.add(db.collection("notifications")
+                                            .whereEqualTo("recipient", invitedId)
+                                            .whereEqualTo("eventId", eventId)
+                                            .whereEqualTo("text", message)
+                                            .get()
+                                            .addOnSuccessListener(notifSnap -> {
+                                                if (notifSnap.isEmpty()) {
+                                                    // Send if not found
+                                                    FirestoreUtils.storeNotificationInFirestore(
+                                                            organizerId,
+                                                            invitedId,
+                                                            message,
+                                                            event.getName(),
+                                                            event.getEventId(),
+                                                            db
+                                                    );
+                                                    anySent.set(true);
+                                                } else {
+                                                    alreadyNotified.set(true);
+                                                }
+                                            }));
+                                }
+
+                                // Wait for all individual checks to finish before showing feedback
+                                Tasks.whenAllComplete(tasks).addOnCompleteListener(t -> {
+                                    if (anySent.get() && globalUser.getRole() == Role.ORGANIZER) {
+                                        Toast.makeText(this, "Invitation notifications sent to new winners.", Toast.LENGTH_SHORT).show();
+                                        Log.d("EventDetails", "Automated notifications sent to winners.");
                                     }
-                                }
-
-                            })
-                            .addOnFailureListener(e -> {
-                                Log.e("EventDetailsActivity", "Failed to generate invitationList. Error: " + e);
-                                if (globalUser.getRole() == Role.ORGANIZER) {
-                                    Toast.makeText(this, "Could not complete Draw", Toast.LENGTH_SHORT).show();
-                                }
-                            });
+                                    if (alreadyNotified.get() && globalUser.getRole() == Role.ORGANIZER) {
+                                            Toast.makeText(this, "Some winners were already notified previously.", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                    })
+                    .addOnFailureListener(e -> {
+                        Log.e("EventDetailsActivity", "Failed to generate invitationList. Error: " + e);
+                        if (globalUser.getRole() == Role.ORGANIZER) {
+                            Toast.makeText(this, "Could not complete Draw", Toast.LENGTH_SHORT).show();
+                        }
                 });
+        });
     }
 }
+
