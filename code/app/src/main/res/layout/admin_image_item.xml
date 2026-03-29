@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    app:strokeColor="@color/primaryAccent"
+    app:strokeColor="?attr/colorPrimary"
     app:strokeWidth="2.5dp"
     app:cardUseCompatPadding="true">
     <!--the following code is adapted from https://www.geeksforgeeks.org/android/how-to-build-an-image-gallery-android-app-with-recyclerview-and-glide/-->

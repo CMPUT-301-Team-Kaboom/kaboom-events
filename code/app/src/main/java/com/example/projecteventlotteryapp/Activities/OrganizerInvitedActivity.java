@@ -31,7 +31,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class OrganizerInvitedActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {
+public class OrganizerInvitedActivity extends BaseActivity implements CreateNotificationDialogFragment.NotificationListener {
     private String eventId;
     private String eventName;
     private EventUtils eventUtils;

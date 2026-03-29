@@ -60,7 +60,7 @@ import java.util.concurrent.ExecutionException;
  *
  *
  */
-public class EventDetailsActivity extends AppCompatActivity {
+public class EventDetailsActivity extends BaseActivity {
     private FirebaseFirestore db;
     private String eventId;
     private Event event;

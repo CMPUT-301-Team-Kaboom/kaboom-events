@@ -6,7 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.example.projecteventlotteryapp.R;
 
-public class CriteriaActivity extends AppCompatActivity {
+public class CriteriaActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

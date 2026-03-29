@@ -12,7 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:text="Create Notification"
-        android:textColor="@color/white"
+        android:textColor="?attr/colorOnPrimary"
         android:textSize="20sp"
         android:textStyle="bold" />
 
@@ -26,7 +26,7 @@
         android:gravity="top"
         android:hint="Enter a Message"
         android:padding="20dp"
-        android:textColor="@color/white"
+        android:textColor="?attr/colorOnPrimary"
         android:textColorHint="#888888"/>
 
     <LinearLayout
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginEnd="8dp"
-            android:backgroundTint="@color/white"
+            android:backgroundTint="?attr/colorOnPrimary"
             android:text="Back"
             android:textAllCaps="false"
             android:textColor="@color/black" />

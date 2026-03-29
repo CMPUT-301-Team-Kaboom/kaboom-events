@@ -24,7 +24,7 @@ import java.util.ArrayList;
  * It fetches organizer data from Firebase and displays it in a ListView.
  * @author Kevin
  */
-public class AdminOrganizersListActivity extends AppCompatActivity {
+public class AdminOrganizersListActivity extends BaseActivity {
     private ListView organizerListView;
     private OrganizerArrayAdapter organizerAdapter;
     private ArrayList<User> organizerDataList;

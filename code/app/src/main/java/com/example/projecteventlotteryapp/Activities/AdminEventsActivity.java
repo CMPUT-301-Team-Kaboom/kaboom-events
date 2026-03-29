@@ -25,7 +25,7 @@ import java.util.ArrayList;
 /**
  * Displays a list of all events for the admin to see and manage.
  */
-public class AdminEventsActivity extends AppCompatActivity {
+public class AdminEventsActivity extends BaseActivity {
     private ListView eventListView;
     private AdminEventArrayAdapter eventAdapter;
     private ArrayList<Event> eventDataList;

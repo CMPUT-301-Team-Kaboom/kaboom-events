@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-public class NotificationsListActivity extends AppCompatActivity {
+public class NotificationsListActivity extends BaseActivity {
 
     private FirebaseFirestore db;
     private ListView notificationsListView;

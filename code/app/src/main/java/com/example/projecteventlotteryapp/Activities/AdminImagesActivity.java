@@ -21,7 +21,7 @@ Admins cannot delete the default poster
 
 Author: Ashley Kang
  */
-public class AdminImagesActivity extends AppCompatActivity {
+public class AdminImagesActivity extends BaseActivity {
     /*
     the following code is adapted from https://www.geeksforgeeks.org/android/how-to-build-an-image-gallery-android-app-with-recyclerview-and-glide/
      */

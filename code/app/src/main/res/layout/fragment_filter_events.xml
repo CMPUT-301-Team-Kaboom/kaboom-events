@@ -148,7 +148,7 @@
             android:layout_height="30dp"
             android:background="@drawable/tag_button"
             android:text="+"
-            android:textColor="@color/white" />
+            android:textColor="?attr/colorOnPrimary" />
 
     </LinearLayout>
 
@@ -232,7 +232,7 @@
         android:layout_marginTop="36dp"
         android:backgroundTint="@color/grey"
         android:text="Clear Filters"
-        android:textColor="@color/primaryBackground"
+        android:textColor="?attr/colorOnSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cl_enrollment_status" />
@@ -242,9 +242,9 @@
         android:id="@+id/btn_filter_confirm"
         android:layout_width="140dp"
         android:layout_height="40dp"
-        android:backgroundTint="@color/secondaryAccent"
+        android:backgroundTint="?attr/colorSurface"
         android:text="Confirm"
-        android:textColor="@color/primaryBackground"
+        android:textColor="?attr/colorOnSecondary"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/btn_clear_filters" />
