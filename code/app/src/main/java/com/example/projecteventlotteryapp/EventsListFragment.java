@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+
 import com.example.projecteventlotteryapp.Activities.EventDetailsActivity;
 import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.Enums.Role;
@@ -21,6 +22,7 @@ import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.Filter;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
@@ -157,9 +159,13 @@ public class EventsListFragment extends Fragment {
         if (globalUser.getRole() == Role.ORGANIZER) { // filter by role
             DocumentReference organizerRef = db.collection("organizers")
                     .document(globalUser.getUserId());
-            query = query.whereEqualTo("organizer", organizerRef);
-        } else { // filter by private
-            query = query.whereEqualTo("isPrivate", false);
+            query = query.where(Filter.or(
+                    Filter.equalTo("organizer", organizerRef),
+                    Filter.arrayContains("coorganizers", globalUser.getUserId())));
+        } else { // filter by private or coorganizer
+            query = query.where(Filter.or(
+                    Filter.equalTo("isPrivate", false),
+                    Filter.arrayContains("coorganizers", globalUser.getUserId())));
         }
 
         // get events
@@ -246,9 +252,13 @@ public class EventsListFragment extends Fragment {
         if (globalUser.getRole() == Role.ORGANIZER) { // filter by role
             DocumentReference organizerRef = db.collection("organizers")
                     .document(globalUser.getUserId());
-            query = query.whereEqualTo("organizer", organizerRef);
+            query = query.where(Filter.or(
+                    Filter.equalTo("organizer", organizerRef),
+                    Filter.arrayContains("coorganizers", globalUser.getUserId())));
         } else { // filter by private
-            query = query.whereEqualTo("isPrivate", false);
+            query = query.where(Filter.or(
+                    Filter.equalTo("isPrivate", false),
+                    Filter.arrayContains("coorganizers", globalUser.getUserId())));
         }
 
         // get events

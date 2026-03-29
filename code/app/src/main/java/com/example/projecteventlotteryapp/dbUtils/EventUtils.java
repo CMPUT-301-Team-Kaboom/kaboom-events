@@ -266,6 +266,7 @@ public class EventUtils {
 
         // get array field
         ArrayList<String> tagsList = FirestoreUtils.fetchStringArrayList(snapshot, "tags");
+        ArrayList<String> coorganizerIds = FirestoreUtils.fetchStringArrayList(snapshot, "coorganizers");
 
         DocumentReference organizer = snapshot.getDocumentReference("organizer");
 
@@ -285,6 +286,7 @@ public class EventUtils {
         event.setGeolocationEnabled(geolocationEnabled);
         event.setTagsList(tagsList);
         event.setWaitlistLimit(waitlistLimit);
+        event.setCoorganizerIds(coorganizerIds != null ? coorganizerIds : new ArrayList<>());
 
         Log.d("Event", "Fetched event.\nEventId: " + eventId + "\nname: " + name);
         return event;
@@ -362,6 +364,7 @@ public class EventUtils {
         eventData.put("invited",  new ArrayList<>());
         eventData.put("declined", new ArrayList<>());
         eventData.put("comments", new ArrayList<>());
+        eventData.put("coorganizers", new ArrayList<>());
 
         db.collection("events")
                 .add(eventData)
@@ -581,5 +584,41 @@ public class EventUtils {
                 reference.update("comments", FieldValue.arrayRemove(commentId));
             }
         });
+    }
+
+    /**
+     * Adds a co-organizer to an event.
+     * @param eventId the ID of the event
+     * @param userId the ID of the user to be added as a co-organizer
+     * @param senderId the ID of the current user adding the co-organizer
+     * @return a Task representing the asynchronous operation
+     */
+    public Task<Void> addCoorganizer(String eventId, String userId, String senderId) {
+        DocumentReference eventDoc = db.collection("events").document(eventId);
+
+        HashMap<String, Object> updates = new HashMap<>();
+        updates.put("coorganizers", FieldValue.arrayUnion(userId));
+        updates.put("waitlist", FieldValue.arrayRemove(userId));
+        updates.put("invited", FieldValue.arrayRemove(userId));
+        updates.put("enrolled", FieldValue.arrayRemove(userId));
+        updates.put("declined", FieldValue.arrayRemove(userId));
+
+        return eventDoc.update(updates).addOnSuccessListener(aVoid -> {
+            eventDoc.get().addOnSuccessListener(snapshot -> {
+                String eventName = snapshot.getString("name");
+                String message = "You have been added as a co-organizer for " + eventName;
+                FirestoreUtils.storeNotificationInFirestore(senderId, userId, message, eventName, eventId, db);
+            });
+        });
+    }
+
+    /**
+     * Removes a co-organizer from an event.
+     * @param eventId the ID of the event
+     * @param userId the ID of the user to be removed as a co-organizer
+     * @return a Task representing the asynchronous operation
+     */
+    public Task<Void> removeCoorganizer(String eventId, String userId) {
+        return db.collection("events").document(eventId).update("coorganizers", FieldValue.arrayRemove(userId));
     }
 }
