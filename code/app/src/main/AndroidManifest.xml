@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
 
     <queries>
         <package android:name="com.google.android.gms" />
@@ -23,11 +24,15 @@
         android:theme="@style/Theme.ProjectEventLotteryApp"
         tools:replace="android:allowBackup,android:fullBackupContent,android:dataExtractionRules">
         <activity
+            android:name=".Activities.OrganizerPrivateInvitationsActivity"
+            android:exported="false" />
+        <activity
             android:name=".Activities.RegistrationActivity"
             android:exported="true"
             android:launchMode="singleTop">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -72,24 +77,25 @@
             android:exported="false" />
         <activity
             android:name=".Activities.EditEventActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".Activities.EntrantSettingsActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".Activities.OrganizerEnrolledActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".Activities.OrganizerInvitedActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".Activities.OrganizerDeclinedActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".Activities.EventCommentsActivity"
-            android:exported="false"/>
-        <activity android:name=".Activities.MapActivity"
-            android:exported="false"/>
+            android:exported="false" />
+        <activity
+            android:name=".Activities.MapActivity"
+            android:exported="false" />
         <activity
             android:name=".Activities.NotificationsListActivity"
             android:exported="false" />

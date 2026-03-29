@@ -108,20 +108,20 @@ public class EventUtils {
      * If the user ID already exists in the list, Firestore will not add a duplicate.</p>
      *
      * @param listType the entrant list to which the user should be added
-     * @param entrant the user being added to the list
+     * @param entrantID the ID of the user being added to the list
      * @return a {@link Task} representing the asynchronous Firestore update operation
      */
-    public Task<Void> addToEntrantList(EntrantListType listType, User entrant, String eventId) {
+    public Task<Void> addToEntrantList(EntrantListType listType, String entrantID, String eventId) {
         Log.d("AddToEntrantList", String.format("Type: %s | userId: %s",
                 listType.toString(),
-                entrant.getUserId())
+                entrantID)
         );
 
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
         HashMap<String, Object> updates = new HashMap<>();
         String listField = getDbEntrantListFieldName(listType);
-        updates.put(listField, FieldValue.arrayUnion(entrant.getUserId()));
+        updates.put(listField, FieldValue.arrayUnion(entrantID));
 
         if (listField.equals("waitlist")) {
             updates.put("waitlistSize", FieldValue.increment(1));
@@ -135,15 +135,15 @@ public class EventUtils {
      * <p>This function updates the Firestore event document by removing an entrant's userID from
      * the corresponding list field using {@code FieldValue.arrayRemove}.</p>
      * @param listType the list to remove the entrant from
-     * @param entrant the entrant to add to the list
+     * @param entrantID the ID of the entrant to remove from the list
      * @return a {@link Task} representing the asynchronous Firestore update operation
      */
-    public Task<Void> removeFromEntrantList(EntrantListType listType, User entrant, String eventId) {
+    public Task<Void> removeFromEntrantList(EntrantListType listType, String entrantID, String eventId) {
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
         HashMap<String, Object> updates = new HashMap<>();
         String listField = getDbEntrantListFieldName(listType);
-        updates.put(listField, FieldValue.arrayRemove(entrant.getUserId()));
+        updates.put(listField, FieldValue.arrayRemove(entrantID));
         if (listField.equals("waitlist")) {
             updates.put("waitlistSize", FieldValue.increment(-1));
         }
@@ -192,6 +192,7 @@ public class EventUtils {
     public Task<Void> fetchOrganizerForEvent(Event event, DocumentReference organizerRef) {
         if (organizerRef == null) return Tasks.forResult(null);
 
+        Log.d("EventUtils", "Fetching organizer for event: " + event.getEventId());
         return organizerRef.get().continueWith(task -> {
             if (task.isSuccessful() && task.getResult().exists()) {
                 /*
@@ -203,6 +204,31 @@ public class EventUtils {
                 DocumentSnapshot organizerDoc = task.getResult();
                 event.setOrganizerId(organizerDoc.getId());
                 event.setOrganizerName(organizerDoc.getString("name"));
+            }
+            return null;
+        });
+    }
+
+    /**
+     * Fetches the poster document from Firestore and updates the given Event with poster info.
+     *
+     * @param event the Event to update
+     * @param posterRef the DocumentReference to the poster
+     * @return a {@link Task} representing the asynchronous Firestore update operation
+     */
+    public Task<Void> fetchPosterForEvent(Event event, DocumentReference posterRef) {
+        if (posterRef == null) return Tasks.forResult(null);
+
+        return posterRef.get().continueWith(task -> {
+            if (task.isSuccessful() && task.getResult().exists()) {
+                /*
+                The following code is adapted from...
+                Source: https://firebase.google.com/docs/firestore/query-data/get-data
+                Title: "Get data with Cloud Firestore"
+                Retrieved: 2026-03-03
+                */
+                DocumentSnapshot posterDoc = task.getResult();
+                event.setPoster(posterDoc.getString("url"));
             }
             return null;
         });
@@ -240,6 +266,7 @@ public class EventUtils {
 
         // get array field
         ArrayList<String> tagsList = FirestoreUtils.fetchStringArrayList(snapshot, "tags");
+        ArrayList<String> coorganizerIds = FirestoreUtils.fetchStringArrayList(snapshot, "coorganizers");
 
         DocumentReference organizer = snapshot.getDocumentReference("organizer");
 
@@ -259,6 +286,7 @@ public class EventUtils {
         event.setGeolocationEnabled(geolocationEnabled);
         event.setTagsList(tagsList);
         event.setWaitlistLimit(waitlistLimit);
+        event.setCoorganizerIds(coorganizerIds != null ? coorganizerIds : new ArrayList<>());
 
         Log.d("Event", "Fetched event.\nEventId: " + eventId + "\nname: " + name);
         return event;
@@ -336,6 +364,7 @@ public class EventUtils {
         eventData.put("invited",  new ArrayList<>());
         eventData.put("declined", new ArrayList<>());
         eventData.put("comments", new ArrayList<>());
+        eventData.put("coorganizers", new ArrayList<>());
 
         db.collection("events")
                 .add(eventData)
@@ -460,6 +489,7 @@ public class EventUtils {
         return Tasks.whenAllSuccess(waitlistTask, invitedListTask)
             .continueWithTask(task -> {
                 if (!task.isSuccessful()) {
+                    Log.e("generateInvitationList", "Fetch tasks error: " + task.getException());
                     return Tasks.forException(task.getException());
                 }
 
@@ -554,5 +584,41 @@ public class EventUtils {
                 reference.update("comments", FieldValue.arrayRemove(commentId));
             }
         });
+    }
+
+    /**
+     * Adds a co-organizer to an event.
+     * @param eventId the ID of the event
+     * @param userId the ID of the user to be added as a co-organizer
+     * @param senderId the ID of the current user adding the co-organizer
+     * @return a Task representing the asynchronous operation
+     */
+    public Task<Void> addCoorganizer(String eventId, String userId, String senderId) {
+        DocumentReference eventDoc = db.collection("events").document(eventId);
+
+        HashMap<String, Object> updates = new HashMap<>();
+        updates.put("coorganizers", FieldValue.arrayUnion(userId));
+        updates.put("waitlist", FieldValue.arrayRemove(userId));
+        updates.put("invited", FieldValue.arrayRemove(userId));
+        updates.put("enrolled", FieldValue.arrayRemove(userId));
+        updates.put("declined", FieldValue.arrayRemove(userId));
+
+        return eventDoc.update(updates).addOnSuccessListener(aVoid -> {
+            eventDoc.get().addOnSuccessListener(snapshot -> {
+                String eventName = snapshot.getString("name");
+                String message = "You have been added as a co-organizer for " + eventName;
+                FirestoreUtils.storeNotificationInFirestore(senderId, userId, message, eventName, eventId, db);
+            });
+        });
+    }
+
+    /**
+     * Removes a co-organizer from an event.
+     * @param eventId the ID of the event
+     * @param userId the ID of the user to be removed as a co-organizer
+     * @return a Task representing the asynchronous operation
+     */
+    public Task<Void> removeCoorganizer(String eventId, String userId) {
+        return db.collection("events").document(eventId).update("coorganizers", FieldValue.arrayRemove(userId));
     }
 }

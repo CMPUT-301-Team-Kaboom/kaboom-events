@@ -22,11 +22,14 @@ import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.Filter;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass used to display a list of events based off certain conditions.
@@ -38,13 +41,12 @@ import java.util.ArrayList;
 public class EventsListFragment extends Fragment {
     private FirebaseFirestore db;
     private CollectionReference eventsRef;
-
     private EventUtils eventUtils;
     private User globalUser;
     private ListView eventsListView;
     private ArrayList<Event> eventsArrayList;
-    private ArrayAdapter<Event> eventsArrayAdapter;
-
+    private EventArrayAdapter eventsArrayAdapter;
+    private Map<String, String> eventStatuses;
     private EventsFilter currentFilter;
 
     public EventsListFragment() {
@@ -75,6 +77,8 @@ public class EventsListFragment extends Fragment {
         // get user role
         MyApp app = (MyApp) getActivity().getApplication();
         globalUser = app.getCurrentUser();
+
+        eventStatuses = new HashMap<>();
     }
 
     /**
@@ -112,7 +116,7 @@ public class EventsListFragment extends Fragment {
         // setup ListView and EventArrayAdapter (see citation [1])
         eventsListView = view.findViewById(R.id.lv_events_list);
         eventsArrayList = new ArrayList<Event>();
-        eventsArrayAdapter = new EventArrayAdapter(getActivity(), eventsArrayList);
+        eventsArrayAdapter = new EventArrayAdapter(getActivity(), eventsArrayList, eventStatuses);
         eventsListView.setAdapter(eventsArrayAdapter);
 
         // listener for a ListView event items
@@ -151,11 +155,17 @@ public class EventsListFragment extends Fragment {
     private void getEventsForRole() {
         Query query = eventsRef;
 
-        // filter by role
-        if (globalUser.getRole() == Role.ORGANIZER) {
+        // base filtering
+        if (globalUser.getRole() == Role.ORGANIZER) { // filter by role
             DocumentReference organizerRef = db.collection("organizers")
                     .document(globalUser.getUserId());
-            query = query.whereEqualTo("organizer", organizerRef);
+            query = query.where(Filter.or(
+                    Filter.equalTo("organizer", organizerRef),
+                    Filter.arrayContains("coorganizers", globalUser.getUserId())));
+        } else { // filter by private or coorganizer
+            query = query.where(Filter.or(
+                    Filter.equalTo("isPrivate", false),
+                    Filter.arrayContains("coorganizers", globalUser.getUserId())));
         }
 
         // get events
@@ -176,13 +186,22 @@ public class EventsListFragment extends Fragment {
                 if (organizerRef != null) {
                     eventUtils.fetchOrganizerForEvent(event, organizerRef)
                             .addOnSuccessListener(aVoid -> {
-                                eventsArrayList.add(event);
                                 eventsArrayAdapter.notifyDataSetChanged();
                             });
-                } else {
-                    eventsArrayList.add(event);
-                    eventsArrayAdapter.notifyDataSetChanged();
                 }
+
+                // get poster
+                DocumentReference posterRef = snapshot.getDocumentReference("poster");
+                if (posterRef != null) {
+                    eventUtils.fetchPosterForEvent(event, posterRef)
+                            .addOnSuccessListener(aVoid -> {
+                                eventsArrayAdapter.notifyDataSetChanged();
+                            });
+                }
+
+                // update adapter
+                eventsArrayList.add(event);
+                eventsArrayAdapter.notifyDataSetChanged();
             }
         });
     }
@@ -229,12 +248,17 @@ public class EventsListFragment extends Fragment {
     private void getFilteredEvents() {
         Query query = eventsRef;
 
-        // filter by role (see citation [1])
-        if (globalUser.getRole() == Role.ORGANIZER) {
-            Log.d("EventsListFragment", "filter organizer: " + globalUser.getUserId());
+        // base filtering
+        if (globalUser.getRole() == Role.ORGANIZER) { // filter by role
             DocumentReference organizerRef = db.collection("organizers")
                     .document(globalUser.getUserId());
-            query = query.whereEqualTo("organizer", organizerRef);
+            query = query.where(Filter.or(
+                    Filter.equalTo("organizer", organizerRef),
+                    Filter.arrayContains("coorganizers", globalUser.getUserId())));
+        } else { // filter by private
+            query = query.where(Filter.or(
+                    Filter.equalTo("isPrivate", false),
+                    Filter.arrayContains("coorganizers", globalUser.getUserId())));
         }
 
         // get events
@@ -257,16 +281,100 @@ public class EventsListFragment extends Fragment {
                     if (organizerRef != null) {
                         eventUtils.fetchOrganizerForEvent(event, organizerRef)
                                 .addOnSuccessListener(aVoid -> {
-                                    eventsArrayList.add(event);
                                     eventsArrayAdapter.notifyDataSetChanged();
                                 });
-                    } else {
-                        eventsArrayList.add(event);
-                        eventsArrayAdapter.notifyDataSetChanged();
                     }
+
+                    // get poster
+                    DocumentReference posterRef = snapshot.getDocumentReference("poster");
+                    if (posterRef != null) {
+                        eventUtils.fetchPosterForEvent(event, posterRef)
+                                .addOnSuccessListener(aVoid -> {
+                                    eventsArrayAdapter.notifyDataSetChanged();
+                                });
+                    }
+
+                    // update adapter
+                    eventsArrayList.add(event);
+                    eventsArrayAdapter.notifyDataSetChanged();
                 }
             }
-            eventsArrayAdapter.notifyDataSetChanged();
+            eventsArrayAdapter.setEventStatuses(new HashMap<>());
+        });
+    }
+
+    /**
+     * Fetch events user has attended from the database and status.
+     *
+     * Code Citation:
+     *     [1] Title: "Perform simple and compound queries in Cloud Firestore"
+     *         Source: https://firebase.google.com/docs/firestore/query-data/
+     *         Retrieved: 2026-03-11
+     *
+     *     [2] Author: Alex Mamo https://stackoverflow.com/users/5246885/alex-mamo
+     *         Title: "Check if Firestore query is empty"
+     *         Answer: https://stackoverflow.com/a/56847476
+     *         Date: 2019-07-02
+     *         Retrieved: 2026-03-12
+     *         License: CC-BY-SA 4.0
+     *
+     */
+    public void getEventsHistory(String userId) {
+        Query query = eventsRef;
+
+        // get events
+        query.get().addOnSuccessListener(queryDocumentSnapshots -> {
+            eventsArrayList.clear();
+            eventStatuses.clear();
+
+            //  handle empty query (see citation [2])
+            if (queryDocumentSnapshots.isEmpty()) {
+                eventsArrayAdapter.notifyDataSetChanged();
+                return;
+            }
+
+            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                Event event = eventUtils.fetchEventFromSnapshot(snapshot);
+
+                // get status (assume user can only be in one list at a time)
+                String status = null;
+                if (snapshot.get("enrolled") != null && ((ArrayList<String>) snapshot.get("enrolled")).contains(userId)) {
+                    status = "enrolled";
+                } else if (snapshot.get("declined") != null && ((ArrayList<String>) snapshot.get("declined")).contains(userId)) {
+                    status = "declined";
+                } else if (snapshot.get("invited") != null && ((ArrayList<String>) snapshot.get("invited")).contains(userId)) {
+                    status = "invited";
+                } else if (snapshot.get("waitlist") != null && ((ArrayList<String>) snapshot.get("waitlist")).contains(userId)) {
+                    status = "waitlist";
+                }
+
+                if (status != null) {
+                    eventStatuses.put(event.getEventId(), status);
+
+                    // get organizer
+                    DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
+                    if (organizerRef != null) {
+                        eventUtils.fetchOrganizerForEvent(event, organizerRef)
+                                .addOnSuccessListener(aVoid -> {
+                                    eventsArrayAdapter.notifyDataSetChanged();
+                                });
+                    }
+
+                    // get poster
+                    DocumentReference posterRef = snapshot.getDocumentReference("poster");
+                    if (posterRef != null) {
+                        eventUtils.fetchPosterForEvent(event, posterRef)
+                                .addOnSuccessListener(aVoid -> {
+                                    eventsArrayAdapter.notifyDataSetChanged();
+                                });
+                    }
+
+                    // update adapter
+                    eventsArrayList.add(event);
+                    eventsArrayAdapter.notifyDataSetChanged();
+                }
+            }
+            eventsArrayAdapter.setEventStatuses(eventStatuses);
         });
     }
 

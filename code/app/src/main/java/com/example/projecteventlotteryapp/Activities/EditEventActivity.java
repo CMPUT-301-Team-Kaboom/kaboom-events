@@ -10,6 +10,7 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -25,6 +26,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
 import com.example.projecteventlotteryapp.Models.Event;
+import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.PosterImageHandler;
 import com.example.projecteventlotteryapp.R;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
@@ -58,7 +60,7 @@ public class EditEventActivity extends AppCompatActivity {
     private EditText editEntrantLimit, editWaitlistLimit, editLocation, editDescription;
     private TextView editTag1, editTag2, editTag3;
     private SwitchCompat switchGeolocation;
-    private Button saveButton;
+    private Button saveButton, addCoorganizerButton;
     private ImageButton backButton;
     private ImageView editQRCode;
     private Bitmap qrCodeBitmap;
@@ -91,6 +93,7 @@ public class EditEventActivity extends AppCompatActivity {
         editDescription = findViewById(R.id.et_edit_description);
         switchGeolocation = findViewById(R.id.switch_geolocation);
         saveButton = findViewById(R.id.btn_event_edit_save);
+        addCoorganizerButton = findViewById(R.id.btn_add_coorganizer);
         bannerEditButton = findViewById(R.id.btn_edit_event_edit_banner);
         editBanner = findViewById(R.id.iv_edit_banner);
         backButton = findViewById(R.id.btn_edit_event_back);
@@ -147,6 +150,9 @@ public class EditEventActivity extends AppCompatActivity {
             posterImageLauncher.launch("image/*");
         });
 
+        // set up add co-organizer button listener
+        addCoorganizerButton.setOnClickListener(v -> showAddCoorganizerDialog());
+
         // set up qr code click listener
         editQRCode.setOnClickListener(v -> generateQRCode());
     }
@@ -199,6 +205,30 @@ public class EditEventActivity extends AppCompatActivity {
 
             builder.show();
         });
+    }
+
+    private void showAddCoorganizerDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Add Co-organizer");
+
+        final EditText input = new EditText(this);
+        input.setHint("Enter User ID");
+        input.setInputType(InputType.TYPE_CLASS_TEXT);
+        builder.setView(input);
+
+        builder.setPositiveButton("Add", (dialog, which) -> {
+            String userId = input.getText().toString().trim();
+            if (!userId.isEmpty()) {
+                String senderId = ((MyApp) getApplication()).getCurrentUser().getUserId();
+                eventUtils.addCoorganizer(eventId, userId, senderId);
+                Toast.makeText(this, "Co-organizer added", Toast.LENGTH_SHORT).show();
+            } else {
+                Toast.makeText(this, "User ID cannot be empty", Toast.LENGTH_SHORT).show();
+            }
+        });
+        builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
+
+        builder.show();
     }
 
     private void saveEventDetails() {

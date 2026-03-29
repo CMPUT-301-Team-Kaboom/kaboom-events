@@ -1,5 +1,8 @@
 package com.example.projecteventlotteryapp.Activities;
 
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.provider.Settings;
@@ -15,6 +18,7 @@ import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
+import com.example.projecteventlotteryapp.EventsListActivity;
 import com.example.projecteventlotteryapp.Models.CreateNotificationDialogFragment;
 import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.OrganizerEntrantListAdapter;
@@ -38,9 +42,10 @@ import static com.example.projecteventlotteryapp.dbUtils.FirestoreUtils.storeNot
 public class OrganizerWaitlistActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {
     private String eventId;
     private String eventName;
+    private boolean isPrivate;
     private OrganizerEntrantListAdapter adapter;
     private ListView waitlistView;
-    private ImageButton backBtn;
+    private ImageButton backBtn, shareBtn;
     private Button selectBtn;
     private Button doneBtn;
     private Button sendNotifBtn;
@@ -66,10 +71,10 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
         backBtn = findViewById(R.id.btn_organizer_waitlist_back);
         backBtn.setOnClickListener(v -> finish());
         sendNotifBtn = findViewById(R.id.btn_send_notification);
-
+        shareBtn = findViewById(R.id.btn_organizer_waitlist_share);
 
         // hide notification buttons container initially
-        floatingActionsContainer.setVisibility(View.GONE);
+        floatingActionsContainer.setVisibility(GONE);
 
         db = FirebaseFirestore.getInstance();
         DocumentReference eventDoc = db.collection("events").document(eventId);
@@ -78,6 +83,19 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
             if (task.isSuccessful()){
                 DocumentSnapshot doc = task.getResult();
                 if(doc.exists()){
+                    isPrivate = doc.getBoolean("isPrivate");
+                    if (isPrivate) { // show share button if private event
+                        shareBtn.setVisibility(VISIBLE);
+                        shareBtn.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                startActivity(new Intent(OrganizerWaitlistActivity.this, OrganizerPrivateInvitationsActivity.class));
+                            }
+                        });
+                    } else { // hide share button if public event
+                        shareBtn.setVisibility(GONE);
+                    }
+
                     if (eventName == null) {
                         eventName = doc.getString("name");
                     }
@@ -99,7 +117,7 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
                 // Enter selection mode
                 isSelectionMode = true;
                 selectBtn.setText("Select All");
-                floatingActionsContainer.setVisibility(View.VISIBLE);
+                floatingActionsContainer.setVisibility(VISIBLE);
                 adapter.setSelectionMode(true);
             } else {
                 // select all otherwise
@@ -111,7 +129,7 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
             // Exit Selection Mode
             isSelectionMode = false;
             selectBtn.setText("Select");
-            floatingActionsContainer.setVisibility(View.GONE);
+            floatingActionsContainer.setVisibility(GONE);
             adapter.setSelectionMode(false);
             adapter.clearSelection();
         });
@@ -141,7 +159,7 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
 
         for (Integer pos : selected) {
             String recipientId = waitlist.get(pos);
-            storeNotificationInFirestore(userId, recipientId, message, eventName, db);
+            storeNotificationInFirestore(userId, recipientId, message, eventName, eventId, db);
         }
 
         Toast.makeText(this, "Notifications sent", Toast.LENGTH_SHORT).show();
@@ -149,7 +167,7 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
         // Clear selection after sending
         isSelectionMode = false;
         selectBtn.setText("Select");
-        floatingActionsContainer.setVisibility(View.GONE);
+        floatingActionsContainer.setVisibility(GONE);
         adapter.setSelectionMode(false);
         adapter.clearSelection();
     }
