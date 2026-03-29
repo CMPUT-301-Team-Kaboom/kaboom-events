@@ -42,6 +42,7 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -70,6 +71,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private DocumentReference eventDoc;
     private EventCommentArrayAdapter commentsAdapter;
     private ArrayList<String> commentsList;
+    private ListenerRegistration eventListener;
 
     //=============================
     // UI Elements
@@ -133,35 +135,44 @@ public class EventDetailsActivity extends AppCompatActivity {
         MyApp app = (MyApp) getApplication();
         globalUser = app.getCurrentUser();
 
-        /*  Code adapted from https://firebase.google.com/docs/firestore/query-data/get-data#java */
-        DocumentReference docRef = db.collection("events").document(eventId);
-        docRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    Log.d("EventActivity", "DocumentSnapshot data: " + document.getData());
-                    event = eventUtils.fetchEventFromSnapshot(document);
+        /*  the following code is adapted from https://firebase.google.com/docs/firestore/query-data/listen#java_2 */
+        eventListener = eventDoc.addSnapshotListener((document, error) -> {
+            if (error != null) {
+                Log.w("EventActivity", "Listen failed.", error);
+                return;
+            }
 
-                    // get and set organizer for this Event
-                    DocumentReference organizerRef = document.getDocumentReference("organizer");
-                    if (organizerRef != null) {
-                        eventUtils.fetchOrganizerForEvent(event, organizerRef)
-                                .addOnSuccessListener(aVoid -> {
-                                    updateUi();
-                                })
-                                .addOnFailureListener(e -> {
-                                    Log.d("EventDetailsActivity", "Failed to set Organizer info for event: " + event.getEventId());
-                                    updateUi();
-                                });
-                    }
+            if (document != null && document.exists()) {
+                Log.d("EventActivity", "DocumentSnapshot data: " + document.getData());
+                event = eventUtils.fetchEventFromSnapshot(document);
+
+                // get and set organizer for this Event
+                DocumentReference organizerRef = document.getDocumentReference("organizer");
+                if (organizerRef != null) {
+                    eventUtils.fetchOrganizerForEvent(event, organizerRef)
+                            .addOnSuccessListener(aVoid -> {
+                                updateUi(document);
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.d("EventDetailsActivity", "Failed to set Organizer info for event: " + event.getEventId());
+                                updateUi(document);
+                            });
                 } else {
-                    Log.d("EventActivity", "No such document");
+                    updateUi(document);
                 }
             } else {
-                Log.d("EventActivity", "get failed with ", task.getException());
+                Log.d("EventActivity", "No such document");
             }
         });
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (eventListener != null) {
+            eventListener.remove();
+        }
     }
 
     /**
@@ -291,12 +302,13 @@ public class EventDetailsActivity extends AppCompatActivity {
     /**
      * Helper function that updates the UI elements using the local event variable and fetches
      * the poster image associated with the event.
+     * @param doc current snapshot of the event document
      */
-    private void updateUi() {
+    private void updateUi(DocumentSnapshot doc) {
         nameHeaderTextView.setText(event.getName());
         organizerHeaderTextview.setText(event.getOrganizerName());
         attendeesTV.setText(String.valueOf(event.getAttendeesLimit()));
-        refreshWaitlistTV();
+        waitListTV.setText(String.valueOf(event.getWaitlistSize()));
         descriptionTV.setText(event.getDescription());
         setupTags();
 
@@ -311,23 +323,19 @@ public class EventDetailsActivity extends AppCompatActivity {
         );
         registrationPeriodTV.setText(registrationPeriodText);
 
-        db.collection("events").document(eventId).get().addOnSuccessListener(doc -> {
-            if (doc.exists()) {
-                DocumentReference posterRef = doc.getDocumentReference("poster");
-
-                if (posterRef != null) {
-                    posterRef.get().addOnSuccessListener(posterDoc -> {
-                        if (posterDoc.exists()) {
-                            Glide.with(this).load(posterDoc.getString("url")).into(posterIV);
-                        } else {
-                            Glide.with(this).load(R.drawable.default_poster).into(posterIV);
-                        }
-                    });
+        // Fetch poster from the provided snapshot reference
+        DocumentReference posterRef = doc.getDocumentReference("poster");
+        if (posterRef != null) {
+            posterRef.get().addOnSuccessListener(posterDoc -> {
+                if (posterDoc.exists()) {
+                    Glide.with(this).load(posterDoc.getString("url")).into(posterIV);
                 } else {
                     Glide.with(this).load(R.drawable.default_poster).into(posterIV);
                 }
-            }
-        });
+            });
+        } else {
+            Glide.with(this).load(R.drawable.default_poster).into(posterIV);
+        }
 
         configureUIForRole(globalUser);
     }
@@ -624,5 +632,3 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
 }
-
-
