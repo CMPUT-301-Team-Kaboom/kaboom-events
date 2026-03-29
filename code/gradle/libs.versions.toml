@@ -16,6 +16,8 @@ recyclerview = "1.4.0"
 playServicesLocation = "21.3.0"
 playServicesMaps = "20.0.0"
 cardview = "1.0.0"
+zxing = "3.5.4"
+zxingAndroidEmbedded = "4.3.0"
 
 [libraries]
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -34,6 +36,8 @@ recyclerview = { group = "androidx.recyclerview", name = "recyclerview", version
 play-services-location = { group = "com.google.android.gms", name = "play-services-location", version.ref = "playServicesLocation" }
 play-services-maps = { group = "com.google.android.gms", name = "play-services-maps", version.ref = "playServicesMaps" }
 cardview = { group = "androidx.cardview", name = "cardview", version.ref = "cardview" }
+zxing-core = { group = "com.google.zxing", name = "core", version.ref = "zxing" }
+zxing-android-embedded = { group = "com.journeyapps", name = "zxing-android-embedded", version.ref = "zxingAndroidEmbedded" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
