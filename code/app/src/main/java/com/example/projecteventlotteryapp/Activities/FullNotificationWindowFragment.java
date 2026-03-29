@@ -1,9 +1,12 @@
 package com.example.projecteventlotteryapp.Activities;
 
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 
@@ -22,20 +25,24 @@ public class FullNotificationWindowFragment extends DialogFragment {
     private static final String ARG_TITLE = "title";
     private static final String ARG_SENDER = "sender";
     private static final String ARG_BODY = "body";
+    private static final String ARG_EVENT_ID = "eventId";
 
     /**
      * Creates a new instance of the dialog fragment.
+     *
      * @param title
      * @param sender
      * @param body
+     * @param eventId
      * @return
      */
-    public static FullNotificationWindowFragment newInstance(String title, String sender, String body) {
+    public static FullNotificationWindowFragment newInstance(String title, String sender, String body, String eventId) {
         FullNotificationWindowFragment fragment = new FullNotificationWindowFragment();
         Bundle args = new Bundle();
         args.putString(ARG_TITLE, title);
         args.putString(ARG_SENDER, sender);
         args.putString(ARG_BODY, body);
+        args.putString(ARG_EVENT_ID, eventId);
         fragment.setArguments(args);
         return fragment;
     }
@@ -51,6 +58,7 @@ public class FullNotificationWindowFragment extends DialogFragment {
         TextView senderTextView = view.findViewById(R.id.tv_full_notif_sender);
         TextView bodyTextView = view.findViewById(R.id.tv_full_notif_body);
         ImageButton backButton = view.findViewById(R.id.btn_full_notif_back);
+        Button eventButton = view.findViewById(R.id.btn_go_to_event);
 
         // set the text for the UI elements
         if (getArguments() != null) {
@@ -61,6 +69,20 @@ public class FullNotificationWindowFragment extends DialogFragment {
 
         // close the dialog when back button is pressed
         backButton.setOnClickListener(v -> dismiss());
+
+        // go to event when event button is pressed
+        eventButton.setOnClickListener(v -> {
+            if (getArguments() != null) {
+                String eventId = getArguments().getString(ARG_EVENT_ID);
+                Log.d("FullNotificationWindowFragment", "event id: "+ eventId);
+
+                if (eventId != null && getActivity() != null) {
+                    Intent intent = new Intent(getActivity(), EventDetailsActivity.class);
+                    intent.putExtra("eventId", eventId);
+                    startActivity(intent);
+                }
+            }
+        });
 
         return view;
     }
