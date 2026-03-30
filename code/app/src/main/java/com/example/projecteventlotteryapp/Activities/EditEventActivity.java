@@ -25,12 +25,14 @@ import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.SwitchCompat;
 
+import com.bumptech.glide.Glide;
 import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.PosterImageHandler;
 import com.example.projecteventlotteryapp.R;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
@@ -112,7 +114,16 @@ public class EditEventActivity extends AppCompatActivity {
         FirebaseFirestore db = FirebaseFirestore.getInstance();
         db.collection("events").document(eventId).get().addOnSuccessListener(doc -> {
             event = eventUtils.fetchEventFromSnapshot(doc);
-            setUI(event);
+            
+            // get QR code reference
+            DocumentReference qrCodeRef = doc.getDocumentReference("qrCode");
+            if (qrCodeRef != null) {
+                eventUtils.fetchQrCodeForEvent(event, qrCodeRef).addOnSuccessListener(aVoid -> {
+                    setUI(event);
+                });
+            } else {
+                setUI(event);
+            }
         });
 
         // set up back button listener
@@ -378,7 +389,7 @@ public class EditEventActivity extends AppCompatActivity {
 
         ArrayList<String> tags = event.getTagsList();
         if (tags != null) {
-            if (tags.size() > 0) editTag1.setText(tags.get(0));
+            if (!tags.isEmpty()) editTag1.setText(tags.get(0));
             else editTag1.setText("None");
             if (tags.size() > 1) editTag2.setText(tags.get(1));
             else editTag2.setText("None");
@@ -388,6 +399,11 @@ public class EditEventActivity extends AppCompatActivity {
             editTag1.setText("None");
             editTag2.setText("None");
             editTag3.setText("None");
+        }
+
+        // load existing QR code
+        if (event.getQrCodeUrl() != null && !event.getQrCodeUrl().isEmpty()) {
+            Glide.with(this).load(event.getQrCodeUrl()).into(editQRCode);
         }
     }
 }
