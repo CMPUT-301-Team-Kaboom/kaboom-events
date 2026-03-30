@@ -331,18 +331,23 @@ public class EventDetailsActivity extends AppCompatActivity {
         );
         registrationPeriodTV.setText(registrationPeriodText);
 
-        DocumentReference posterRef = doc.getDocumentReference("poster");
-        if (posterRef != null) {
-            posterRef.get().addOnSuccessListener(posterDoc -> {
-                if (posterDoc.exists()) {
-                    Glide.with(this).load(posterDoc.getString("url")).into(posterIV);
+        db.collection("events").document(eventId).get().addOnSuccessListener(eventSnapshot -> {
+            if (eventSnapshot.exists()) {
+                DocumentReference posterRef = eventSnapshot.getDocumentReference("poster");
+
+                if (posterRef != null) {
+                    posterRef.get().addOnSuccessListener(posterDoc -> {
+                        if (posterDoc.exists()) {
+                            Glide.with(this).load(posterDoc.getString("url")).into(posterIV);
+                        } else {
+                            Glide.with(this).load(R.drawable.default_poster).into(posterIV);
+                        }
+                    });
                 } else {
                     Glide.with(this).load(R.drawable.default_poster).into(posterIV);
                 }
-            });
-        } else {
-            Glide.with(this).load(R.drawable.default_poster).into(posterIV);
-        }
+            }
+        });
 
         configureUIForRole(globalUser);
     }
