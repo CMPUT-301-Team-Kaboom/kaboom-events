@@ -389,7 +389,7 @@ public class EditEventActivity extends AppCompatActivity {
 
         ArrayList<String> tags = event.getTagsList();
         if (tags != null) {
-            if (!tags.isEmpty()) editTag1.setText(tags.get(0));
+            if (tags.size() > 0) editTag1.setText(tags.get(0));
             else editTag1.setText("None");
             if (tags.size() > 1) editTag2.setText(tags.get(1));
             else editTag2.setText("None");
