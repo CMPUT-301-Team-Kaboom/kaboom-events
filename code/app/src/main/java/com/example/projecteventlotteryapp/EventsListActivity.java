@@ -2,6 +2,7 @@ package com.example.projecteventlotteryapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
@@ -156,6 +157,29 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
             return false;
         });
     }
+
+    /**
+     * Refresh the EventsListFragment upon returning to the EventsListActivity from another activity.
+     *
+     * Code Citation:
+     *          [1] Author: user2742861 https://stackoverflow.com/users/2742861/user2742861
+     *          Title: "Android refresh activity on close of another"
+     *          Answer: https://stackoverflow.com/questions/19277414/android-refresh-activity-on-close-of-another
+     *          Date: 2013-10-09
+     *          Retrieved: 2026-03-29
+     *
+     */
+      @Override protected void onResume() {
+          Log.d("EventsListFragment", "resume");
+          super.onResume();
+
+          EventsListFragment fragment = (EventsListFragment)
+                  getSupportFragmentManager().findFragmentById(R.id.fl_events_list);
+
+          if (fragment != null) {
+              fragment.refreshEventList();
+          }
+      }
 
     /**
      * Configures the UI for a given user depending on their role

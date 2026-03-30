@@ -42,6 +42,7 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -70,6 +71,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private DocumentReference eventDoc;
     private EventCommentArrayAdapter commentsAdapter;
     private ArrayList<String> commentsList;
+    private ListenerRegistration eventListener;
 
     //=============================
     // UI Elements
@@ -133,35 +135,44 @@ public class EventDetailsActivity extends AppCompatActivity {
         MyApp app = (MyApp) getApplication();
         globalUser = app.getCurrentUser();
 
-        /*  Code adapted from https://firebase.google.com/docs/firestore/query-data/get-data#java */
-        DocumentReference docRef = db.collection("events").document(eventId);
-        docRef.get().addOnCompleteListener(task -> {
-            if (task.isSuccessful()) {
-                DocumentSnapshot document = task.getResult();
-                if (document.exists()) {
-                    Log.d("EventActivity", "DocumentSnapshot data: " + document.getData());
-                    event = eventUtils.fetchEventFromSnapshot(document);
+        /*  the following code is adapted from https://firebase.google.com/docs/firestore/query-data/listen#java_2 */
+        eventListener = eventDoc.addSnapshotListener((document, error) -> {
+            if (error != null) {
+                Log.w("EventActivity", "Listen failed.", error);
+                return;
+            }
 
-                    // get and set organizer for this Event
-                    DocumentReference organizerRef = document.getDocumentReference("organizer");
-                    if (organizerRef != null) {
-                        eventUtils.fetchOrganizerForEvent(event, organizerRef)
-                                .addOnSuccessListener(aVoid -> {
-                                    updateUi();
-                                })
-                                .addOnFailureListener(e -> {
-                                    Log.d("EventDetailsActivity", "Failed to set Organizer info for event: " + event.getEventId());
-                                    updateUi();
-                                });
-                    }
+            if (document != null && document.exists()) {
+                Log.d("EventActivity", "DocumentSnapshot data: " + document.getData());
+                event = eventUtils.fetchEventFromSnapshot(document);
+
+                // get and set organizer for this Event
+                DocumentReference organizerRef = document.getDocumentReference("organizer");
+                if (organizerRef != null) {
+                    eventUtils.fetchOrganizerForEvent(event, organizerRef)
+                            .addOnSuccessListener(aVoid -> {
+                                updateUi();
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.d("EventDetailsActivity", "Failed to set Organizer info for event: " + event.getEventId());
+                                updateUi();
+                            });
                 } else {
-                    Log.d("EventActivity", "No such document");
+                    updateUi();
                 }
             } else {
-                Log.d("EventActivity", "get failed with ", task.getException());
+                Log.d("EventActivity", "No such document");
             }
         });
 
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (eventListener != null) {
+            eventListener.remove();
+        }
     }
 
     /**
@@ -319,9 +330,9 @@ public class EventDetailsActivity extends AppCompatActivity {
         );
         registrationPeriodTV.setText(registrationPeriodText);
 
-        db.collection("events").document(eventId).get().addOnSuccessListener(doc -> {
-            if (doc.exists()) {
-                DocumentReference posterRef = doc.getDocumentReference("poster");
+        db.collection("events").document(eventId).get().addOnSuccessListener(eventSnapshot -> {
+            if (eventSnapshot.exists()) {
+                DocumentReference posterRef = eventSnapshot.getDocumentReference("poster");
 
                 if (posterRef != null) {
                     posterRef.get().addOnSuccessListener(posterDoc -> {
@@ -632,5 +643,3 @@ public class EventDetailsActivity extends AppCompatActivity {
     }
 
 }
-
-
