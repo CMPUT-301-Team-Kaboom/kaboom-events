@@ -151,14 +151,14 @@ public class EventDetailsActivity extends AppCompatActivity {
                 if (organizerRef != null) {
                     eventUtils.fetchOrganizerForEvent(event, organizerRef)
                             .addOnSuccessListener(aVoid -> {
-                                updateUi(document);
+                                updateUi();
                             })
                             .addOnFailureListener(e -> {
                                 Log.d("EventDetailsActivity", "Failed to set Organizer info for event: " + event.getEventId());
-                                updateUi(document);
+                                updateUi();
                             });
                 } else {
-                    updateUi(document);
+                    updateUi();
                 }
             } else {
                 Log.d("EventActivity", "No such document");
@@ -310,9 +310,8 @@ public class EventDetailsActivity extends AppCompatActivity {
     /**
      * Helper function that updates the UI elements using the local event variable and fetches
      * the poster image associated with the event.
-     * @param doc current snapshot of the event document
      */
-    private void updateUi(DocumentSnapshot doc) {
+    private void updateUi() {
         nameHeaderTextView.setText(event.getName());
         organizerHeaderTextview.setText(event.getOrganizerName());
         attendeesTV.setText(String.valueOf(event.getAttendeesLimit()));
