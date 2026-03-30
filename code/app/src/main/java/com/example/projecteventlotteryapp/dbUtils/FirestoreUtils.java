@@ -30,8 +30,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Example usage: var = FirestoreUtils.LocalDate(date, zoneId);
  */
 public class FirestoreUtils {
-    private static final org.apache.commons.logging.Log log = LogFactory.getLog(FirestoreUtils.class);
-
     /**
      * This function authenticates an anonymous user with the Firestore db
      *

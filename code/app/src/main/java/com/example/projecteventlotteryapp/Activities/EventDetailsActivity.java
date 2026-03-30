@@ -598,56 +598,56 @@ public class EventDetailsActivity extends AppCompatActivity {
                                 if (invited != null && !invited.isEmpty()) {
                                     String organizerId = globalUser.getUserId();
 
-                                String message = "Congrats! You are invited to this event";
+                                    String message = "Congrats! You are invited to this event";
 
-                                List<Task<?>> tasks = new ArrayList<>();
-                                AtomicBoolean anySent = new AtomicBoolean(false);
-                                AtomicBoolean alreadyNotified = new AtomicBoolean(false);
+                                    List<Task<?>> tasks = new ArrayList<>();
+                                    AtomicBoolean anySent = new AtomicBoolean(false);
+                                    AtomicBoolean alreadyNotified = new AtomicBoolean(false);
 
-                                for (String invitedId : invited) {
-                                    // check if invitation already exists to avoid duplicates
-                                    tasks.add(db.collection("notifications")
-                                            .whereEqualTo("recipient", invitedId)
-                                            .whereEqualTo("eventId", eventId)
-                                            .whereEqualTo("text", message)
-                                            .get()
-                                            .addOnSuccessListener(notifSnap -> {
-                                                if (notifSnap.isEmpty()) {
-                                                    // Send if not found
-                                                    FirestoreUtils.storeNotificationInFirestore(
-                                                            organizerId,
-                                                            invitedId,
-                                                            message,
-                                                            event.getName(),
-                                                            event.getEventId(),
-                                                            db
-                                                    );
-                                                    anySent.set(true);
-                                                } else {
-                                                    alreadyNotified.set(true);
-                                                }
-                                            }));
+                                    for (String invitedId : invited) {
+                                        // check if invitation already exists to avoid duplicates
+                                        tasks.add(db.collection("notifications")
+                                                .whereEqualTo("recipient", invitedId)
+                                                .whereEqualTo("eventId", eventId)
+                                                .whereEqualTo("text", message)
+                                                .get()
+                                                .addOnSuccessListener(notifSnap -> {
+                                                    if (notifSnap.isEmpty()) {
+                                                        // Send if not found
+                                                        FirestoreUtils.storeNotificationInFirestore(
+                                                                organizerId,
+                                                                invitedId,
+                                                                message,
+                                                                event.getName(),
+                                                                event.getEventId(),
+                                                                db
+                                                        );
+                                                        anySent.set(true);
+                                                    } else {
+                                                        alreadyNotified.set(true);
+                                                    }
+                                                })
+                                        );
+                                    }
+                                    // Wait for all individual checks to finish before showing feedback
+                                    Tasks.whenAllComplete(tasks).addOnCompleteListener(t -> {
+                                        if (anySent.get() && globalUser.getRole() == Role.ORGANIZER) {
+                                            Toast.makeText(this, "Invitation notifications sent to new winners.", Toast.LENGTH_SHORT).show();
+                                            Log.d("EventDetails", "Automated notifications sent to winners.");
+                                        }
+                                        if (alreadyNotified.get() && globalUser.getRole() == Role.ORGANIZER) {
+                                                Toast.makeText(this, "Some winners were already notified previously.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
                                 }
-
-                                // Wait for all individual checks to finish before showing feedback
-                                Tasks.whenAllComplete(tasks).addOnCompleteListener(t -> {
-                                    if (anySent.get() && globalUser.getRole() == Role.ORGANIZER) {
-                                        Toast.makeText(this, "Invitation notifications sent to new winners.", Toast.LENGTH_SHORT).show();
-                                        Log.d("EventDetails", "Automated notifications sent to winners.");
-                                    }
-                                    if (alreadyNotified.get() && globalUser.getRole() == Role.ORGANIZER) {
-                                            Toast.makeText(this, "Some winners were already notified previously.", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
-                    })
-                    .addOnFailureListener(e -> {
-                        Log.e("EventDetailsActivity", "Failed to generate invitationList. Error: " + e);
-                        if (globalUser.getRole() == Role.ORGANIZER) {
-                            Toast.makeText(this, "Could not complete Draw", Toast.LENGTH_SHORT).show();
-                        }
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.e("EventDetailsActivity", "Failed to generate invitationList. Error: " + e);
+                                if (globalUser.getRole() == Role.ORGANIZER) {
+                                    Toast.makeText(this, "Could not complete Draw", Toast.LENGTH_SHORT).show();
+                                }
+                            });
                 });
-        });
+        }
     }
-}
 
