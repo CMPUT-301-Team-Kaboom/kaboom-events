@@ -316,7 +316,7 @@ public class EventDetailsActivity extends AppCompatActivity {
         nameHeaderTextView.setText(event.getName());
         organizerHeaderTextview.setText(event.getOrganizerName());
         attendeesTV.setText(String.valueOf(event.getAttendeesLimit()));
-        waitListTV.setText(String.valueOf(event.getWaitlistSize()));
+        refreshWaitlistTV();
         descriptionTV.setText(event.getDescription());
         setupTags();
 
@@ -331,7 +331,6 @@ public class EventDetailsActivity extends AppCompatActivity {
         );
         registrationPeriodTV.setText(registrationPeriodText);
 
-        // Fetch poster from the provided snapshot reference
         DocumentReference posterRef = doc.getDocumentReference("poster");
         if (posterRef != null) {
             posterRef.get().addOnSuccessListener(posterDoc -> {
