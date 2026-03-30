@@ -208,6 +208,7 @@
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_eventDetails_entrant_button_controls"
+                android:visibility="invisible"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_marginStart="6dp"
@@ -250,6 +251,7 @@
 
             <LinearLayout
                 android:id="@+id/ll_eventDetails_organizer_button_controls"
+                android:visibility="invisible"
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_marginStart="6dp"
@@ -267,6 +269,9 @@
                     android:layout_height="35dp"
                     android:layout_margin="3dp"
                     android:layout_weight="1"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="6dp"
+
                     android:background="@drawable/rounded_button_transparent"
                     android:text="Waitlist"
                     android:textSize="12sp"
@@ -279,6 +284,9 @@
                     android:layout_height="35dp"
                     android:layout_margin="3dp"
                     android:layout_weight="1"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="6dp"
+
                     android:background="@drawable/rounded_button_transparent"
                     android:text="Invited"
                     android:textSize="12sp"
@@ -291,6 +299,9 @@
                     android:layout_height="35dp"
                     android:layout_margin="3dp"
                     android:layout_weight="1"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="6dp"
+
                     android:background="@drawable/rounded_button_transparent"
                     android:padding="2dp"
                     android:text="Declined"
@@ -304,6 +315,9 @@
                     android:layout_height="35dp"
                     android:layout_margin="3dp"
                     android:layout_weight="1"
+                    android:paddingStart="6dp"
+                    android:paddingEnd="6dp"
+
                     android:background="@drawable/rounded_button_transparent"
                     android:text="Enrolled"
                     android:textSize="12sp"
@@ -333,6 +347,7 @@
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:background="@drawable/squared_container"
+            android:visibility="gone"
             android:text="Tag 1" />
 
         <TextView
@@ -343,6 +358,7 @@
             android:layout_marginEnd="8dp"
             android:layout_weight="1"
             android:background="@drawable/squared_container"
+            android:visibility="gone"
             android:text="Tag 2" />
 
         <TextView
@@ -352,6 +368,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@drawable/squared_container"
+            android:visibility="gone"
             android:text="Tag 3" />
     </LinearLayout>
 
@@ -374,7 +391,7 @@
             style="@style/DefaultTextStyle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/long_placeholder_text"
+            android:text="description"
             android:textAlignment="textStart"
             android:textSize="14sp"
             android:textStyle="normal" />

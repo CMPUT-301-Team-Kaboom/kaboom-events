@@ -235,6 +235,25 @@ public class EventUtils {
     }
 
     /**
+     * Fetches the qrCode document from Firestore and updates the given Event with QR code info.
+     *
+     * @param event the Event to update
+     * @param qrCodeRef the DocumentReference to the QR code
+     * @return a {@link Task} representing the asynchronous Firestore update operation
+     */
+    public Task<Void> fetchQrCodeForEvent(Event event, DocumentReference qrCodeRef) {
+        if (qrCodeRef == null) return Tasks.forResult(null);
+
+        return qrCodeRef.get().continueWith(task -> {
+            if (task.isSuccessful() && task.getResult().exists()) {
+                DocumentSnapshot qrCodeDoc = task.getResult();
+                event.setQrCodeUrl(qrCodeDoc.getString("url"));
+            }
+            return null;
+        });
+    }
+
+    /**
      * Creates an Event object from a Firestore document snapshot.
      *
      * <p>This method extracts fields from the snapshot and converts them into
