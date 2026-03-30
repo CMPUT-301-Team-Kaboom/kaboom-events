@@ -285,6 +285,14 @@ public class EventDetailsActivity extends AppCompatActivity {
             mapButton.setVisibility(View.GONE);
 
             setupEntrantButtonsByEnrollmentStatus(user);
+        } else if (user.getRole() == Role.ADMIN) {
+            entrantController.setVisibility(View.GONE);
+            organizerController.setVisibility(View.GONE);
+            entrantPrimaryButton.setVisibility(View.GONE);
+            entrantSecondaryButton.setVisibility(View.GONE);
+            editButton.setVisibility(View.GONE);
+            drawButton.setVisibility(View.GONE);
+            mapButton.setVisibility(View.GONE);
         }
     }
 
