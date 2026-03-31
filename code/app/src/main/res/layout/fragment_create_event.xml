@@ -191,7 +191,7 @@
             android:background="@color/transparent"
             android:paddingStart="0dp"
             android:text="Make Event Private"
-            android:textColor="?attr/colorOnPrimary"
+            android:textColor="?attr/android:textColorSecondary"
             android:textSize="16sp"
             android:textStyle="bold" />
 

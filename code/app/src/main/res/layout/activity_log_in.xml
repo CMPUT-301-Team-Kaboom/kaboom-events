@@ -29,7 +29,6 @@
         android:layout_marginTop="16dp"
         android:gravity="center"
         android:text="Log In"
-        android:textColor="?attr/colorOnPrimary"
         android:textSize="32dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"

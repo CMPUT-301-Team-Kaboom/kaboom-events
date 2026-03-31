@@ -270,7 +270,7 @@
                     android:background="@drawable/rounded_button_transparent"
                     android:text="Waitlist"
                     android:textSize="12sp"
-                    app:backgroundTint="?attr/colorOnPrimary" />
+                    app:backgroundTint="@color/white" />
 
                 <Button
                     android:id="@+id/btn_eventDetails_organizer_invited"
@@ -282,7 +282,7 @@
                     android:background="@drawable/rounded_button_transparent"
                     android:text="Invited"
                     android:textSize="12sp"
-                    app:backgroundTint="?attr/colorOnPrimary" />
+                    app:backgroundTint="@color/white" />
 
                 <Button
                     android:id="@+id/btn_eventDetails_organizer_declined"
@@ -295,7 +295,7 @@
                     android:padding="2dp"
                     android:text="Declined"
                     android:textSize="12sp"
-                    app:backgroundTint="?attr/colorOnPrimary" />
+                    app:backgroundTint="@color/white" />
 
                 <Button
                     android:id="@+id/btn_eventDetails_organizer_enrolled"
@@ -307,7 +307,7 @@
                     android:background="@drawable/rounded_button_transparent"
                     android:text="Enrolled"
                     android:textSize="12sp"
-                    app:backgroundTint="?attr/colorOnPrimary" />
+                    app:backgroundTint="@color/white" />
             </LinearLayout>
 
         </androidx.constraintlayout.widget.ConstraintLayout>
@@ -377,7 +377,8 @@
             android:text="@string/long_placeholder_text"
             android:textAlignment="textStart"
             android:textSize="14sp"
-            android:textStyle="normal" />
+            android:textStyle="normal"
+            android:textColor="?attr/colorOnPrimary"/>
     </ScrollView>
 
     <Button

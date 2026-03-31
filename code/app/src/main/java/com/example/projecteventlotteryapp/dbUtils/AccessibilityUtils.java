@@ -5,49 +5,54 @@ import android.content.SharedPreferences;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
+import androidx.annotation.ColorRes;
+import androidx.core.content.ContextCompat;
 
+/**
+ * Utility class for handling accessibility mode.
+ *
+ * <p>This class provides methods to check and set the accessibility mode, allowing users to change small details
+ * within accessibility mode like a text color etc.</p>
+ *
+ * example usage: enabled = AccessibilityUtils.isAccessibilityEnabled(this);
+ */
 public class AccessibilityUtils {
 
+
+    /**
+     * Checks if accessibility mode is enabled
+     * @param context
+     * @return boolean value of weather it is enabled or not
+     */
     public static boolean isAccessibilityEnabled(Context context) {
         SharedPreferences prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
         return prefs.getBoolean("accessibility_mode", false);
     }
+
+    /**
+     * Sets the accessibility mode
+     * @param context
+     * @param enabled Boolean
+     */
     public static void setAccessibilityEnabled(Context context, boolean enabled) {
         SharedPreferences prefs = context.getSharedPreferences("app_prefs", Context.MODE_PRIVATE);
         prefs.edit().putBoolean("accessibility_mode", enabled).apply();
     }
 
-    public static void applyTextViewStyle(TextView textView, Context context) {
+
+    public static void applyTextViewColor(TextView textView, Context context, @ColorRes int defaultColor, @ColorRes int accessibilityColor) {
         if (isAccessibilityEnabled(context)) {
-            textView.setTextSize(28);
+            textView.setTextColor(ContextCompat.getColor(context, accessibilityColor));
         } else {
-            textView.setTextSize(24);
+            textView.setTextColor(ContextCompat.getColor(context, defaultColor));
         }
     }
 
-    public static void applyBodyTextStyle(TextView textView, Context context) {
+    public static void applyHintColor(EditText editText, Context context, @ColorRes int defaultColor, @ColorRes int accessibilityColor) {
         if (isAccessibilityEnabled(context)) {
-            textView.setTextSize(20);
+            editText.setHintTextColor(ContextCompat.getColor(context, accessibilityColor));
         } else {
-            textView.setTextSize(16);
-        }
-    }
-
-    public static void applyButtonStyle(Button button, Context context) {
-        if (isAccessibilityEnabled(context)) {
-            button.setTextSize(18);
-        } else {
-            button.setTextSize(14);
-        }
-    }
-
-    public static void applyEditTextStyle(EditText editText, Context context) {
-        if (isAccessibilityEnabled(context)) {
-            editText.setTextSize(20);
-            editText.setMinHeight(140);
-        } else {
-            editText.setTextSize(16);
-            editText.setMinHeight(100);
+            editText.setHintTextColor(ContextCompat.getColor(context, defaultColor));
         }
     }
 }

@@ -12,6 +12,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Switch;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.activity.result.ActivityResultLauncher;
@@ -111,7 +112,6 @@ public class EntrantSettingsActivity extends BaseActivity {
         ImageButton btnBack = findViewById(R.id.btn_entrant_back);
         btn_signOut = findViewById(R.id.btn_sign_out);
 
-
         //Setup accessibility Switch
         SwitchCompat accessibilitySwitch = findViewById(R.id.s_accessibility_switch);
         accessibilitySwitch.setChecked(AccessibilityUtils.isAccessibilityEnabled(this));
@@ -206,6 +206,7 @@ public class EntrantSettingsActivity extends BaseActivity {
                 //if profile doesn't exist, show toast message
                 Toast.makeText(this, "No profile found. Please create a profile", Toast.LENGTH_SHORT).show();
             }
+            applyAccessibilityStyle();
             //if profile doesn't exist, show toast message
         }).addOnFailureListener(e -> {
             Log.e("PROFILE", "Failed to load profile", e);
@@ -339,5 +340,10 @@ public class EntrantSettingsActivity extends BaseActivity {
         startActivity(intent);
     }
 
+    private void applyAccessibilityStyle() {
+        AccessibilityUtils.applyHintColor(nameEditText, this, R.color.grey, R.color.white);
+        AccessibilityUtils.applyHintColor(emailEditText, this, R.color.grey, R.color.white);
+        AccessibilityUtils.applyHintColor(phoneEditText, this, R.color.grey, R.color.white);
+    }
 
 }
