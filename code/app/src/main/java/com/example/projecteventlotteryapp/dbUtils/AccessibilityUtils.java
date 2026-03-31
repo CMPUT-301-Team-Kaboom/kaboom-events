@@ -39,15 +39,14 @@ public class AccessibilityUtils {
         prefs.edit().putBoolean("accessibility_mode", enabled).apply();
     }
 
-
-    public static void applyTextViewColor(TextView textView, Context context, @ColorRes int defaultColor, @ColorRes int accessibilityColor) {
-        if (isAccessibilityEnabled(context)) {
-            textView.setTextColor(ContextCompat.getColor(context, accessibilityColor));
-        } else {
-            textView.setTextColor(ContextCompat.getColor(context, defaultColor));
-        }
-    }
-
+    /**
+     * Sets the text color of hints if needed to be changed still.
+     *
+     * @param editText EditText to set the color of
+     * @param context Context of the activity
+     * @param defaultColor color of the base theme hint
+     * @param accessibilityColor color of the accessibility theme hint
+     */
     public static void applyHintColor(EditText editText, Context context, @ColorRes int defaultColor, @ColorRes int accessibilityColor) {
         if (isAccessibilityEnabled(context)) {
             editText.setHintTextColor(ContextCompat.getColor(context, accessibilityColor));

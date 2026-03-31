@@ -20,6 +20,7 @@ import com.example.projecteventlotteryapp.dbUtils.AccessibilityUtils;
  */
 public abstract class BaseActivity extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         if (AccessibilityUtils.isAccessibilityEnabled(this)) {
