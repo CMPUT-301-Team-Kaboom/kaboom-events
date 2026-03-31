@@ -1,15 +1,15 @@
 package com.example.projecteventlotteryapp.dbUtils;
 
-import android.provider.Settings;
 import android.util.Log;
 
+import com.google.android.gms.tasks.Task;
+import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseAuthException;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.GeoPoint;
-import com.google.firebase.firestore.auth.FirebaseAuthCredentialsProvider;
+
+import org.apache.commons.logging.LogFactory;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -19,6 +19,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Helper class for Firestore actions
@@ -215,5 +216,72 @@ public class FirestoreUtils {
                     Log.w("Firestore", "Error adding notification", e);
                 });
 
+    }
+
+    public static void sendRejections(String organizerId, String eventId, FirebaseFirestore db, android.content.Context context) {
+        // Flags for final summary Toast
+        AtomicBoolean anySent = new AtomicBoolean(false);
+        AtomicBoolean alreadyNotified = new AtomicBoolean(false);
+
+        //Fetch the specific event document
+        db.collection("events").document(eventId).get().addOnSuccessListener(eventDoc -> {
+            if (!eventDoc.exists()) return;
+
+            String eventName = eventDoc.getString("name");
+            ArrayList<String> waitlist = fetchStringArrayList(eventDoc, "waitlist");
+            ArrayList<String> invitedList = fetchStringArrayList(eventDoc, "invited");
+
+            if (waitlist.isEmpty()) {
+                android.widget.Toast.makeText(context, "Waitlist is empty.", android.widget.Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            String rejectionText = "We're sorry, you were not selected for the event: " + (eventName != null ? eventName : "the event");
+
+            // List to track all asynchronous notification checks
+            List<Task<?>> tasks = new ArrayList<>();
+
+            // Iterate through waitlist to find users NOT in invited list
+            for (String userId : waitlist) {
+                if (!invitedList.contains(userId)) {
+
+                    // check if notification already exists
+                    tasks.add(db.collection("notifications")
+                            .whereEqualTo("recipient", userId)
+                            .whereEqualTo("eventId", eventId)
+                            .whereEqualTo("text", rejectionText)
+                            .get()
+                            .addOnSuccessListener(notifSnap -> {
+                                if (notifSnap.isEmpty()) {
+                                    // Send if not found
+                                    storeNotificationInFirestore(organizerId, userId, rejectionText, eventName, eventId, db);
+                                    anySent.set(true);
+                                } else {
+                                    alreadyNotified.set(true);
+                                }
+                            }));
+                }
+            }
+
+            // Wait for ALL individual checks to finish before inspecting the flags
+            Tasks.whenAllComplete(tasks).addOnCompleteListener(allTasks -> {
+                // anySent checks if we actually sent out anything this time
+                // alreadyNotified checks if we already notified the users
+                // both being true indicates some people were notified for the first time while others were skipped
+                if (anySent.get() && alreadyNotified.get()) {
+                    android.widget.Toast.makeText(context, "Rejection notifications sent to some users.", android.widget.Toast.LENGTH_SHORT).show();
+                }
+                if (anySent.get()) {
+                    android.widget.Toast.makeText(context, "Rejection notifications sent.", android.widget.Toast.LENGTH_SHORT).show();
+                }
+                if (alreadyNotified.get()) {
+                    android.widget.Toast.makeText(context, "Rejection notification already sent to users.", android.widget.Toast.LENGTH_SHORT).show();
+                }
+                if (!anySent.get() && !alreadyNotified.get()) {
+                    android.widget.Toast.makeText(context, "No rejections needed.", android.widget.Toast.LENGTH_SHORT).show();
+                }
+            });
+
+        }).addOnFailureListener(e -> Log.e("FirestoreUtils", "Error fetching event for rejections", e));
     }
 }
