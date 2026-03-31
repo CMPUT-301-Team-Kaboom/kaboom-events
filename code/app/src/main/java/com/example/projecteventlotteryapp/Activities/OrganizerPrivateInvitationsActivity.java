@@ -1,6 +1,9 @@
 package com.example.projecteventlotteryapp.Activities;
 
+import static com.example.projecteventlotteryapp.dbUtils.FirestoreUtils.storeNotificationInFirestore;
+
 import android.app.AlertDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -17,13 +20,13 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
 import com.example.projecteventlotteryapp.Enums.Role;
+import com.example.projecteventlotteryapp.Models.CreateNotificationDialogFragment;
+import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.PrivateInviteEntrantArrayAdapter;
 import com.example.projecteventlotteryapp.R;
-import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -34,13 +37,16 @@ import java.util.Map;
  * This class handles the logic and UI support for inviting entrants to private events.
  *
  */
-public class OrganizerPrivateInvitationsActivity extends AppCompatActivity {
+public class OrganizerPrivateInvitationsActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {
     private ToggleButton nameToggleButton, emailToggleButton, phoneToggleButton;
 
     private FirebaseFirestore db;
     private ListView entrantsListView;
     private ArrayList<User> entrantsArrayList;
     private PrivateInviteEntrantArrayAdapter entrantsArrayAdapter;
+
+    private User selectedEntrant;
+    private String eventId, eventName;
 
     /**
      * Entry point of the activity.
@@ -67,15 +73,20 @@ public class OrganizerPrivateInvitationsActivity extends AppCompatActivity {
         // setup db
         db = FirebaseFirestore.getInstance();
 
+        Intent intent  = getIntent();
+        eventId = intent.getStringExtra("eventId");
+        eventName = intent.getStringExtra("eventName");
+
         // setup ListView and ArrayAdapter
         entrantsListView = findViewById(R.id.lv_entrants_list);
         entrantsArrayList = new ArrayList<>();
-        entrantsArrayAdapter = new PrivateInviteEntrantArrayAdapter(this, entrantsArrayList, user -> {
+        entrantsArrayAdapter = new PrivateInviteEntrantArrayAdapter(this, entrantsArrayList, entrant -> {
+            selectedEntrant = entrant;
             new AlertDialog.Builder(this, R.style.DeleteGuard)
                     .setTitle("Invite Entrant")
                     .setMessage("Are you sure you want to invite this entrant?")
                     .setPositiveButton("Invite", ((dialog, which) -> {
-                        // TODO: invite entrant
+                        CreateNotificationDialogFragment.newInstance().show(getSupportFragmentManager(), "send_private_invite");
                         Log.d("OrganizerPrivateInvitationsActivity", "invited entrant");
                     }))
                     .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss())
@@ -126,6 +137,31 @@ public class OrganizerPrivateInvitationsActivity extends AppCompatActivity {
         });
 
         getAllEntrants();
+    }
+
+    /**
+     * This method is called when the organizer sends the notification after typing the message.
+     *
+     * @param message entered by the organizer
+     */
+    @Override
+    public void onSendNotification(String message) {
+        if (selectedEntrant == null) {
+            Toast.makeText(this, "Cannot send an invite.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        // get sender ID
+        String organizerId = ((MyApp) getApplication()).getCurrentUser().getUserId();
+
+        // get recipient ID
+        String recipientId = selectedEntrant.getUserId();
+
+        // store the notification
+        storeNotificationInFirestore(organizerId, recipientId, message, eventName, eventId, db);
+
+        // Show a confirmation message
+        Toast.makeText(this, "Invite sent to " + selectedEntrant.getName(), Toast.LENGTH_SHORT).show();
     }
 
     /**

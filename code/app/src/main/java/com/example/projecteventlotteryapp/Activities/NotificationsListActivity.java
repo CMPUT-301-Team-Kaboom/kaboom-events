@@ -70,9 +70,9 @@ public class NotificationsListActivity extends AppCompatActivity {
                 String title = (String) item.get("title");
                 String sender = (String) item.get("organizerName");
                 String body = (String) item.get("notificationText");
-
+                String eventId = (String) item.get("eventId");
                 // Create and show fragment
-                FullNotificationWindowFragment.newInstance(title, sender, body)
+                FullNotificationWindowFragment.newInstance(title, sender, body, eventId)
                         .show(getSupportFragmentManager(), "FullNotificationWindow");
             });
         }
@@ -127,6 +127,7 @@ public class NotificationsListActivity extends AppCompatActivity {
                                             item.put("title", document.getString("eventName"));
                                             item.put("organizerName", name);
                                             item.put("notificationText", document.getString("text"));
+                                            item.put("eventId", document.getString("eventId"));
                                             notificationsList.add(item);
 
                                             if (notificationsList.size() == docs.size()) {
@@ -139,7 +140,9 @@ public class NotificationsListActivity extends AppCompatActivity {
                                             item.put("title", document.getString("eventName"));
                                             item.put("organizerName", "ID: " + document.getString("sender"));
                                             item.put("notificationText", document.getString("text"));
+                                            item.put("eventId", document.getString("eventId"));
                                             notificationsList.add(item);
+
                                             if (notificationsList.size() == docs.size()) {
                                                 adapter.notifyDataSetChanged();
                                             }

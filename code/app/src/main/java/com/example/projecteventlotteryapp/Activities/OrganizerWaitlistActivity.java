@@ -87,11 +87,11 @@ public class OrganizerWaitlistActivity extends AppCompatActivity implements Crea
                     isPrivate = doc.getBoolean("isPrivate");
                     if (isPrivate) { // show share button if private event
                         shareBtn.setVisibility(VISIBLE);
-                        shareBtn.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                startActivity(new Intent(OrganizerWaitlistActivity.this, OrganizerPrivateInvitationsActivity.class));
-                            }
+                        shareBtn.setOnClickListener(v -> {
+                            Intent inviteActivityIntent = new Intent(OrganizerWaitlistActivity.this, OrganizerPrivateInvitationsActivity.class);
+                            inviteActivityIntent.putExtra("eventId", eventId);
+                            inviteActivityIntent.putExtra("eventName", eventName);
+                            startActivity(inviteActivityIntent);
                         });
                     } else { // hide share button if public event
                         shareBtn.setVisibility(GONE);
