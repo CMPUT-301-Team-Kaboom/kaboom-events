@@ -12,6 +12,8 @@
     <color name="tertiaryAccent">#082836</color>
     <color name="transparent">#00000000</color>
     <color name="red">#ff0000</color>
+
+    <!-- accessibility colors -->
     <color name="accessibilityBackground">#1A1A1A</color>
     <color name="accessibilitySurface">#2A2A2A</color>
     <color name="accessibilityPrimary">#FFDE21</color>
