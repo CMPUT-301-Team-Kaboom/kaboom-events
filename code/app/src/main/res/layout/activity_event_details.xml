@@ -328,6 +328,7 @@
         <TextView
             android:id="@+id/tv_eventDetails_tag1"
             style="@style/DefaultTextStyle"
+            android:textColor="?attr/android:textColorPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -338,6 +339,7 @@
         <TextView
             android:id="@+id/tv_eventDetails_tag2"
             style="@style/DefaultTextStyle"
+            android:textColor="?attr/android:textColorPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -348,6 +350,7 @@
         <TextView
             android:id="@+id/tv_eventDetails_tag3"
             style="@style/DefaultTextStyle"
+            android:textColor="?attr/android:textColorPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
