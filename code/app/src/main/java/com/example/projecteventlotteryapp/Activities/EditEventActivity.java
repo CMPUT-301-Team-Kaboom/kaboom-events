@@ -7,16 +7,18 @@ import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
 import android.graphics.Bitmap;
-import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.text.InputType;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,7 +35,9 @@ import com.example.projecteventlotteryapp.R;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.ListenerRegistration;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
@@ -47,6 +51,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -66,6 +71,8 @@ public class EditEventActivity extends AppCompatActivity {
     private ImageButton backButton;
     private ImageView editQRCode;
     private Bitmap qrCodeBitmap;
+    private ListenerRegistration eventListener;
+    private FirebaseFirestore db;
     /////////////////////////////////////////////////////
     /// IMAGE UPLOAD VARIABLES
     ////////////////////////////////////////////////////
@@ -80,7 +87,8 @@ public class EditEventActivity extends AppCompatActivity {
         setContentView(R.layout.activity_edit_event);
         // getting eventId from intent
         eventId = getIntent().getStringExtra("eventId");
-        eventUtils = new EventUtils(FirebaseFirestore.getInstance());
+        db = FirebaseFirestore.getInstance();
+        eventUtils = new EventUtils(db);
         posterImageHandler = new PosterImageHandler();
 
         // initialize ui components
@@ -110,19 +118,33 @@ public class EditEventActivity extends AppCompatActivity {
         editTag2.setText("None");
         editTag3.setText("None");
 
-        // fill in event info
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        db.collection("events").document(eventId).get().addOnSuccessListener(doc -> {
-            event = eventUtils.fetchEventFromSnapshot(doc);
-            
-            // get QR code reference
-            DocumentReference qrCodeRef = doc.getDocumentReference("qrCode");
-            if (qrCodeRef != null) {
-                eventUtils.fetchQrCodeForEvent(event, qrCodeRef).addOnSuccessListener(aVoid -> {
-                    setUI(event);
-                });
-            } else {
-                setUI(event);
+        // fill in event info with snapshot listener for immediate update (QR code only as requested)
+        DocumentReference eventDoc = db.collection("events").document(eventId);
+        eventListener = eventDoc.addSnapshotListener((document, error) -> {
+            if (error != null) {
+                Log.w("EditEventActivity", "Listen failed.", error);
+                return;
+            }
+
+            if (document != null && document.exists()) {
+                event = eventUtils.fetchEventFromSnapshot(document);
+                
+                // get and set QR code for this Event
+                DocumentReference qrCodeRef = document.getDocumentReference("qrCode");
+                if (qrCodeRef != null) {
+                    eventUtils.fetchQrCodeForEvent(event, qrCodeRef)
+                            .addOnSuccessListener(aVoid -> {
+                                updateQRCodeUi();
+                                if (editName.getText().toString().isEmpty()) {
+                                    setUI(event);
+                                }
+                            });
+                } else {
+                    updateQRCodeUi();
+                    if (editName.getText().toString().isEmpty()) {
+                        setUI(event);
+                    }
+                }
             }
         });
 
@@ -168,12 +190,29 @@ public class EditEventActivity extends AppCompatActivity {
         editQRCode.setOnClickListener(v -> generateQRCode());
     }
 
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        if (eventListener != null) {
+            eventListener.remove();
+        }
+    }
+
+    private void updateQRCodeUi() {
+        if (event != null && event.getQrCodeUrl() != null && !event.getQrCodeUrl().isEmpty()) {
+            Glide.with(this).load(event.getQrCodeUrl()).into(editQRCode);
+        }
+    }
+
     private void generateQRCode() {
         if (eventId == null || eventId.isEmpty()) {
             Toast.makeText(this, "Event ID is missing!", Toast.LENGTH_SHORT).show();
             return;
         }
-
+        if (event.isPrivate()) {
+            Toast.makeText(this, "Cannot make QR for private events!", Toast.LENGTH_SHORT).show();
+            return;
+        }
         MultiFormatWriter multiFormatWriter = new MultiFormatWriter();
         try {
             BitMatrix bitMatrix = multiFormatWriter.encode(eventId, BarcodeFormat.QR_CODE, 500, 500);
@@ -223,23 +262,71 @@ public class EditEventActivity extends AppCompatActivity {
         builder.setTitle("Add Co-organizer");
 
         final EditText input = new EditText(this);
-        input.setHint("Enter User ID");
+        input.setHint("Enter User Name");
         input.setInputType(InputType.TYPE_CLASS_TEXT);
         builder.setView(input);
 
-        builder.setPositiveButton("Add", (dialog, which) -> {
-            String userId = input.getText().toString().trim();
-            if (!userId.isEmpty()) {
-                String senderId = ((MyApp) getApplication()).getCurrentUser().getUserId();
-                eventUtils.addCoorganizer(eventId, userId, senderId);
-                Toast.makeText(this, "Co-organizer added", Toast.LENGTH_SHORT).show();
+        builder.setPositiveButton("Search", (dialog, which) -> {
+            String userName = input.getText().toString().trim();
+            if (!userName.isEmpty()) {
+                searchUsersByName(userName);
             } else {
-                Toast.makeText(this, "User ID cannot be empty", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "User Name cannot be empty", Toast.LENGTH_SHORT).show();
             }
         });
         builder.setNegativeButton("Cancel", (dialog, which) -> dialog.cancel());
 
         builder.show();
+    }
+
+    // the following code is adapted from https://firebase.google.com/docs/firestore/query-data/queries#java
+    private void searchUsersByName(String name) {
+        db.collection("organizers").whereEqualTo("name", name).get().addOnSuccessListener(organizerSnap -> {
+            db.collection("entrants").whereEqualTo("name", name).get().addOnSuccessListener(entrantSnap -> {
+                List<DocumentSnapshot> results = new ArrayList<>();
+                results.addAll(organizerSnap.getDocuments());
+                results.addAll(entrantSnap.getDocuments());
+
+                if (results.isEmpty()) {
+                    Toast.makeText(this, "No users found with name: " + name, Toast.LENGTH_SHORT).show();
+                } else if (results.size() == 1) {
+                    addCoorganizer(results.get(0).getId());
+                } else {
+                    showUserSelectionDialog(results);
+                }
+            });
+        });
+    }
+
+    private void showUserSelectionDialog(List<DocumentSnapshot> users) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Select User");
+
+        List<String> displayNames = new ArrayList<>();
+        for (DocumentSnapshot doc : users) {
+            displayNames.add(doc.getString("name") + " (" + doc.getString("email") + ")");
+        }
+
+        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, displayNames);
+        ListView listView = new ListView(this);
+        listView.setAdapter(adapter);
+        builder.setView(listView);
+
+        AlertDialog dialog = builder.create();
+        listView.setOnItemClickListener((parent, view, position, id) -> {
+            addCoorganizer(users.get(position).getId());
+            dialog.dismiss();
+        });
+        dialog.show();
+    }
+
+    private void addCoorganizer(String userId) {
+        String senderId = ((MyApp) getApplication()).getCurrentUser().getUserId();
+        eventUtils.addCoorganizer(eventId, userId, senderId).addOnSuccessListener(aVoid -> {
+            Toast.makeText(this, "Co-organizer added", Toast.LENGTH_SHORT).show();
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Failed to add co-organizer", Toast.LENGTH_SHORT).show();
+        });
     }
 
     private void saveEventDetails() {
