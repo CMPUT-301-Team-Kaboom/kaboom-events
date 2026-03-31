@@ -96,7 +96,7 @@ public class EntrantListSamplingTest {
     }
 
     /**
-     * Edge case: entrantsLimit < invitedListSize → should return empty (or crash if bug exists)
+     * Edge case: entrantsLimit &lt; invitedListSize → should return empty (or crash if bug exists)
      */
     @Test
     public void sampleEntrantList_negativeSamplingSize_returnsEmpty() {

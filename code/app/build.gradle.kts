@@ -47,6 +47,11 @@ dependencies {
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-firestore")
     implementation(libs.cardview)
+    implementation(fileTree(mapOf(
+        "dir" to "/Users/kevincao/Library/Android/sdk/platforms/android-36",
+        "include" to listOf("*.aar", "*.jar"),
+        "exclude" to listOf<String>()
+    )))
 
     // JUnit5 unit testing
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
