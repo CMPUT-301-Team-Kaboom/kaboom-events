@@ -54,6 +54,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 
 /**
@@ -85,6 +86,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     private Button editButton;
     private Button drawButton;
     private Button mapButton;
+
 
     // entrant buttons
     private Button entrantPrimaryButton;
@@ -202,6 +204,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         editButton      = findViewById(R.id.btn_eventDetails_edit);
         drawButton      = findViewById(R.id.btn_eventDetails_Draw);
+
         commentButton   = findViewById(R.id.btn_eventDetails_view_comments);
         commentButton.setOnClickListener(v -> {
             Intent intent = new Intent(this, EventCommentsActivity.class);
@@ -280,6 +283,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
             drawButton.setOnClickListener(v -> {
                 drawEntrantsForInvitationList();
+                FirestoreUtils.sendRejections(globalUser.getUserId(), eventId, db, this);
             });
 
             mapButton.setOnClickListener(v -> {
@@ -607,7 +611,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                         Toast.makeText(this, "Draw Complete", Toast.LENGTH_SHORT).show();
                     }
 
-                    // fetch invitation list
+                    // fetch invitation list to send notifications
                     db.collection("events").document(eventId).get()
                             .addOnSuccessListener(doc -> {
                                 ArrayList<String> invited = (ArrayList<String>) doc.get("invited");
@@ -617,20 +621,46 @@ public class EventDetailsActivity extends AppCompatActivity {
 
                                     String message = "Congrats! You are invited to this event";
 
-                                    // iterate through invited list and send invitations
-                                    for (String invitedId : invited) {
-                                        FirestoreUtils.storeNotificationInFirestore(
-                                                organizerId,
-                                                invitedId,
-                                                message,
-                                                event.getName(),
-                                                event.getEventId(),
-                                                db
-                                        );
-                                        Log.d("EventDetails", "Automated notifications sent to " + invited.size() + " winners.");
-                                    }
-                                }
+                                    List<Task<?>> tasks = new ArrayList<>();
+                                    AtomicBoolean anySent = new AtomicBoolean(false);
+                                    AtomicBoolean alreadyNotified = new AtomicBoolean(false);
 
+                                    for (String invitedId : invited) {
+                                        // check if invitation already exists to avoid duplicates
+                                        tasks.add(db.collection("notifications")
+                                                .whereEqualTo("recipient", invitedId)
+                                                .whereEqualTo("eventId", eventId)
+                                                .whereEqualTo("text", message)
+                                                .get()
+                                                .addOnSuccessListener(notifSnap -> {
+                                                    if (notifSnap.isEmpty()) {
+                                                        // Send if not found
+                                                        FirestoreUtils.storeNotificationInFirestore(
+                                                                organizerId,
+                                                                invitedId,
+                                                                message,
+                                                                event.getName(),
+                                                                event.getEventId(),
+                                                                db
+                                                        );
+                                                        anySent.set(true);
+                                                    } else {
+                                                        alreadyNotified.set(true);
+                                                    }
+                                                })
+                                        );
+                                    }
+                                    // Wait for all individual checks to finish before showing feedback
+                                    Tasks.whenAllComplete(tasks).addOnCompleteListener(t -> {
+                                        if (anySent.get() && globalUser.getRole() == Role.ORGANIZER) {
+                                            Toast.makeText(this, "Invitation notifications sent to new winners.", Toast.LENGTH_SHORT).show();
+                                            Log.d("EventDetails", "Automated notifications sent to winners.");
+                                        }
+                                        if (alreadyNotified.get() && globalUser.getRole() == Role.ORGANIZER) {
+                                                Toast.makeText(this, "Some winners were already notified previously.", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
                             })
                             .addOnFailureListener(e -> {
                                 Log.e("EventDetailsActivity", "Failed to generate invitationList. Error: " + e);
@@ -639,7 +669,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                 }
                             });
                 });
-
+        }
     }
 
 }

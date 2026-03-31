@@ -37,9 +37,11 @@ public class OrganizerDeclinedActivity extends AppCompatActivity implements Crea
     private Button selectBtn;
     private Button doneBtn;
     private Button sendNotifBtn;
+    private TextView declineSize;
     private ConstraintLayout floatingActionsContainer;
     private ArrayList<String> declined;
     private FirebaseFirestore db;
+    private String limit;
     private boolean isSelectionMode = false;
 
     @Override
@@ -59,6 +61,8 @@ public class OrganizerDeclinedActivity extends AppCompatActivity implements Crea
         backBtn = findViewById(R.id.btn_organizer_declined_back);
         backBtn.setOnClickListener(v -> finish());
         sendNotifBtn = findViewById(R.id.btn_send_notification);
+        declineSize = findViewById(R.id.tv_organizer_declined_size);
+
 
 
         // hide notification buttons container initially
@@ -78,6 +82,12 @@ public class OrganizerDeclinedActivity extends AppCompatActivity implements Crea
 
                     adapter = new OrganizerEntrantListAdapter(this, declined);
                     declinedView.setAdapter(adapter);
+
+                    if (declined != null) {
+                        declineSize.setText(String.valueOf(declined.size()));
+                    } else {
+                        declineSize.setText("0");
+                    }
 
                 }
             } else {
