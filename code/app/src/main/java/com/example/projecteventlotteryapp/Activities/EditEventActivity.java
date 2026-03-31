@@ -279,6 +279,7 @@ public class EditEventActivity extends AppCompatActivity {
         builder.show();
     }
 
+    // the following code is adapted from https://firebase.google.com/docs/firestore/query-data/queries#java
     private void searchUsersByName(String name) {
         db.collection("organizers").whereEqualTo("name", name).get().addOnSuccessListener(organizerSnap -> {
             db.collection("entrants").whereEqualTo("name", name).get().addOnSuccessListener(entrantSnap -> {
@@ -390,19 +391,19 @@ public class EditEventActivity extends AppCompatActivity {
 
         ZoneId zoneId = ZoneId.systemDefault();
 
-        Map<String, Object> eventUpdates = new HashMap<>();
-        eventUpdates.put("name", name);
-        eventUpdates.put("registrationStartDate", FirestoreUtils.localDateToTimestamp(regStart, zoneId));
-        eventUpdates.put("registrationEndDate", FirestoreUtils.localDateToTimestamp(regEnd, zoneId));
-        eventUpdates.put("drawDate", FirestoreUtils.localDateTimeToTimestamp(drawDateTime, zoneId));
-        eventUpdates.put("entrantsLimit", entrantLimit);
-        eventUpdates.put("waitlistLimit", waitlistLimit);
+        Map<String, Object> event = new HashMap<>();
+        event.put("name", name);
+        event.put("registrationStartDate", FirestoreUtils.localDateToTimestamp(regStart, zoneId));
+        event.put("registrationEndDate", FirestoreUtils.localDateToTimestamp(regEnd, zoneId));
+        event.put("drawDate", FirestoreUtils.localDateTimeToTimestamp(drawDateTime, zoneId));
+        event.put("entrantsLimit", entrantLimit);
+        event.put("waitlistLimit", waitlistLimit);
         //event.put("location", location);
-        eventUpdates.put("description", description);
-        eventUpdates.put("geoLocationEnabled", isGeolocationEnabled);
-        eventUpdates.put("tags", tags);
+        event.put("description", description);
+        event.put("geoLocationEnabled", isGeolocationEnabled);
+        event.put("tags", tags);
 
-        eventUtils.updateEventInDB(eventUpdates, eventId);
+        eventUtils.updateEventInDB(event, eventId);
 
         finish(); // close activity
     }
