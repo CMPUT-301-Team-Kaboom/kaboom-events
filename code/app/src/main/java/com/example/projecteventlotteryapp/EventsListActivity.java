@@ -7,8 +7,10 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -16,6 +18,7 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.projecteventlotteryapp.Activities.CriteriaAppGuideActivity;
 import com.example.projecteventlotteryapp.Activities.EntrantSettingsActivity;
+import com.example.projecteventlotteryapp.Activities.EventDetailsActivity;
 import com.example.projecteventlotteryapp.Activities.NotificationsListActivity;
 import com.example.projecteventlotteryapp.Enums.Role;
 import com.example.projecteventlotteryapp.Models.EventsFilter;
@@ -25,6 +28,8 @@ import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -42,6 +47,17 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
     private TabLayout entrantController;
     private User globalUser;
     private EventsListFragment eventsListFragment;
+
+    // qr scanner launcher
+    private final ActivityResultLauncher<ScanOptions> qrCodeScannerLauncher = registerForActivityResult(new ScanContract(), result -> {
+        if (result.getContents() != null) {
+            // successful scan
+            String scannedEventId = result.getContents();
+            Intent intent = new Intent(EventsListActivity.this, EventDetailsActivity.class);
+            intent.putExtra("eventId", scannedEventId);
+            startActivity(intent);
+        }
+    });
 
     /**
      * Entry point of the activity.
@@ -133,6 +149,10 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
                 startActivity(new Intent(this, EntrantSettingsActivity.class));
                 return true;
             } else if (id == R.id.scan_qrcode){
+                ScanOptions options = new ScanOptions();
+                options.setPrompt("Scan an Event QR code");
+                options.setDesiredBarcodeFormats(ScanOptions.QR_CODE);
+                qrCodeScannerLauncher.launch(options);
                 return true;
             } else if (id == R.id.notification){
                 startActivity(new Intent(this, NotificationsListActivity.class));
