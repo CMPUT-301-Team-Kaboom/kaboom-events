@@ -158,7 +158,7 @@ public class OrganizerPrivateInvitationsActivity extends BaseActivity implements
         String recipientId = selectedEntrant.getUserId();
 
         // store the notification
-        storeNotificationInFirestore(organizerId, recipientId, message, eventName, eventId, db);
+        storeNotificationInFirestore(organizerId, recipientId, message, eventName, eventId, db, this);
 
         // Show a confirmation message
         Toast.makeText(this, "Invite sent to " + selectedEntrant.getName(), Toast.LENGTH_SHORT).show();

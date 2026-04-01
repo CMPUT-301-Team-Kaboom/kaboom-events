@@ -147,10 +147,8 @@ public class OrganizerDeclinedActivity extends AppCompatActivity implements Crea
 
         for (Integer pos : selected) {
             String recipientId = declined.get(pos);
-            storeNotificationInFirestore(userId, recipientId, message, eventName, eventId, db);
+            storeNotificationInFirestore(userId, recipientId, message, eventName, eventId, db,this);
         }
-
-        Toast.makeText(this, "Notifications sent", Toast.LENGTH_SHORT).show();
 
         // Clear selection after sending
         isSelectionMode = false;

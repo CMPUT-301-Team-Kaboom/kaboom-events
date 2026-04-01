@@ -641,7 +641,8 @@ public class EventDetailsActivity extends BaseActivity {
                                                                 message,
                                                                 event.getName(),
                                                                 event.getEventId(),
-                                                                db
+                                                                db,
+                                                                this
                                                         );
                                                         anySent.set(true);
                                                     } else {

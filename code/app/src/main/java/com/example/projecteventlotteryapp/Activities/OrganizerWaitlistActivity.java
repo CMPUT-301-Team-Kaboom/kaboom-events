@@ -162,10 +162,8 @@ public class OrganizerWaitlistActivity extends BaseActivity implements CreateNot
 
         for (Integer pos : selected) {
             String recipientId = waitlist.get(pos);
-            storeNotificationInFirestore(userId, recipientId, message, eventName, eventId, db);
+            storeNotificationInFirestore(userId, recipientId, message, eventName, eventId, db, this);
         }
-
-        Toast.makeText(this, "Notifications sent", Toast.LENGTH_SHORT).show();
 
         // Clear selection after sending
         isSelectionMode = false;
