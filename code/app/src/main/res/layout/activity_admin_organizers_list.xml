@@ -5,7 +5,7 @@
     android:id="@+id/organizer_list_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primaryBackground"
+    android:background="?attr/android:windowBackground"
     tools:context=".EventsListActivity"
     android:paddingTop="32dp">
 
