@@ -23,6 +23,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Activity responsible for displaying a list of notifications for the current user.
+ *
+ */
 public class NotificationsListActivity extends AppCompatActivity {
 
     private FirebaseFirestore db;
@@ -87,9 +91,9 @@ public class NotificationsListActivity extends AppCompatActivity {
      */
     private void fetchNotifications() {
         String deviceId = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
-
+        // behaviour for entrants
         if (globalUser.getRole() == Role.ENTRANT) {
-
+            // fetch notifications sent TO the entrant
             db.collection("notifications")
                     .whereEqualTo("recipient", deviceId)
                     .addSnapshotListener((value, error) -> {
@@ -151,7 +155,7 @@ public class NotificationsListActivity extends AppCompatActivity {
                         }
                     });
         } else { // If the user is an organizer
-            // Grab notifications sent by the organizer
+            // Grab notifications sent BY the organizer
             db.collection("notifications")
                     .whereEqualTo("sender", deviceId)
                     .addSnapshotListener((value, error) -> {
