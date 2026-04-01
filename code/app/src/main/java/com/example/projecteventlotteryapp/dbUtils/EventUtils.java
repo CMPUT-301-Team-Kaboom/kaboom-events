@@ -296,7 +296,8 @@ public class EventUtils {
                 registrationEndDate,
                 drawDate,
                 attendeesLimit,
-                EventIsPrivate
+                EventIsPrivate,
+                geolocationEnabled
         );
 
         event.setDescription(description);
@@ -368,12 +369,13 @@ public class EventUtils {
         );
         eventData.put("entrantsLimit", event.getAttendeesLimit());
         eventData.put("isPrivate", event.isPrivate());
+        eventData.put("geoLocationEnabled", event.geoLocationEnabled());
+
 
         // setting null values these
         eventData.put("poster", defaultPoster);
         eventData.put("waitlistSize", 0);
         eventData.put("description", null);
-        eventData.put("geoLocationEnabled", false);
         eventData.put("location", null);
         eventData.put("qrCode", null);
         eventData.put("tags", null);
