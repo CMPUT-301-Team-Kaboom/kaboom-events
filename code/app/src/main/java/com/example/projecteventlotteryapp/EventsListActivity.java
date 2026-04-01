@@ -167,10 +167,10 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
      *
      * Code Citation:
      *          [1] Author: user2742861 https://stackoverflow.com/users/2742861/user2742861
-     *          Title: "Android refresh activity on close of another"
-     *          Answer: https://stackoverflow.com/questions/19277414/android-refresh-activity-on-close-of-another
-     *          Date: 2013-10-09
-     *          Retrieved: 2026-03-29
+     *              Title: "Android refresh activity on close of another"
+     *              Answer: https://stackoverflow.com/questions/19277414/android-refresh-activity-on-close-of-another
+     *              Date: 2013-10-09
+     *              Retrieved: 2026-03-29
      *
      */
       @Override protected void onResume() {
@@ -180,7 +180,26 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
           EventsListFragment fragment = (EventsListFragment)
                   getSupportFragmentManager().findFragmentById(R.id.fl_events_list);
 
-          if (fragment != null) {
+          if (fragment == null) {
+              return;
+          }
+
+          if (globalUser.getRole() == Role.ENTRANT) { // entrant so remember chosen
+              int position = entrantController.getSelectedTabPosition();
+
+              if (position == 0) {
+                  fragment.refreshEventList();
+              } else if (position == 1) {
+                  EventsFilter filter = new EventsFilter();
+                  LocalDate today = LocalDate.now();
+                  filter.regStart = today;
+                  filter.regEnd = today;
+
+                  fragment.applyFilters(filter);
+              } else if (position == 2) {
+                  fragment.getEventsHistory(globalUser.getUserId());
+              }
+          } else { // organizer
               fragment.refreshEventList();
           }
       }
