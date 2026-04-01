@@ -2,11 +2,15 @@ package com.example.projecteventlotteryapp;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.Toast;
 
 import androidx.activity.EdgeToEdge;
+import androidx.activity.result.ActivityResultLauncher;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
@@ -14,13 +18,18 @@ import androidx.core.view.WindowInsetsCompat;
 
 import com.example.projecteventlotteryapp.Activities.CriteriaAppGuideActivity;
 import com.example.projecteventlotteryapp.Activities.EntrantSettingsActivity;
+import com.example.projecteventlotteryapp.Activities.EventDetailsActivity;
 import com.example.projecteventlotteryapp.Activities.NotificationsListActivity;
 import com.example.projecteventlotteryapp.Enums.Role;
 import com.example.projecteventlotteryapp.Models.EventsFilter;
 import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.Models.User;
+import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.tabs.TabLayout;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.journeyapps.barcodescanner.ScanContract;
+import com.journeyapps.barcodescanner.ScanOptions;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -38,6 +47,17 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
     private TabLayout entrantController;
     private User globalUser;
     private EventsListFragment eventsListFragment;
+
+    // qr scanner launcher
+    private final ActivityResultLauncher<ScanOptions> qrCodeScannerLauncher = registerForActivityResult(new ScanContract(), result -> {
+        if (result.getContents() != null) {
+            // successful scan
+            String scannedEventId = result.getContents();
+            Intent intent = new Intent(EventsListActivity.this, EventDetailsActivity.class);
+            intent.putExtra("eventId", scannedEventId);
+            startActivity(intent);
+        }
+    });
 
     /**
      * Entry point of the activity.
@@ -67,6 +87,7 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0);
             return insets;
         });
+
 
         MyApp app = (MyApp) getApplication();
         globalUser = app.getCurrentUser();
@@ -128,6 +149,10 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
                 startActivity(new Intent(this, EntrantSettingsActivity.class));
                 return true;
             } else if (id == R.id.scan_qrcode){
+                ScanOptions options = new ScanOptions();
+                options.setPrompt("Scan an Event QR code");
+                options.setDesiredBarcodeFormats(ScanOptions.QR_CODE);
+                qrCodeScannerLauncher.launch(options);
                 return true;
             } else if (id == R.id.notification){
                 startActivity(new Intent(this, NotificationsListActivity.class));
@@ -136,6 +161,29 @@ public class EventsListActivity extends AppCompatActivity implements FilterEvent
             return false;
         });
     }
+
+    /**
+     * Refresh the EventsListFragment upon returning to the EventsListActivity from another activity.
+     *
+     * Code Citation:
+     *          [1] Author: user2742861 https://stackoverflow.com/users/2742861/user2742861
+     *          Title: "Android refresh activity on close of another"
+     *          Answer: https://stackoverflow.com/questions/19277414/android-refresh-activity-on-close-of-another
+     *          Date: 2013-10-09
+     *          Retrieved: 2026-03-29
+     *
+     */
+      @Override protected void onResume() {
+          Log.d("EventsListFragment", "resume");
+          super.onResume();
+
+          EventsListFragment fragment = (EventsListFragment)
+                  getSupportFragmentManager().findFragmentById(R.id.fl_events_list);
+
+          if (fragment != null) {
+              fragment.refreshEventList();
+          }
+      }
 
     /**
      * Configures the UI for a given user depending on their role

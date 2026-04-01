@@ -65,6 +65,7 @@ public class Event {
         this.drawDate = drawDate;
         this.attendeesLimit = attendeesLimit;
         isPrivate = false;
+        geolocationEnabled = false;
     }
 
     /**
@@ -87,6 +88,31 @@ public class Event {
         this.drawDate = drawDate;
         this.attendeesLimit = attendeesLimit;
         this.isPrivate = isPrivate;
+        this.geolocationEnabled = false;
+    }
+
+
+    /**
+     * Creates a new Event object with basic event information and includes geolocation.
+     * <p> This constructor is typically used when creating a new event before
+     * it has been stored in the database, this also includes geolocation.</p>
+     */
+    public Event(
+            String name,
+            LocalDate registrationStartDate,
+            LocalDate registrationEndDate,
+            LocalDateTime drawDate,
+            int attendeesLimit,
+            boolean isPrivate,
+            boolean geolocationEnabled
+    ) {
+        this.name = name;
+        this.registrationStartDate = registrationStartDate;
+        this.registrationEndDate = registrationEndDate;
+        this.drawDate = drawDate;
+        this.attendeesLimit = attendeesLimit;
+        this.isPrivate = isPrivate;
+        this.geolocationEnabled = geolocationEnabled;
     }
 
 
@@ -103,6 +129,7 @@ public class Event {
      * @param drawDate the date and time when the lottery draw occurs
      * @param attendeesLimit the maximum number of entrants that can attend the event
      * @param isPrivate boolean value indicating if Event is private
+     * @param geolocationEnabled boolean value indicating if geolocation is enabled
      */
     public Event(
             String eventId,
@@ -111,9 +138,10 @@ public class Event {
             LocalDate registrationEndDate,
             LocalDateTime drawDate,
             int attendeesLimit,
-            boolean isPrivate
+            boolean isPrivate,
+            boolean geolocationEnabled
     ) {
-        this(name, registrationStartDate, registrationEndDate, drawDate, attendeesLimit, isPrivate);
+        this(name, registrationStartDate, registrationEndDate, drawDate, attendeesLimit, isPrivate, geolocationEnabled);
         this.eventId = eventId;
         //eventDoc = this.db.collection("events").document(this.eventId);
     }
@@ -323,15 +351,40 @@ public class Event {
      * @param poster the poster of the event
      */
     public void setPoster(String poster) { this.poster = poster; }
+
+    /**
+     * gets the poster
+     * @return poster
+     */
     public String getPoster() { return poster; }
 
+    /**
+     * gets privacy of an event
+     * @return isPrivate
+     */
     public boolean isPrivate() {
         return isPrivate;
     }
 
+    /**
+     * sets privacy of an event
+     * @param privacy boolean value of whether the event is private
+     */
     public void setPrivate(boolean privacy) {
         isPrivate = privacy;
     }
+
+    /**
+     * gets weather the geolocation is enabled or not for the event
+     * @return geolocationEnabled
+     */
+    public boolean geoLocationEnabled() {return geolocationEnabled;}
+
+    /**
+     * sets the geolocationEnabled
+     * @param enabled boolean value of whether geolocation is enabled
+     */
+    public void setGeoLocationEnabled(boolean enabled) { geolocationEnabled = enabled;}
 
     public ArrayList<String> getCoorganizerIds() {
         return coorganizerIds;

@@ -208,6 +208,46 @@
             android:textStyle="normal" />
     </LinearLayout>
 
+    <LinearLayout
+        android:id="@+id/ll_location_Enabled_container"
+        android:layout_width="325dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:background="@drawable/rounded_edittext"
+        android:orientation="vertical"
+        android:paddingHorizontal="12dp"
+        android:paddingVertical="4dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/ll_isPrivate_container">
+
+
+        <androidx.appcompat.widget.SwitchCompat
+            android:id="@+id/switch_create_needLocation"
+            style="@style/BodyRoundedEditTextStyle"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:background="@color/transparent"
+            android:paddingStart="0dp"
+            android:text="Enable Geolocation"
+            android:textColor="@color/white"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tv_needLocation_hint"
+            style="@style/DefaultTextStyle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="-16dp"
+            android:layout_marginBottom="4dp"
+            android:text="Only Entrants with geolocation enabled can join the waitlist"
+            android:textColor="@color/grey"
+            android:textSize="11sp"
+            android:textStyle="normal" />
+    </LinearLayout>
+
     <Button
         android:id="@+id/btn_event_edit_confirm"
         style="@style/RoundedButton"
@@ -219,6 +259,6 @@
         android:textColor="@color/primaryBackground"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/ll_isPrivate_container" />
+        app:layout_constraintTop_toBottomOf="@+id/ll_location_Enabled_container" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
