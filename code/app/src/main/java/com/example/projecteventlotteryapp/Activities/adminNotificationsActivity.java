@@ -28,23 +28,30 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * Activity for managing the notifications sent in the app
+ *
+ */
 public class adminNotificationsActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_admin_notifications_list);
-        
+
+        // set up elements
         ListView listView = findViewById(R.id.lv_notificationsListView);
         ImageButton btnBack = findViewById(R.id.btn_admin_notifications_back);
         FirebaseFirestore db = FirebaseFirestore.getInstance();
 
+        // Get sender ID from intent
         String senderID = getIntent().getStringExtra("sender_id");
 
+        // Set up back button
         btnBack.setOnClickListener(v -> finish());
 
+        // Fetch notifications
         Query notificationQuery = db.collection("notifications");
-
         if (senderID != null) {
             notificationQuery = notificationQuery.whereEqualTo("sender", senderID);
         }
@@ -54,54 +61,63 @@ public class adminNotificationsActivity extends AppCompatActivity {
                 //.orderBy("date", Query.Direction.DESCENDING)
                 .get()
                 .addOnSuccessListener(queryDocumentSnapshots -> {
+                    // if the notifications exist
                     if (queryDocumentSnapshots != null) {
+                        // start an array and initialize the count
                         List<Map<String, String>> data = new ArrayList<>();
                         int count = 1;
-
+                        // iterate through each notification and add it to the array
                         for (QueryDocumentSnapshot document : queryDocumentSnapshots) {
                             Map<String, String> notification = new HashMap<>();
 
                             // Store document ID for deletion functionality
                             notification.put("id", document.getId());
                             notification.put("number", String.valueOf(count));
-
+                            
+                            // retrieve elements from the document
                             String recipient = document.getString("recipient");
-                            String eventName = document.getString("event");
-                            if (eventName == null) eventName = document.getString("title");
-
-                            notification.put("event", eventName != null ? eventName : "General Notification");
-
+                            String eventName = document.getString("eventName");
                             String message = document.getString("text");
-                            String displaySubtext = "To: " + (recipient != null ? recipient : "All") + "\n" + (message != null ? message : "No message content") ;
+
+                            // place items into hashmap
+                            notification.put("event", eventName);
+                            String displaySubtext = "To: " + recipient + "\n" + message;
                             notification.put("text", displaySubtext);
 
+                            // set up date formatting
                             SimpleDateFormat dateFormat = new SimpleDateFormat("dd MMM yyyy", Locale.getDefault());
-
                             Timestamp timestamp = document.getTimestamp("date");
-                            if (timestamp != null) {
-                                String formattedDate = dateFormat.format(timestamp.toDate());
-                                notification.put("date", formattedDate);
-                            } else {
-                                notification.put("date", "No date");
-                            }
-
-
-
+                            String formattedDate = dateFormat.format(timestamp.toDate());
+                            notification.put("date", formattedDate);
+                            
+                            // add the notification to the array and increase the count
                             data.add(notification);
                             count++;
                         }
 
+                        // Define the keys from the data map that we want to display
                         String[] from = {"number", "event", "text", "date"};
+                        // Define the corresponding TextView IDs in the layout where the data should be placed
                         int[] to = {R.id.tv_item_number, R.id.tv_item_name, R.id.tv_item_subtext, R.id.tv_date};
 
+                        // Initialize the adapter to bind the data list to the ListView using the specified layout and mapping
                         SimpleAdapter adapter = new SimpleAdapter(
                                 this,
                                 data,
                                 R.layout.notification_item,
                                 from,
                                 to
-                        ) {
+                        )
+
+                        {
                             @Override
+                            /**
+                             * Method that's run every time a row is drawn in the notifications list
+                             * @param position
+                             * @param convertView
+                             * @param parent
+                             *
+                             */
                             public View getView(int position, View convertView, ViewGroup parent) {
                                 // find the views
                                 View view = super.getView(position, convertView, parent);
@@ -119,6 +135,7 @@ public class adminNotificationsActivity extends AppCompatActivity {
                                         divider.setVisibility(View.VISIBLE);
                                     }
                                 }
+                                // set up delete button
                                 deleteBtn.setOnClickListener(v -> {
                                     new AlertDialog.Builder(parent.getContext(), R.style.DeleteGuard)
                                             .setTitle("Delete Notification")
@@ -144,6 +161,10 @@ public class adminNotificationsActivity extends AppCompatActivity {
                                 return view;
                             }
 
+                            /**
+                             * Method to renumber the notifications after deletion
+                             * @param list
+                             */
                             private void reNumber(List<Map<String, String>> list) {
                                 for (int i = 0; i < list.size(); i++) {
                                     list.get(i).put("number", String.valueOf(i + 1));

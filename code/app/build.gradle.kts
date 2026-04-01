@@ -34,6 +34,11 @@ android {
     testOptions{
         unitTests.isReturnDefaultValues = true
     }
+    packaging {
+        resources {
+            excludes.add("NOTICES/libcore-NOTICES.txt")
+        }
+    }
 }
 
 dependencies {
@@ -47,11 +52,6 @@ dependencies {
     implementation("com.google.firebase:firebase-database")
     implementation("com.google.firebase:firebase-firestore")
     implementation(libs.cardview)
-    implementation(fileTree(mapOf(
-        "dir" to "/Users/kevincao/Library/Android/sdk/platforms/android-36",
-        "include" to listOf("*.aar", "*.jar"),
-        "exclude" to listOf<String>()
-    )))
 
     // JUnit5 unit testing
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.10.2")
@@ -80,7 +80,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-    implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation(libs.recyclerview)
 
     testImplementation(libs.junit)
