@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primaryBackground"
+    android:background="?attr/android:windowBackground"
     android:paddingTop="32dp">
 
     <!-- Back Button -->
@@ -62,11 +62,11 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    style="@style/DefaultTextStyle"
+                    style="@style/DefaultTextStyleAccessibilityDark"
                     android:text="Joining An Event"/>
 
                 <TextView
-                    style="@style/DefaultTextStyle"
+                    style="@style/DefaultTextStyleAccessibilityDark"
                     android:text="@string/info_text_1"
                     android:textAlignment="textStart"
                     android:textStyle="normal" />
@@ -87,11 +87,11 @@
                 app:layout_constraintTop_toBottomOf="@+id/ll_box_1">
 
                 <TextView
-                    style="@style/DefaultTextStyle"
+                    style="@style/DefaultTextStyleAccessibilityDark"
                     android:text="Lottery Selection"/>
 
                 <TextView
-                    style="@style/DefaultTextStyle"
+                    style="@style/DefaultTextStyleAccessibilityDark"
                     android:text="@string/info_text_2"
                     android:textAlignment="textStart"
                     android:textStyle="normal" />
@@ -112,11 +112,11 @@
                 app:layout_constraintTop_toBottomOf="@+id/ll_box_2">
 
                 <TextView
-                    style="@style/DefaultTextStyle"
+                    style="@style/DefaultTextStyleAccessibilityDark"
                     android:text="Declining Events and List Removal"/>
 
                 <TextView
-                    style="@style/DefaultTextStyle"
+                    style="@style/DefaultTextStyleAccessibilityDark"
                     android:text="@string/info_text_3"
                     android:textAlignment="textStart"
                     android:textStyle="normal" />

@@ -15,7 +15,7 @@ import com.example.projecteventlotteryapp.R;
  * Users can also enable/disable notifications, sign out, and delete their profile
  * @author Kevin
  */
-public class AdminActivity extends AppCompatActivity {
+public class AdminActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

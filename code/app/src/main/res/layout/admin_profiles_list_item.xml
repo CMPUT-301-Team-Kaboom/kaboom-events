@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:paddingTop="8dp"
-    android:background="@color/primaryBackground">
+    android:background="?attr/colorOnSecondary">
 
     <TextView
         android:id="@+id/tv_profile_item_position"
@@ -13,7 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:text="1"
-        android:textColor="@color/primaryAccent"
+        android:textColor="?attr/colorPrimary"
         android:textSize="34sp"
         app:layout_constraintBottom_toTopOf="@+id/separator_line"
         app:layout_constraintStart_toStartOf="parent"
@@ -36,7 +36,7 @@
         android:layout_marginStart="12dp"
         android:layout_marginEnd="16dp"
         android:text="First Last"
-        android:textColor="@color/primaryAccent"
+        android:textColor="?attr/colorPrimary"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toEndOf="@+id/iv_profile_item_icon"
@@ -47,7 +47,7 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="example@ualberta.ca"
-        android:textColor="@color/white"
+        android:textColor="?attr/colorOnPrimary"
         app:layout_constraintEnd_toEndOf="@+id/tv_profile_item_name"
         app:layout_constraintStart_toStartOf="@+id/tv_profile_item_name"
         app:layout_constraintTop_toBottomOf="@+id/tv_profile_item_name" />
@@ -67,7 +67,7 @@
         android:layout_width="match_parent"
         android:layout_height="1dp"
         android:layout_marginTop="8dp"
-        android:background="@color/primaryAccent"
+        android:background="?attr/colorPrimary"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tv_profile_item_position" />
 

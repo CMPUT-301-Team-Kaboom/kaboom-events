@@ -28,7 +28,7 @@ import java.util.List;
  *
  * <p>The screen includes a map of the event and a list of entrants in the waitlist.</p>
  */
-public class MapActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapActivity extends BaseActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private String eventId;

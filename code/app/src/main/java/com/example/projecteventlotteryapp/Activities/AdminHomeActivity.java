@@ -16,7 +16,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
  * Users can also navigate to their own profile to edit their details.
  * @author Kevin
  */
-public class AdminHomeActivity extends AppCompatActivity {
+public class AdminHomeActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

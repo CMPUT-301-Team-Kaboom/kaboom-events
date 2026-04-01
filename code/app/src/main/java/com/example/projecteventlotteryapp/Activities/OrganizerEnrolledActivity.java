@@ -42,7 +42,7 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class OrganizerEnrolledActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {
+public class OrganizerEnrolledActivity extends BaseActivity implements CreateNotificationDialogFragment.NotificationListener {
     private String eventId;
     private String eventName;
     private OrganizerEntrantListAdapter adapter;

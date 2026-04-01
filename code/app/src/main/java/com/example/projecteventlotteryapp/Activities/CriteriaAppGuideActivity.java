@@ -12,7 +12,7 @@ import com.example.projecteventlotteryapp.R;
  * Displays rules and criteria for the lottery.
  * @author Kevin
  */
-public class CriteriaAppGuideActivity extends AppCompatActivity {
+public class CriteriaAppGuideActivity extends BaseActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);

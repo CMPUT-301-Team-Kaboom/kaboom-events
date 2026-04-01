@@ -58,7 +58,7 @@ import java.util.Map;
  * Activity for organizers to edit event details.
  * Provides fields for name, registration dates, draw date/time, entrant limits, location, and description.
  */
-public class EditEventActivity extends AppCompatActivity {
+public class EditEventActivity extends BaseActivity {
     private String eventId;
     private Event event;
     private EventUtils eventUtils;

@@ -39,7 +39,7 @@ import static com.example.projecteventlotteryapp.dbUtils.FirestoreUtils.storeNot
 /**
  * Provides an organizer with the waitlist of entrants that have entered to join their event
  */
-public class OrganizerWaitlistActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {
+public class OrganizerWaitlistActivity extends BaseActivity implements CreateNotificationDialogFragment.NotificationListener {
     private String eventId;
     private String eventName;
     private boolean isPrivate;

@@ -62,7 +62,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  *
  *
  */
-public class EventDetailsActivity extends AppCompatActivity {
+public class EventDetailsActivity extends BaseActivity {
     private FirebaseFirestore db;
     private String eventId;
     private Event event;

@@ -5,7 +5,7 @@
     android:id="@+id/admin_home_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primaryBackground"
+    android:background="?attr/colorOnSecondary"
     android:paddingTop="32dp">
 
     <TextView
@@ -66,10 +66,10 @@
         android:id="@+id/bn_events_list_menu"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/secondaryBackground"
-        app:itemIconTint="@color/white"
+        android:background="?attr/colorSecondary"
+        app:itemIconTint="?attr/colorOnPrimary"
         app:itemIconSize="42dp"
-        app:itemTextColor="@color/white"
+        app:itemTextColor="?attr/colorOnPrimary"
         app:itemActiveIndicatorStyle="@null"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
