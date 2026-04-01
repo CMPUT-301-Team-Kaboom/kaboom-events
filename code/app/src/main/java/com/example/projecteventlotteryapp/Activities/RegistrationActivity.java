@@ -36,7 +36,11 @@ import com.google.firebase.firestore.GeoPoint;
 
 import java.util.HashMap;
 
-public class RegistrationActivity extends BaseActivity implements AdminRegistrationFragment.AdminRegistrationDialogListener {
+/**
+ * Activity responsible for handling user registration.
+ *
+ */
+public class RegistrationActivity extends AppCompatActivity implements AdminRegistrationFragment.AdminRegistrationDialogListener {
     private final String ADMIN_PASS = "kaboom";
     private FirebaseFirestore db;
     private String deviceID;

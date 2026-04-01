@@ -34,6 +34,11 @@ android {
     testOptions{
         unitTests.isReturnDefaultValues = true
     }
+    packaging {
+        resources {
+            excludes.add("NOTICES/libcore-NOTICES.txt")
+        }
+    }
 }
 
 dependencies {
@@ -75,7 +80,6 @@ dependencies {
     implementation(libs.material)
     implementation(libs.activity)
     implementation(libs.constraintlayout)
-    implementation("com.google.android.gms:play-services-maps:18.2.0")
     implementation(libs.recyclerview)
 
     testImplementation(libs.junit)

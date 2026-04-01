@@ -28,7 +28,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class OrganizerDeclinedActivity extends BaseActivity implements CreateNotificationDialogFragment.NotificationListener {
+/**
+ * Activity responsible for displaying a list of declined users for the current event.
+ * Organizers can select users to send out notifications
+ *
+ */
+public class OrganizerDeclinedActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {
     private String eventId;
     private String eventName;
     private OrganizerEntrantListAdapter adapter;

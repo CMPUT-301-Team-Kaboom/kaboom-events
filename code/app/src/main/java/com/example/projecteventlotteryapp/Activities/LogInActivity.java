@@ -49,7 +49,6 @@ public class LogInActivity extends BaseActivity {
         // FIX: Retrieve deviceID so it is not null
         deviceID = Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID);
 
-        // TODO: enable if db rules have changed
         // authenticate with firestore db
         // FirestoreUtils.anonymousAuth();
 

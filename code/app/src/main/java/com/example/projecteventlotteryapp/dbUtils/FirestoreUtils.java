@@ -218,8 +218,16 @@ public class FirestoreUtils {
 
     }
 
+    /**
+     * Stores a rejection notification in the database
+     *
+     * @param organizerId
+     * @param eventId
+     * @param db
+     * @param context
+     */
     public static void sendRejections(String organizerId, String eventId, FirebaseFirestore db, android.content.Context context) {
-        // Flags for final summary Toast
+        // Flags for final summary Toast, atomicboolean to safeguard against race conditions
         AtomicBoolean anySent = new AtomicBoolean(false);
         AtomicBoolean alreadyNotified = new AtomicBoolean(false);
 

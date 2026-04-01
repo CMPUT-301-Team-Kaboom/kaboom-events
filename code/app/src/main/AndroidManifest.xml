@@ -58,9 +58,6 @@
             android:name=".Activities.AdminHomeActivity"
             android:exported="false" />
         <activity
-            android:name=".Activities.AdminActivity"
-            android:exported="false" />
-        <activity
             android:name=".Activities.OrganizerWaitlistActivity"
             android:exported="false" />
         <activity
