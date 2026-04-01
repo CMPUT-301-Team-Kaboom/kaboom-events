@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primaryBackground"
+    android:background="?attr/android:windowBackground"
     tools:context=".Activities.EventDetailsActivity">
 
 
@@ -64,7 +64,7 @@
                 android:background="@drawable/rounded_button_transparent"
                 android:text="Edit"
                 android:textSize="18sp"
-                app:backgroundTint="@color/white"
+                app:backgroundTint="?attr/colorOnPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -78,7 +78,7 @@
                 android:background="@drawable/rounded_button_transparent"
                 android:text="Draw"
                 android:textSize="18sp"
-                app:backgroundTint="@color/white"
+                app:backgroundTint="?attr/colorOnPrimary"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/btn_eventDetails_edit" />
 
@@ -94,7 +94,7 @@
                 android:background="@drawable/rounded_button_transparent"
                 android:text="Map"
                 android:textSize="18sp"
-                app:backgroundTint="@color/white"
+                app:backgroundTint="?attr/colorOnPrimary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent" />
 
@@ -225,7 +225,7 @@
                     style="@style/RoundedButton"
                     android:layout_width="wrap_content"
                     android:height="35dp"
-                    android:backgroundTint="@color/secondaryAccent"
+                    android:backgroundTint="?attr/colorSurface"
                     android:text="Join Waitlist"
                     android:textAlignment="textStart"
                     android:textSize="15sp"
@@ -342,6 +342,7 @@
         <TextView
             android:id="@+id/tv_eventDetails_tag1"
             style="@style/DefaultTextStyle"
+            android:textColor="?attr/android:textColorPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -353,6 +354,7 @@
         <TextView
             android:id="@+id/tv_eventDetails_tag2"
             style="@style/DefaultTextStyle"
+            android:textColor="?attr/android:textColorPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginEnd="8dp"
@@ -364,6 +366,7 @@
         <TextView
             android:id="@+id/tv_eventDetails_tag3"
             style="@style/DefaultTextStyle"
+            android:textColor="?attr/android:textColorPrimary"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_weight="1"
@@ -394,7 +397,8 @@
             android:text="description"
             android:textAlignment="textStart"
             android:textSize="14sp"
-            android:textStyle="normal" />
+            android:textStyle="normal"
+            android:textColor="?attr/colorOnPrimary"/>
     </ScrollView>
 
     <Button

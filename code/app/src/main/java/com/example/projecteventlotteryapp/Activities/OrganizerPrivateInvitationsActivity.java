@@ -37,7 +37,7 @@ import java.util.Map;
  * This class handles the logic and UI support for inviting entrants to private events.
  *
  */
-public class OrganizerPrivateInvitationsActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {
+public class OrganizerPrivateInvitationsActivity extends BaseActivity implements CreateNotificationDialogFragment.NotificationListener {
     private ToggleButton nameToggleButton, emailToggleButton, phoneToggleButton;
 
     private FirebaseFirestore db;

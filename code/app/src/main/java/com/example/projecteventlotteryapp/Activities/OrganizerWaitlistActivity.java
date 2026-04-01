@@ -35,7 +35,7 @@ import static com.example.projecteventlotteryapp.dbUtils.FirestoreUtils.storeNot
  * Organizers can select users to send out notifications
  *
  */
-public class OrganizerWaitlistActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {
+public class OrganizerWaitlistActivity extends BaseActivity implements CreateNotificationDialogFragment.NotificationListener {
     private String eventId;
     private String eventName;
     private boolean isPrivate;

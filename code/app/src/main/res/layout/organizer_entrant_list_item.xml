@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/secondaryBackground"
+    android:background="?attr/colorSecondary"
     android:paddingBottom="8dp">
 
     <!-- Row Content Container -->
@@ -63,7 +63,7 @@
         android:layout_alignParentEnd="true"
         android:layout_centerVertical="true"
         android:layout_marginEnd="16dp"
-        android:buttonTint="@color/white"
+        android:buttonTint="?attr/colorOnPrimary"
         android:scaleX="1.5"
         android:scaleY="1.5"
         android:visibility="gone" />
@@ -75,6 +75,6 @@
         android:layout_height="2dp"
         android:layout_below="@id/ll_entrant_data"
         android:layout_marginTop="10dp"
-        android:background="@color/primaryAccent" />
+        android:background="?attr/colorPrimary" />
 
 </RelativeLayout>

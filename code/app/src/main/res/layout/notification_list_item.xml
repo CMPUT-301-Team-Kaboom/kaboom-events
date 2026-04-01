@@ -54,7 +54,7 @@
             android:fontFamily="sans-serif"
             android:maxLines="1"
             android:text="Notification message goes here..."
-            android:textColor="@color/white"
+            android:textColor="?attr/colorOnPrimary"
             android:textSize="13sp" />
     </LinearLayout>
 

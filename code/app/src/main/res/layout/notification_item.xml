@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:textColor="@color/primaryAccent"
+            android:textColor="?attr/colorPrimary"
             android:textSize="32sp"
             android:textStyle="bold"
             android:layout_marginEnd="16dp"
@@ -36,7 +36,7 @@
                 android:id="@+id/tv_item_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/primaryAccent"
+                android:textColor="?attr/colorPrimary"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
@@ -44,7 +44,7 @@
                 android:id="@+id/tv_item_subtext"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="@color/white"
+                android:textColor="?attr/colorOnPrimary"
                 android:textSize="14sp" />
 
         </LinearLayout>
@@ -63,7 +63,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Day, Month Year"
-                android:textColor="@color/white"
+                android:textColor="?attr/colorOnPrimary"
                 android:textSize="12sp" />
 
             <com.google.android.material.button.MaterialButton

@@ -34,7 +34,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
  *
  * Upon successful log in, the user is directed to the corresponding activity to their role.
  */
-public class LogInActivity extends AppCompatActivity {
+public class LogInActivity extends BaseActivity {
     private FirebaseFirestore db;
     private String deviceID;
     private ToggleButton btnEntrant, btnOrganizer, btnAdmin;

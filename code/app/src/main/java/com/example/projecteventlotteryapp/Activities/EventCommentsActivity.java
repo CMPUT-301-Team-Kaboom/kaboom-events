@@ -34,7 +34,7 @@ import java.util.Map;
  * This event allows both entrants and the event organizer to post new comments and view
  * other users' comments under the event.
  */
-public class EventCommentsActivity extends AppCompatActivity {
+public class EventCommentsActivity extends BaseActivity {
     private String eventId;
     private ArrayList<String> commentsList;
     private EventCommentArrayAdapter adapter;
