@@ -231,7 +231,7 @@
             android:background="@color/transparent"
             android:paddingStart="0dp"
             android:text="Enable Geolocation"
-            android:textColor="@color/white"
+            android:textColor="?attr/android:textColorSecondary"
             android:textSize="16sp"
             android:textStyle="bold" />
 

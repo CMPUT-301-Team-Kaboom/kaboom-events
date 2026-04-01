@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/primaryBackground"
+    android:background="?attr/android:windowBackground"
     android:paddingTop="32dp">
 
     <!-- Back Button -->
@@ -47,6 +47,7 @@
         <TextView
             android:id="@+id/tv_organizerName"
             style="@style/MainHeaderTextviewStyle"
+            android:textColor="?attr/android:textColorPrimary"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="All Notifications" />
@@ -64,7 +65,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:shapeAppearanceOverlay="@style/CircleImage"
         app:srcCompat="@drawable/profile_icon"
-        app:strokeColor="@color/primaryAccent"
+        app:strokeColor="?attr/colorPrimary"
         app:strokeWidth="2dp" />
 
     <ListView

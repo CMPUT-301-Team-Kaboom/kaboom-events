@@ -5,7 +5,7 @@
     android:id="@+id/admin_events_list_main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSecondary"
+    android:background="?attr/android:windowBackground"
     tools:context=".Activities.AdminEventsActivity">
 
     <ImageButton

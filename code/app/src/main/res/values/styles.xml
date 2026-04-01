@@ -77,7 +77,7 @@
 
     <style name="SecondaryRoundedButton" parent="RoundedButton">
         <item name="android:background">@drawable/secondary_button_background</item>
-        <item name="android:textColor">?attr/colorOnPrimary</item>
+        <item name="android:textColor">?attr/android:textColorSecondary</item>
     </style>
 
     <style name="ToggleRoundedButton" parent="RoundedButton">

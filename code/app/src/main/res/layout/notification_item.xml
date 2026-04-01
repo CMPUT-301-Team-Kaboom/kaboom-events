@@ -16,7 +16,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
-            android:textColor="?attr/colorPrimary"
+            android:textColor="?attr/android:textColorTertiary"
             android:textSize="32sp"
             android:textStyle="bold"
             android:layout_marginEnd="16dp"
