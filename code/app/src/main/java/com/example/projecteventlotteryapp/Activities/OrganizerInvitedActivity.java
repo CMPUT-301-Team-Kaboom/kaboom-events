@@ -142,7 +142,7 @@ public class OrganizerInvitedActivity extends AppCompatActivity implements Creat
                             }
 
                             for (String userID : selectedList){
-                                eventUtils.removeFromEntrantList(EntrantListType.INVITED, userID, eventId);
+                                eventUtils.moveEntrantAcrossLists(eventId, userID, EntrantListType.DECLINED, EntrantListType.INVITED);
                                 invitedList.remove(userID);
                             }
 

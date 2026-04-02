@@ -17,8 +17,10 @@ import com.example.projecteventlotteryapp.AdminEventArrayAdapter;
 import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.R;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 
 import java.util.ArrayList;
 
@@ -91,13 +93,38 @@ public class AdminEventsActivity extends AppCompatActivity {
     }
 
     private void loadEvents() {
-        db.collection("events").get().addOnCompleteListener(task -> {
-            if (task.isSuccessful() && task.getResult() != null) {
-                eventDataList.clear();
-                for (DocumentSnapshot doc : task.getResult().getDocuments()) {
-                    Event event = eventUtils.fetchEventFromSnapshot(doc);
-                    eventDataList.add(event);
+        db.collection("events").get().addOnSuccessListener(queryDocumentSnapshots -> {
+            eventDataList.clear();
+
+            // handle empty list
+            if (queryDocumentSnapshots.isEmpty()) {
+                eventAdapter.notifyDataSetChanged();
+                return;
+            }
+
+            for (QueryDocumentSnapshot snapshot : queryDocumentSnapshots) {
+                Event event = eventUtils.fetchEventFromSnapshot(snapshot);
+
+                // get organizer
+                DocumentReference organizerRef = snapshot.getDocumentReference("organizer");
+                if (organizerRef != null) {
+                    eventUtils.fetchOrganizerForEvent(event, organizerRef)
+                            .addOnSuccessListener(aVoid -> {
+                                eventAdapter.notifyDataSetChanged();
+                            });
                 }
+
+                // get poster
+                DocumentReference posterRef = snapshot.getDocumentReference("poster");
+                if (posterRef != null) {
+                    eventUtils.fetchPosterForEvent(event, posterRef)
+                            .addOnSuccessListener(aVoid -> {
+                                eventAdapter.notifyDataSetChanged();
+                            });
+                }
+
+                // update adapter
+                eventDataList.add(event);
                 eventAdapter.notifyDataSetChanged();
             }
         });

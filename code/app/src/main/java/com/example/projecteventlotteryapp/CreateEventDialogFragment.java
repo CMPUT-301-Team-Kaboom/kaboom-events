@@ -68,6 +68,7 @@ public class CreateEventDialogFragment extends DialogFragment {
         EditText editDrawTime = view.findViewById(R.id.et_event_edit_draw_time);
         EditText editEntrantLimit = view.findViewById(R.id.et_event_edit_entrant_limit);
         SwitchCompat isPrivateSwitch = view.findViewById(R.id.switch_create_isPrivate);
+        SwitchCompat needLocationSwitch = view.findViewById(R.id.switch_create_needLocation);
         Button confirmButton = view.findViewById(R.id.btn_event_edit_confirm);
 
         // convert editTexts for dates and times to be pickers instead of text
@@ -103,6 +104,7 @@ public class CreateEventDialogFragment extends DialogFragment {
             LocalDateTime drawDateTime = LocalDateTime.of(drawDate, drawTime);
             int entrantLimit = Integer.parseInt(editEntrantLimit.getText().toString().trim());
             boolean isPrivate = isPrivateSwitch.isChecked();
+            boolean needLocation = needLocationSwitch.isChecked();
 
 
             if (!regEnd.isAfter(regStart)) {
@@ -124,7 +126,7 @@ public class CreateEventDialogFragment extends DialogFragment {
                 return;
             }
 
-            Event event = new Event(name, regStart, regEnd, drawDateTime, entrantLimit, isPrivate);
+            Event event = new Event(name, regStart, regEnd, drawDateTime, entrantLimit, isPrivate, needLocation);
             MyApp app = (MyApp) requireActivity().getApplication();
             eventUtils.createNewEventDbItem(event, app.getCurrentUser().getUserId());
             listener.OnEventCreated();
