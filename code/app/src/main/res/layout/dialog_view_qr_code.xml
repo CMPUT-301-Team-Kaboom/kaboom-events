@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="@color/primaryBackground">
+
+    <TextView
+        android:id="@+id/tv_qr_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Event QR Code"
+        android:textSize="20sp"
+        android:textStyle="bold"
+        android:textColor="@color/white"
+        android:layout_marginBottom="16dp"/>
+
+    <ImageView
+        android:id="@+id/iv_qr_code_display"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:scaleType="fitCenter"
+        android:background="@color/white"
+        android:padding="8dp"/>
+
+    <Button
+        android:id="@+id/btn_close_qr"
+        style="@style/RoundedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Close"
+        android:textColor="@color/primaryBackground" />
+
+</LinearLayout>

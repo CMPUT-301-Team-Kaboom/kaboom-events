@@ -30,8 +30,9 @@ import com.example.projecteventlotteryapp.Enums.EntrantListType;
 import com.example.projecteventlotteryapp.EventCommentArrayAdapter;
 import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.Enums.Role;
-import com.example.projecteventlotteryapp.Models.User;
+import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.Models.MyApp;
+import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.R;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
@@ -91,6 +92,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     // entrant buttons
     private Button entrantPrimaryButton;
     private Button entrantSecondaryButton;
+    private Button qrButton;
 
     // global UI elements
     private ImageButton backButton;
@@ -189,6 +191,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         entrantPrimaryButton    = findViewById(R.id.btn_eventDetails_entrant_primary);
         entrantSecondaryButton  = findViewById(R.id.btn_eventDetails_entrant_secondary);
+        qrButton                = findViewById(R.id.btn_eventDetails_qr);
 
         nameHeaderTextView      = findViewById(R.id.tv_eventDetails_event_name_header);
         organizerHeaderTextview = findViewById(R.id.tv_eventDetails_org_header);
@@ -213,6 +216,22 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
         backButton      = findViewById(R.id.btn_eventDetails_back);
         backButton.setOnClickListener(v -> finish());
+
+        qrButton.setOnClickListener(v -> {
+            if (event != null) {
+                db.collection("events").document(eventId).get().addOnSuccessListener(snapshot -> {
+                    DocumentReference qrRef = snapshot.getDocumentReference("qrCode");
+                    if (qrRef != null) {
+                        qrRef.get().addOnSuccessListener(qrDoc -> {
+                            String url = qrDoc.getString("url");
+                            ViewQRCodeDialogFragment.newInstance(url).show(getSupportFragmentManager(), "view_qr");
+                        });
+                    } else {
+                        Toast.makeText(this, "No QR Code found for this event", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -238,6 +257,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             organizerController.setVisibility(View.VISIBLE);
             editButton.setVisibility(View.VISIBLE);
             mapButton.setVisibility(View.VISIBLE);
+            qrButton.setVisibility(View.GONE);
 
             if (event.getRegistrationEndDate().isBefore(LocalDate.now())) {
                 drawButton.setVisibility(View.VISIBLE);
@@ -298,6 +318,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             editButton.setVisibility(View.GONE);
             drawButton.setVisibility(View.GONE);
             mapButton.setVisibility(View.GONE);
+            qrButton.setVisibility(View.VISIBLE);
 
             setupEntrantButtonsByEnrollmentStatus(user);
         } else if (user.getRole() == Role.ADMIN) {
@@ -308,6 +329,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             editButton.setVisibility(View.GONE);
             drawButton.setVisibility(View.GONE);
             mapButton.setVisibility(View.GONE);
+            qrButton.setVisibility(View.GONE);
         }
     }
 
