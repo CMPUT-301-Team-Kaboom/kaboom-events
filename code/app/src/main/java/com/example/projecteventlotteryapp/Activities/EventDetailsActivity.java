@@ -30,8 +30,9 @@ import com.example.projecteventlotteryapp.Enums.EntrantListType;
 import com.example.projecteventlotteryapp.EventCommentArrayAdapter;
 import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.Enums.Role;
-import com.example.projecteventlotteryapp.Models.User;
+import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.Models.MyApp;
+import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.R;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
@@ -215,6 +216,22 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
         backButton      = findViewById(R.id.btn_eventDetails_back);
         backButton.setOnClickListener(v -> finish());
+
+        qrButton.setOnClickListener(v -> {
+            if (event != null) {
+                db.collection("events").document(eventId).get().addOnSuccessListener(snapshot -> {
+                    DocumentReference qrRef = snapshot.getDocumentReference("qrCode");
+                    if (qrRef != null) {
+                        qrRef.get().addOnSuccessListener(qrDoc -> {
+                            String url = qrDoc.getString("url");
+                            ViewQRCodeDialogFragment.newInstance(url).show(getSupportFragmentManager(), "view_qr");
+                        });
+                    } else {
+                        Toast.makeText(this, "No QR Code found for this event", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 
     /**
