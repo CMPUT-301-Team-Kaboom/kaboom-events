@@ -1,5 +1,6 @@
 package com.example.projecteventlotteryapp.dbUtils;
 
+import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -614,7 +615,7 @@ public class EventUtils {
      * @param senderId the ID of the current user adding the co-organizer
      * @return a Task representing the asynchronous operation
      */
-    public Task<Void> addCoorganizer(String eventId, String userId, String senderId) {
+    public Task<Void> addCoorganizer(String eventId, String userId, String senderId, Context context) {
         DocumentReference eventDoc = db.collection("events").document(eventId);
 
         HashMap<String, Object> updates = new HashMap<>();
@@ -628,7 +629,7 @@ public class EventUtils {
             eventDoc.get().addOnSuccessListener(snapshot -> {
                 String eventName = snapshot.getString("name");
                 String message = "You have been added as a co-organizer for " + eventName;
-                FirestoreUtils.storeNotificationInFirestore(senderId, userId, message, eventName, eventId, db);
+                FirestoreUtils.storeNotificationInFirestore(senderId, userId, message, eventName, eventId, db, context);
             });
         });
     }
