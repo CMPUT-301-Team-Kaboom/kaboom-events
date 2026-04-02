@@ -91,6 +91,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     // entrant buttons
     private Button entrantPrimaryButton;
     private Button entrantSecondaryButton;
+    private Button qrButton;
 
     // global UI elements
     private ImageButton backButton;
@@ -189,6 +190,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         entrantPrimaryButton    = findViewById(R.id.btn_eventDetails_entrant_primary);
         entrantSecondaryButton  = findViewById(R.id.btn_eventDetails_entrant_secondary);
+        qrButton                = findViewById(R.id.btn_eventDetails_qr);
 
         nameHeaderTextView      = findViewById(R.id.tv_eventDetails_event_name_header);
         organizerHeaderTextview = findViewById(R.id.tv_eventDetails_org_header);
@@ -238,6 +240,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             organizerController.setVisibility(View.VISIBLE);
             editButton.setVisibility(View.VISIBLE);
             mapButton.setVisibility(View.VISIBLE);
+            qrButton.setVisibility(View.GONE);
 
             if (event.getRegistrationEndDate().isBefore(LocalDate.now())) {
                 drawButton.setVisibility(View.VISIBLE);
@@ -298,6 +301,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             editButton.setVisibility(View.GONE);
             drawButton.setVisibility(View.GONE);
             mapButton.setVisibility(View.GONE);
+            qrButton.setVisibility(View.VISIBLE);
 
             setupEntrantButtonsByEnrollmentStatus(user);
         } else if (user.getRole() == Role.ADMIN) {
@@ -308,6 +312,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             editButton.setVisibility(View.GONE);
             drawButton.setVisibility(View.GONE);
             mapButton.setVisibility(View.GONE);
+            qrButton.setVisibility(View.GONE);
         }
     }
 
