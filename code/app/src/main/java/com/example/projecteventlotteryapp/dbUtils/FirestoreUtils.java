@@ -198,28 +198,51 @@ public class FirestoreUtils {
      * @param message
      * @param eventName
      */
-    public static void storeNotificationInFirestore(String userId, String recipientID, String message, String eventName, String eventId, FirebaseFirestore db) {
+    public static void storeNotificationInFirestore(String userId, String recipientID, String message, String eventName, String eventId, FirebaseFirestore db, android.content.Context context) {
         // Get the sender's device ID
-        Map<String, Object> notif = new HashMap<>();
-        notif.put("sender", userId);
-        notif.put("recipient", recipientID);
-        notif.put("text", message);
-        notif.put("date", com.google.firebase.Timestamp.now());
-        notif.put("eventName", eventName != null ? eventName : "Waitlist Update");
-        notif.put("eventId", eventId);
+        db.collection("entrants").document(recipientID).get()
+                .addOnSuccessListener( documentSnapshot -> {
+                    if (documentSnapshot.exists()) {
+                        Boolean notiEnabled = documentSnapshot.getBoolean("notificationEnabled");
+                        if (notiEnabled != null && notiEnabled) {
+                            Map<String, Object> notif = new HashMap<>();
+                            notif.put("sender", userId);
+                            notif.put("recipient", recipientID);
+                            notif.put("text", message);
+                            notif.put("date", com.google.firebase.Timestamp.now());
+                            notif.put("eventName", eventName != null ? eventName : "Waitlist Update");
+                            notif.put("eventId", eventId);
 
-        db.collection("notifications").add(notif)
-                .addOnSuccessListener(documentReference -> {
-                    Log.d("Notification", "Notification stored with ID: " + documentReference.getId());
+                            db.collection("notifications").add(notif)
+                                    .addOnSuccessListener(documentReference -> {
+                                        Log.d("Notification", "Notification stored with ID: " + documentReference.getId());
+                                    })
+                                    .addOnFailureListener(e -> {
+                                        Log.w("Firestore", "Error adding notification", e);
+                                    });
+                        }
+                        else {
+                            android.widget.Toast.makeText(context, recipientID + " does not have notifications enabled.", android.widget.Toast.LENGTH_SHORT).show();
+                        }
+
+
+                    }
                 })
                 .addOnFailureListener(e -> {
-                    Log.w("Firestore", "Error adding notification", e);
+                    Log.w("Firestore", "Error getting document", e);
                 });
-
     }
 
+    /**
+     * Stores a rejection notification in the database
+     *
+     * @param organizerId
+     * @param eventId
+     * @param db
+     * @param context
+     */
     public static void sendRejections(String organizerId, String eventId, FirebaseFirestore db, android.content.Context context) {
-        // Flags for final summary Toast
+        // Flags for final summary Toast, atomicboolean to safeguard against race conditions
         AtomicBoolean anySent = new AtomicBoolean(false);
         AtomicBoolean alreadyNotified = new AtomicBoolean(false);
 
@@ -254,7 +277,7 @@ public class FirestoreUtils {
                             .addOnSuccessListener(notifSnap -> {
                                 if (notifSnap.isEmpty()) {
                                     // Send if not found
-                                    storeNotificationInFirestore(organizerId, userId, rejectionText, eventName, eventId, db);
+                                    storeNotificationInFirestore(organizerId, userId, rejectionText, eventName, eventId, db, context);
                                     anySent.set(true);
                                 } else {
                                     alreadyNotified.set(true);

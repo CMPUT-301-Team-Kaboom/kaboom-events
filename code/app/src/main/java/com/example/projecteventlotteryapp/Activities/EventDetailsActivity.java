@@ -302,8 +302,25 @@ public class EventDetailsActivity extends AppCompatActivity {
             });
 
             drawButton.setOnClickListener(v -> {
-                drawEntrantsForInvitationList();
-                FirestoreUtils.sendRejections(globalUser.getUserId(), eventId, db, this);
+                // Start the Draw process (Ensuring it returns a Task)
+                // Doing it this say protects against race conditions for the user lists
+                // Since tasks allow us to use success listeners and failure listeners
+                Task<Void> drawTask = drawEntrantsForInvitationList();
+
+                if (drawTask != null) {
+                    drawTask.addOnSuccessListener(aVoid -> {
+                        // The "Invited" list is now updated in Firestore.
+                        Toast.makeText(this, "Draw Complete", Toast.LENGTH_SHORT).show();
+
+                        // Now trigger the rejection sweep.
+                        FirestoreUtils.sendRejections(globalUser.getUserId(), eventId, db, this);
+
+                        // Update the local UI to reflect new counts
+                        updateUi();
+                    }).addOnFailureListener(e -> {
+                        Toast.makeText(this, "Draw Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                }
             });
 
             mapButton.setOnClickListener(v -> {
@@ -626,8 +643,8 @@ public class EventDetailsActivity extends AppCompatActivity {
      * This is a helper function that wraps the eventUtils generateInvitationList function and
      * provides contextual logging and Toasts based on active User role
      */
-    private void drawEntrantsForInvitationList() {
-        eventUtils.generateInvitationList(event.getEventId(), event.getAttendeesLimit())
+    private Task<Void> drawEntrantsForInvitationList() {
+        return eventUtils.generateInvitationList(event.getEventId(), event.getAttendeesLimit())
                 .addOnSuccessListener(aVoid -> {
                     if (globalUser.getRole() == Role.ORGANIZER) {
                         Toast.makeText(this, "Draw Complete", Toast.LENGTH_SHORT).show();
@@ -663,7 +680,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                                 message,
                                                                 event.getName(),
                                                                 event.getEventId(),
-                                                                db
+                                                                db,
+                                                                this
                                                         );
                                                         anySent.set(true);
                                                     } else {
@@ -679,7 +697,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                             Log.d("EventDetails", "Automated notifications sent to winners.");
                                         }
                                         if (alreadyNotified.get() && globalUser.getRole() == Role.ORGANIZER) {
-                                                Toast.makeText(this, "Some winners were already notified previously.", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(this, "Some winners were already notified previously.", Toast.LENGTH_SHORT).show();
                                         }
                                     });
                                 }
@@ -691,7 +709,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                 }
                             });
                 });
-        }
     }
+}
 
 
