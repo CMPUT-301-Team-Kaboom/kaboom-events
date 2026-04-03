@@ -5,7 +5,6 @@ import static com.example.projecteventlotteryapp.dbUtils.FirestoreUtils.storeNot
 import android.app.AlertDialog;
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -31,8 +30,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import java.util.ArrayList;
 import java.util.Set;
 
-public class OrganizerInvitedActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {
-    private String eventId;
+/**
+ * Activity responsible for displaying a list of invited users for the current event.
+ * Organizers can select users to send out notifications
+ *
+ */
+public class OrganizerInvitedActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {    private String eventId;
     private String eventName;
     private EventUtils eventUtils;
     private OrganizerEntrantListAdapter adapter;

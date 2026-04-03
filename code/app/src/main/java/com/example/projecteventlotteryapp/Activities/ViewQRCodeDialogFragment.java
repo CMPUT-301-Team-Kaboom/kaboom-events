@@ -15,6 +15,9 @@ import androidx.fragment.app.DialogFragment;
 import com.bumptech.glide.Glide;
 import com.example.projecteventlotteryapp.R;
 
+/**
+ * DialogFragment for displaying a QR code
+ */
 public class ViewQRCodeDialogFragment extends DialogFragment {
 
     private static final String ARG_QR_URL = "qr_url";
