@@ -30,8 +30,9 @@ import com.example.projecteventlotteryapp.Enums.EntrantListType;
 import com.example.projecteventlotteryapp.EventCommentArrayAdapter;
 import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.Enums.Role;
-import com.example.projecteventlotteryapp.Models.User;
+import com.example.projecteventlotteryapp.Models.Event;
 import com.example.projecteventlotteryapp.Models.MyApp;
+import com.example.projecteventlotteryapp.Models.User;
 import com.example.projecteventlotteryapp.R;
 import com.example.projecteventlotteryapp.dbUtils.EventUtils;
 import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
@@ -91,6 +92,7 @@ public class EventDetailsActivity extends AppCompatActivity {
     // entrant buttons
     private Button entrantPrimaryButton;
     private Button entrantSecondaryButton;
+    private Button qrButton;
 
     // global UI elements
     private ImageButton backButton;
@@ -189,6 +191,7 @@ public class EventDetailsActivity extends AppCompatActivity {
 
         entrantPrimaryButton    = findViewById(R.id.btn_eventDetails_entrant_primary);
         entrantSecondaryButton  = findViewById(R.id.btn_eventDetails_entrant_secondary);
+        qrButton                = findViewById(R.id.btn_eventDetails_qr);
 
         nameHeaderTextView      = findViewById(R.id.tv_eventDetails_event_name_header);
         organizerHeaderTextview = findViewById(R.id.tv_eventDetails_org_header);
@@ -213,6 +216,22 @@ public class EventDetailsActivity extends AppCompatActivity {
         });
         backButton      = findViewById(R.id.btn_eventDetails_back);
         backButton.setOnClickListener(v -> finish());
+
+        qrButton.setOnClickListener(v -> {
+            if (event != null) {
+                db.collection("events").document(eventId).get().addOnSuccessListener(snapshot -> {
+                    DocumentReference qrRef = snapshot.getDocumentReference("qrCode");
+                    if (qrRef != null) {
+                        qrRef.get().addOnSuccessListener(qrDoc -> {
+                            String url = qrDoc.getString("url");
+                            ViewQRCodeDialogFragment.newInstance(url).show(getSupportFragmentManager(), "view_qr");
+                        });
+                    } else {
+                        Toast.makeText(this, "No QR Code found for this event", Toast.LENGTH_SHORT).show();
+                    }
+                });
+            }
+        });
     }
 
     /**
@@ -238,6 +257,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             organizerController.setVisibility(View.VISIBLE);
             editButton.setVisibility(View.VISIBLE);
             mapButton.setVisibility(View.VISIBLE);
+            qrButton.setVisibility(View.GONE);
 
             if (event.getRegistrationEndDate().isBefore(LocalDate.now())) {
                 drawButton.setVisibility(View.VISIBLE);
@@ -282,8 +302,25 @@ public class EventDetailsActivity extends AppCompatActivity {
             });
 
             drawButton.setOnClickListener(v -> {
-                drawEntrantsForInvitationList();
-                FirestoreUtils.sendRejections(globalUser.getUserId(), eventId, db, this);
+                // Start the Draw process (Ensuring it returns a Task)
+                // Doing it this say protects against race conditions for the user lists
+                // Since tasks allow us to use success listeners and failure listeners
+                Task<Void> drawTask = drawEntrantsForInvitationList();
+
+                if (drawTask != null) {
+                    drawTask.addOnSuccessListener(aVoid -> {
+                        // The "Invited" list is now updated in Firestore.
+                        Toast.makeText(this, "Draw Complete", Toast.LENGTH_SHORT).show();
+
+                        // Now trigger the rejection sweep.
+                        FirestoreUtils.sendRejections(globalUser.getUserId(), eventId, db, this);
+
+                        // Update the local UI to reflect new counts
+                        updateUi();
+                    }).addOnFailureListener(e -> {
+                        Toast.makeText(this, "Draw Failed: " + e.getMessage(), Toast.LENGTH_SHORT).show();
+                    });
+                }
             });
 
             mapButton.setOnClickListener(v -> {
@@ -298,6 +335,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             editButton.setVisibility(View.GONE);
             drawButton.setVisibility(View.GONE);
             mapButton.setVisibility(View.GONE);
+            qrButton.setVisibility(View.VISIBLE);
 
             setupEntrantButtonsByEnrollmentStatus(user);
         } else if (user.getRole() == Role.ADMIN) {
@@ -308,6 +346,7 @@ public class EventDetailsActivity extends AppCompatActivity {
             editButton.setVisibility(View.GONE);
             drawButton.setVisibility(View.GONE);
             mapButton.setVisibility(View.GONE);
+            qrButton.setVisibility(View.GONE);
         }
     }
 
@@ -604,8 +643,8 @@ public class EventDetailsActivity extends AppCompatActivity {
      * This is a helper function that wraps the eventUtils generateInvitationList function and
      * provides contextual logging and Toasts based on active User role
      */
-    private void drawEntrantsForInvitationList() {
-        eventUtils.generateInvitationList(event.getEventId(), event.getAttendeesLimit())
+    private Task<Void> drawEntrantsForInvitationList() {
+        return eventUtils.generateInvitationList(event.getEventId(), event.getAttendeesLimit())
                 .addOnSuccessListener(aVoid -> {
                     if (globalUser.getRole() == Role.ORGANIZER) {
                         Toast.makeText(this, "Draw Complete", Toast.LENGTH_SHORT).show();
@@ -641,7 +680,8 @@ public class EventDetailsActivity extends AppCompatActivity {
                                                                 message,
                                                                 event.getName(),
                                                                 event.getEventId(),
-                                                                db
+                                                                db,
+                                                                this
                                                         );
                                                         anySent.set(true);
                                                     } else {
@@ -657,7 +697,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                             Log.d("EventDetails", "Automated notifications sent to winners.");
                                         }
                                         if (alreadyNotified.get() && globalUser.getRole() == Role.ORGANIZER) {
-                                                Toast.makeText(this, "Some winners were already notified previously.", Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(this, "Some winners were already notified previously.", Toast.LENGTH_SHORT).show();
                                         }
                                     });
                                 }
@@ -669,7 +709,7 @@ public class EventDetailsActivity extends AppCompatActivity {
                                 }
                             });
                 });
-        }
     }
+}
 
 

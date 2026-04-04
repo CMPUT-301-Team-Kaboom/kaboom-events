@@ -6,6 +6,7 @@ package com.example.projecteventlotteryapp.Activities;
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
@@ -290,7 +291,7 @@ public class EditEventActivity extends AppCompatActivity {
                 if (results.isEmpty()) {
                     Toast.makeText(this, "No users found with name: " + name, Toast.LENGTH_SHORT).show();
                 } else if (results.size() == 1) {
-                    addCoorganizer(results.get(0).getId());
+                    addCoorganizer(results.get(0).getId(), this);
                 } else {
                     showUserSelectionDialog(results);
                 }
@@ -314,15 +315,15 @@ public class EditEventActivity extends AppCompatActivity {
 
         AlertDialog dialog = builder.create();
         listView.setOnItemClickListener((parent, view, position, id) -> {
-            addCoorganizer(users.get(position).getId());
+            addCoorganizer(users.get(position).getId(),this);
             dialog.dismiss();
         });
         dialog.show();
     }
 
-    private void addCoorganizer(String userId) {
+    private void addCoorganizer(String userId, Context context) {
         String senderId = ((MyApp) getApplication()).getCurrentUser().getUserId();
-        eventUtils.addCoorganizer(eventId, userId, senderId).addOnSuccessListener(aVoid -> {
+        eventUtils.addCoorganizer(eventId, userId, senderId, context).addOnSuccessListener(aVoid -> {
             Toast.makeText(this, "Co-organizer added", Toast.LENGTH_SHORT).show();
         }).addOnFailureListener(e -> {
             Toast.makeText(this, "Failed to add co-organizer", Toast.LENGTH_SHORT).show();

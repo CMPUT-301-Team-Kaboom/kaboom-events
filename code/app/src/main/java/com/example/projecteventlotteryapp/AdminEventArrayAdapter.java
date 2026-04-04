@@ -11,6 +11,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.bumptech.glide.Glide;
 import com.example.projecteventlotteryapp.Models.Event;
 
 import java.time.format.DateTimeFormatter;
@@ -52,14 +53,20 @@ public class AdminEventArrayAdapter extends ArrayAdapter<Event> {
         organizerTextView.setText(event.getOrganizerName());
         
         if (event.getDrawDate() != null) {
-            DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("MMMM d, yyyy 'at' h:mm a");
+            DateTimeFormatter datePattern = DateTimeFormatter.ofPattern("MMM d, yyyy 'at' h:mm a");
             String formattedDate = event.getDrawDate().format(datePattern);
-            drawDateTextView.setText("Starts on " + formattedDate);
+            drawDateTextView.setText(formattedDate);
         } else {
             drawDateTextView.setText("Start date TBD");
         }
         
         attendeesTextView.setText("Attendees: " + event.getAttendeesLimit());
+
+        if (event.getPoster() != null) {
+            Glide.with(context).load(event.getPoster()).into(posterImageView);
+        } else {
+            Glide.with(context).load(R.drawable.default_poster).into(posterImageView);
+        }
 
         deleteIcon.setOnClickListener(v -> {
             if (deleteListener != null) {

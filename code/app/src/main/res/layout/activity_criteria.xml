@@ -63,7 +63,7 @@
 
                 <TextView
                     style="@style/DefaultTextStyle"
-                    android:text="Joining An Event"/>
+                    android:text="Searching for an Event"/>
 
                 <TextView
                     style="@style/DefaultTextStyle"
@@ -88,7 +88,7 @@
 
                 <TextView
                     style="@style/DefaultTextStyle"
-                    android:text="Lottery Selection"/>
+                    android:text="Joining an Event"/>
 
                 <TextView
                     style="@style/DefaultTextStyle"
@@ -113,7 +113,7 @@
 
                 <TextView
                     style="@style/DefaultTextStyle"
-                    android:text="Declining Events and List Removal"/>
+                    android:text="Lottery Selection"/>
 
                 <TextView
                     style="@style/DefaultTextStyle"
@@ -121,6 +121,82 @@
                     android:textAlignment="textStart"
                     android:textStyle="normal" />
             </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_box_4"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/rounded_container"
+                android:orientation="vertical"
+                android:padding="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ll_box_3">
+
+                <TextView
+                    style="@style/DefaultTextStyle"
+                    android:text="Declining Events and List Removal"/>
+
+                <TextView
+                    style="@style/DefaultTextStyle"
+                    android:text="@string/info_text_4"
+                    android:textAlignment="textStart"
+                    android:textStyle="normal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_box_5"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/rounded_container"
+                android:orientation="vertical"
+                android:padding="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ll_box_4">
+
+                <TextView
+                    style="@style/DefaultTextStyle"
+                    android:text="Becoming a Co-Organizer"/>
+
+                <TextView
+                    style="@style/DefaultTextStyle"
+                    android:text="@string/info_text_5"
+                    android:textAlignment="textStart"
+                    android:textStyle="normal" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_box_6"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_marginTop="24dp"
+                android:layout_marginEnd="12dp"
+                android:background="@drawable/rounded_container"
+                android:orientation="vertical"
+                android:padding="16dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/ll_box_5">
+
+                <TextView
+                    style="@style/DefaultTextStyle"
+                    android:text="Private Events"/>
+
+                <TextView
+                    style="@style/DefaultTextStyle"
+                    android:text="@string/info_text_6"
+                    android:textAlignment="textStart"
+                    android:textStyle="normal" />
+            </LinearLayout>
+
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 

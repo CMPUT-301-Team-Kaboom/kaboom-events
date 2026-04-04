@@ -30,6 +30,7 @@ import com.example.projecteventlotteryapp.R;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.opencsv.CSVWriter;
 
 import java.io.BufferedWriter;
@@ -156,7 +157,11 @@ public class OrganizerEnrolledActivity extends AppCompatActivity implements Crea
                             String name = doc.getString("name");
                             String email = doc.getString("email");
                             String phone = (doc.getString("phone").isEmpty()) ? "N/A" : doc.getString("phone");
-                            String location = doc.getGeoPoint("location").getLatitude() + " " + doc.getGeoPoint("location").getLongitude();
+                            String location = "N/A";
+                            GeoPoint loc = doc.getGeoPoint("location");
+                            if (loc != null){
+                                location = loc.getLatitude() + " " + loc.getLongitude();
+                            }
 
                             String[] line = {userID, name, email, phone, location};
                             userData.add(line);
@@ -197,10 +202,9 @@ public class OrganizerEnrolledActivity extends AppCompatActivity implements Crea
 
         for (Integer pos : selected) {
             String recipientId = enrolledList.get(pos);
-            storeNotificationInFirestore(userId, recipientId, message, eventName, eventId, db);
+            storeNotificationInFirestore(userId, recipientId, message, eventName, eventId, db, this);
         }
 
-        Toast.makeText(this, "Notifications sent", Toast.LENGTH_SHORT).show();
 
         // Clear selection after sending
         isSelectionMode = false;
