@@ -1,1 +1,1 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.example.projecteventlotteryapp"}];updateSearchResults();
+packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"com.example.projecteventlotteryapp"},{"l":"com.example.projecteventlotteryapp.Activities"},{"l":"com.example.projecteventlotteryapp.dbUtils"},{"l":"com.example.projecteventlotteryapp.Enums"},{"l":"com.example.projecteventlotteryapp.Models"}];updateSearchResults();

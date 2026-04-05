@@ -43,8 +43,12 @@ import java.util.ArrayList;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 
-public class OrganizerEnrolledActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {
-    private String eventId;
+/**
+ * Activity responsible for displaying a list of enrolled users for the current event.
+ * Organizers can select users to send out notifications
+ *
+ */
+public class OrganizerEnrolledActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {    private String eventId;
     private String eventName;
     private OrganizerEntrantListAdapter adapter;
     private ListView enrolledListView;

@@ -1,1 +1,5 @@
 com.example.projecteventlotteryapp
+com.example.projecteventlotteryapp.Activities
+com.example.projecteventlotteryapp.dbUtils
+com.example.projecteventlotteryapp.Enums
+com.example.projecteventlotteryapp.Models

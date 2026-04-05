@@ -24,7 +24,7 @@
 
         <LinearLayout
             android:id="@+id/ll_item_text_container"
-            android:layout_width="match_parent"
+            android:layout_width="195dp"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginStart="15dp"
@@ -56,7 +56,8 @@
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
             android:orientation="vertical"
-            android:gravity="end">
+            android:gravity="end"
+            android:layout_marginStart="8dp">
 
             <TextView
                 android:id="@+id/tv_date"
@@ -82,6 +83,36 @@
                 app:strokeColor="#FF0000"
                 app:strokeWidth="2dp" />
         </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_item_text_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@id/tv_item_number"
+            android:layout_toStartOf="@id/ll_date_container"
+            android:layout_marginStart="15dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/tv_item_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/primaryAccent"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:ellipsize="end"
+                android:maxLines="1" />
+
+            <TextView
+                android:id="@+id/tv_item_subtext"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/white"
+                android:textSize="14sp" />
+
+        </LinearLayout>
+
     </RelativeLayout>
 
     <!-- Divider Line -->
