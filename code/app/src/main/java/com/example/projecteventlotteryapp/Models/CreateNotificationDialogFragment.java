@@ -15,6 +15,9 @@ import androidx.fragment.app.DialogFragment;
 
 import com.example.projecteventlotteryapp.R;
 
+/**
+ * DialogFragment responsible for creating a notification.
+ */
 public class CreateNotificationDialogFragment extends DialogFragment {
 
     public interface NotificationListener {
@@ -40,12 +43,15 @@ public class CreateNotificationDialogFragment extends DialogFragment {
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_create_notification, container, false);
 
+        // set up elements
         EditText etMessage = view.findViewById(R.id.et_notification_message);
         Button btnBack = view.findViewById(R.id.btn_notif_back);
         Button btnSend = view.findViewById(R.id.btn_notif_send);
 
+        // set up back button
         btnBack.setOnClickListener(v -> dismiss());
 
+        // set up send button
         btnSend.setOnClickListener(v -> {
             String message = etMessage.getText().toString();
             if (!message.isEmpty() && listener != null) {

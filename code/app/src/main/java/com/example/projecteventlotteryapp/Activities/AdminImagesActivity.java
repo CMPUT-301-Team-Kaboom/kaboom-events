@@ -15,12 +15,12 @@ import com.example.projecteventlotteryapp.R;
 
 import java.util.ArrayList;
 
-/*
-Displays a grid of all posters in the app and allows admins to delete posters
-Admins cannot delete the default poster
+/**
+* Displays a grid of all posters in the app and allows admins to delete posters
+* Admins cannot delete the default poster
 
-Author: Ashley Kang
- */
+* Author: Ashley Kang
+ * */
 public class AdminImagesActivity extends AppCompatActivity {
     /*
     the following code is adapted from https://www.geeksforgeeks.org/android/how-to-build-an-image-gallery-android-app-with-recyclerview-and-glide/

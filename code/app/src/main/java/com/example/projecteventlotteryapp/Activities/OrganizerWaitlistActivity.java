@@ -5,39 +5,33 @@ import static android.view.View.VISIBLE;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.constraintlayout.widget.ConstraintLayout;
 
-import com.example.projecteventlotteryapp.EventsListActivity;
 import com.example.projecteventlotteryapp.Models.CreateNotificationDialogFragment;
 import com.example.projecteventlotteryapp.Models.MyApp;
 import com.example.projecteventlotteryapp.OrganizerEntrantListAdapter;
 import com.example.projecteventlotteryapp.R;
-import com.example.projecteventlotteryapp.dbUtils.FirestoreUtils;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import static com.example.projecteventlotteryapp.dbUtils.FirestoreUtils.storeNotificationInFirestore;
 
 
 /**
- * Provides an organizer with the waitlist of entrants that have entered to join their event
+ * Activity responsible for displaying a list of waitlisted users for the current event.
+ * Organizers can select users to send out notifications
  */
 public class OrganizerWaitlistActivity extends AppCompatActivity implements CreateNotificationDialogFragment.NotificationListener {
     private String eventId;
