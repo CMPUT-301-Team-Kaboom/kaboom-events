@@ -29,6 +29,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
@@ -45,13 +47,14 @@ public class DatabaseTestsViaUI {
     private final List<String> createdOrganizerIds = new ArrayList<>();
     private final List<String> createdAdminIds = new ArrayList<>();
 
-    @Rule
-    public ActivityScenarioRule<RegistrationActivity> scenario = new ActivityScenarioRule<>(RegistrationActivity.class);
+    public ActivityScenarioRule<RegistrationActivity> activityRule = new ActivityScenarioRule<>(RegistrationActivity.class);
 
-    @Rule
     public GrantPermissionRule permissionRule = GrantPermissionRule.grant(
             Manifest.permission.ACCESS_FINE_LOCATION,
             Manifest.permission.ACCESS_COARSE_LOCATION);
+
+    @Rule
+    public TestRule chain = RuleChain.outerRule(permissionRule).around(activityRule);
 
     @Before
     public void setup() {
