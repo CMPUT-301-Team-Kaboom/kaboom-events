@@ -3,7 +3,9 @@ package com.example.projecteventlotteryapp;
 import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.Matchers.allOf;
 import static org.junit.Assert.assertFalse;
 
@@ -96,6 +98,11 @@ public class AdminTestsViaUI {
                 .onChildView(withId(R.id.iv_profile_item_delete))
                 .perform(click());
 
+        onView(withText("Delete"))
+                .inRoot(isDialog()).perform(click());
+
+        Thread.sleep(3000);
+
         CountDownLatch verifyLatch = new CountDownLatch(1);
         final boolean[] exists = {true};
         db.collection("entrants").document(testId).get()
@@ -139,6 +146,9 @@ public class AdminTestsViaUI {
                 .inAdapterView(withId(R.id.lv_organizer_list))
                 .onChildView(withId(R.id.iv_organizer_item_delete))
                 .perform(click());
+
+        onView(withText("Delete"))
+                .inRoot(isDialog()).perform(click());
 
         CountDownLatch verifyLatch = new CountDownLatch(1);
         final boolean[] exists = {true};

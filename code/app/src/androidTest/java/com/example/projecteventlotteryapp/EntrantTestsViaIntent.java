@@ -64,8 +64,9 @@ public class EntrantTestsViaIntent {
     }
 
     @Test
-    public void testNavigateToDetailedEvent() {
+    public void testNavigateToDetailedEvent() throws InterruptedException{
         try (ActivityScenario<EventsListActivity> scenario = ActivityScenario.launch(EventsListActivity.class)) {
+            Thread.sleep(3000);
 
             onData(anything())
                     .inAdapterView(withId(R.id.lv_events_list))

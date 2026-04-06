@@ -31,6 +31,7 @@
         android:ems="10"
         android:inputType="text"
         android:padding="8dp"
+        android:textColor="@color/white"
         android:textSize="14sp" />
 
     <LinearLayout

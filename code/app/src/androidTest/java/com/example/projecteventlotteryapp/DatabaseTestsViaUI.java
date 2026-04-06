@@ -4,16 +4,20 @@ import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static androidx.test.espresso.action.ViewActions.typeText;
+import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
+import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import static junit.framework.TestCase.assertTrue;
 
+import android.Manifest;
 import android.provider.Settings;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 import androidx.test.ext.junit.runners.AndroidJUnit4;
 import androidx.test.filters.LargeTest;
 import androidx.test.platform.app.InstrumentationRegistry;
+import androidx.test.rule.GrantPermissionRule;
 
 import com.example.projecteventlotteryapp.Activities.RegistrationActivity;
 import com.example.projecteventlotteryapp.Enums.Role;
@@ -25,6 +29,8 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.RuleChain;
+import org.junit.rules.TestRule;
 import org.junit.runner.RunWith;
 
 import java.util.ArrayList;
@@ -36,18 +42,26 @@ import java.util.concurrent.TimeUnit;
 @LargeTest
 public class DatabaseTestsViaUI {
     private FirebaseFirestore db;
-    private CollectionReference entrantsRef;
+    private String deviceID;
     private final List<String> createdEntrantIds = new ArrayList<>();
     private final List<String> createdOrganizerIds = new ArrayList<>();
     private final List<String> createdAdminIds = new ArrayList<>();
 
+    public ActivityScenarioRule<RegistrationActivity> activityRule = new ActivityScenarioRule<>(RegistrationActivity.class);
+
+    public GrantPermissionRule permissionRule = GrantPermissionRule.grant(
+            Manifest.permission.ACCESS_FINE_LOCATION,
+            Manifest.permission.ACCESS_COARSE_LOCATION);
+
     @Rule
-    public ActivityScenarioRule<RegistrationActivity> scenario = new ActivityScenarioRule<>(RegistrationActivity.class);
+    public TestRule chain = RuleChain.outerRule(permissionRule).around(activityRule);
 
     @Before
     public void setup() {
         db = FirebaseFirestore.getInstance();
-        entrantsRef = db.collection("entrants");
+        deviceID = Settings.Secure.getString(
+                InstrumentationRegistry.getInstrumentation().getTargetContext().getContentResolver(),
+                Settings.Secure.ANDROID_ID);
     }
 
     @After
@@ -86,17 +100,16 @@ public class DatabaseTestsViaUI {
         onView(withId(R.id.btn_registration_entrant)).perform(click());
         onView(withId(R.id.btn_registration_signup)).perform(click());
 
+        Thread.sleep(3000);
+
         CountDownLatch latch = new CountDownLatch(1);
         final boolean[] userExists = {false};
-        final String[] newEntrantId = {null};
 
-        db.collection("entrants")
-                .whereEqualTo("name", "TestUser1")
-                .get()
-                .addOnSuccessListener(querySnapshot -> {
-                    if (!querySnapshot.isEmpty()) {
+        db.collection("entrants").document(deviceID).get()
+                .addOnSuccessListener(doc -> {
+                    if (doc.exists()) {
                         userExists[0] = true;
-                        newEntrantId[0] = querySnapshot.getDocuments().get(0).getId();
+                        createdEntrantIds.add(deviceID);
                     }
                     latch.countDown();
                 })
@@ -105,7 +118,6 @@ public class DatabaseTestsViaUI {
         latch.await(5, TimeUnit.SECONDS);
         Thread.sleep(3000);
         assertTrue(userExists[0]);
-        createdEntrantIds.add(newEntrantId[0]);
     }
 
     @Test
@@ -116,17 +128,18 @@ public class DatabaseTestsViaUI {
         onView(withId(R.id.btn_registration_organizer)).perform(click());
         onView(withId(R.id.btn_registration_signup)).perform(click());
 
+        Thread.sleep(5000);
+
         CountDownLatch latch = new CountDownLatch(1);
         final boolean[] userExists = {false};
-        final String[] newOrganizerId = {null};
 
         db.collection("organizers")
-                .whereEqualTo("name", "TestOrg1")
+                .document(deviceID)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    if (!querySnapshot.isEmpty()) {
+                    if (querySnapshot.exists()) {
                         userExists[0] = true;
-                        newOrganizerId[0] = querySnapshot.getDocuments().get(0).getId();
+                        createdOrganizerIds.add(deviceID);
                     }
                     latch.countDown();
                 })
@@ -135,7 +148,6 @@ public class DatabaseTestsViaUI {
         latch.await(5, TimeUnit.SECONDS);
         Thread.sleep(3000);
         assertTrue(userExists[0]);
-        createdOrganizerIds.add(newOrganizerId[0]);
     }
 
     @Test
@@ -146,26 +158,31 @@ public class DatabaseTestsViaUI {
         onView(withId(R.id.btn_registration_admin)).perform(click());
         onView(withId(R.id.btn_registration_signup)).perform(click());
 
+        Thread.sleep(1000);
+
+        onView(withId(R.id.et_admin_guard_textbox)).inRoot(isDialog()).perform(typeText("kaboom"), closeSoftKeyboard());
+        onView(withId(R.id.btn_admin_guard_confirm)).inRoot(isDialog()).perform(click());
+
+        Thread.sleep(3000);
+
         CountDownLatch latch = new CountDownLatch(1);
         final boolean[] userExists = {false};
-        final String[] newAdminId = {null};
 
         db.collection("admins")
-                .whereEqualTo("name", "TestAdmin1")
+                .document(deviceID)
                 .get()
                 .addOnSuccessListener(querySnapshot -> {
-                    if (!querySnapshot.isEmpty()) {
+                    if (querySnapshot.exists()) {
                         userExists[0] = true;
-                        newAdminId[0] = querySnapshot.getDocuments().get(0).getId();
+                        createdAdminIds.add(deviceID);
                     }
                     latch.countDown();
                 })
                 .addOnFailureListener(e -> latch.countDown());
 
-        latch.await(5, TimeUnit.SECONDS);
+        latch.await(10, TimeUnit.SECONDS);
         Thread.sleep(3000);
-        assertTrue(userExists[0]);
-        createdAdminIds.add(newAdminId[0]);
+        assertTrue("Admin user should be created in Firestore", userExists[0]);
     }
 
     @Test

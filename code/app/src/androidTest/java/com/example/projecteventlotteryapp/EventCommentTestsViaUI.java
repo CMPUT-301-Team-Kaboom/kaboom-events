@@ -85,6 +85,7 @@ public class EventCommentTestsViaUI {
                 LocalDate.now(),
                 LocalDateTime.now().plusDays(1),
                 100,
+                false,
                 false);
 
         Map<String, Object> organizer = new HashMap<>();
