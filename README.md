@@ -5,5 +5,6 @@ If you are trying to run this app on your machine via the Android Studio Emulato
 - Entrants are able to navigate to Events directly from notifications
 <img width="200" alt="image" src="https://github.com/user-attachments/assets/c0c081ac-ea16-4e55-a739-dd0dd4184555" />
 
-- Our app includes a "History" tab which lists all of the Events and Entrant had previously signed up for as well as their current enrollment status for each event.
-<img width="200" alt="image" src="https://github.com/user-attachments/assets/daa2b543-35e3-492d-ac8e-1000e1962af1" />
+- Our app includes an "Available" tab which lists all of the Events and Entrant can currently join the Waitlist for based on spots available and registration dates.
+<img width="200" alt="image" src="https://github.com/user-attachments/assets/8c5b42ea-fb40-4742-9c46-e22d79e3c751" />
+
