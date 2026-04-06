@@ -1,9 +1,5 @@
 # Setting Up
-If you are trying to run this app on your machine via the Android Studio Emulator, you will have to add the following key into your `code/local.properties` file:
-``` 
-MAPS_KEY="AIzaSyDJO37xNophevoYE8cq1_IRIxiGCsLbCNI"
-```
-This file is not in this GitHub repo as per Android Studio instructions and is unique to each device.
+If you are trying to run this app on your machine via the Android Studio Emulator, you will have to add an api key into your `code/local.properties` file. Contact one of the team members for access to this key.
 
 # Bonus Features
 - Entrants are able to navigate to Events directly from notifications
