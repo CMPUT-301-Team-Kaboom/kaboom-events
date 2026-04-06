@@ -65,6 +65,7 @@ public class EntrantSettingsActivity extends AppCompatActivity {
     private EditText phoneEditText;
     private Button btnSave;
     private Button btnDelete;
+    private Button btnSignOut;
     private Switch swtchNotification;
     private User globalUser;
     private final int FINE_PERMISSION_CODE = 1;
@@ -101,6 +102,8 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         btnDelete = findViewById(R.id.btn_delete_profile);
         swtchNotification = findViewById((R.id.s_switch));
         ImageButton btnBack = findViewById(R.id.btn_entrant_back);
+        btnSignOut = findViewById(R.id.btn_sign_out);
+
 
         btnBack.setOnClickListener(v -> finish());
 
@@ -113,6 +116,13 @@ public class EntrantSettingsActivity extends AppCompatActivity {
         //save when save button is clicked
         btnSave.setOnClickListener(v -> updateProfileInFirestore());
         btnDelete.setOnClickListener(v -> deleteProfileFromFirestore());
+        btnSignOut.setOnClickListener(v -> {
+            Intent intent = new Intent(EntrantSettingsActivity.this, RegistrationActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+            startActivity(intent);
+            finish();
+        });
+
 
         // Load the current notification status from Firestore
         db.loadUserProfile(deviceID, globalUser.getRole()).addOnSuccessListener(documentSnapshot -> {
