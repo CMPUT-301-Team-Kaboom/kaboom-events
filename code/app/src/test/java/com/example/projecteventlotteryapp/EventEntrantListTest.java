@@ -4,10 +4,7 @@ import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.Mockito.doReturn;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -21,16 +18,19 @@ import com.google.android.gms.tasks.Tasks;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.ArrayList;
+import java.util.Map;
 
 /*
  Unit test class that functions to test for all four entrant list types: waitlist, invited, accepted, and declined
@@ -59,6 +59,7 @@ public class EventEntrantListTest {
         when(eventCollection.document(anyString())).thenReturn(eventDoc);
 
         when(eventDoc.update(anyString(), any())).thenReturn(Tasks.forResult(null));
+        when(eventDoc.update(any(Map.class))).thenReturn(Tasks.forResult(null));
     }
 
     @Test
@@ -91,16 +92,20 @@ public class EventEntrantListTest {
     public void joinEntrantList(){
         eventUtils.addToEntrantList(type, user.getUserId(), eventId);
 
-        verify(eventDoc).update(eq("waitlist"), argThat(arg ->
-            arg.getClass().getSimpleName().contains("ArrayUnion")));
+        verify(eventDoc).update(argThat((Map<String, Object> map) ->
+            map.containsKey("waitlist") &&
+            map.get("waitlist").getClass().getSimpleName().contains("ArrayUnion")
+        ));
     }
 
     @Test
     public void leaveEntrantList(){
         eventUtils.removeFromEntrantList(type, user.getUserId(), eventId);
 
-        verify(eventDoc).update(eq("waitlist"), argThat(arg->
-                arg.getClass().getSimpleName().contains("ArrayRemove")));
+        verify(eventDoc).update(argThat((Map<String, Object> map) ->
+                map.containsKey("waitlist") &&
+                        map.get("waitlist").getClass().getSimpleName().contains("ArrayRemove")
+        ));
     }
 
     @Test
