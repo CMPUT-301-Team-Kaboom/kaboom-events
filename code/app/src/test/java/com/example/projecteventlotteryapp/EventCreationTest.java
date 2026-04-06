@@ -162,11 +162,13 @@ public class EventCreationTest {
         eventData.put("description", null);
         eventData.put("geoLocationEnabled", false);
         eventData.put("location", null);
-        eventData.put("qrCodePath", null);
+        eventData.put("qrCode", null);
         eventData.put("tags", null);
         eventData.put("waitlistLimit", -1);  // -1 indicates no limit
         eventData.put("isPrivate", false);
         eventData.put("waitlistSize", 0);
+        eventData.put("coorganizers", new ArrayList<>());
+        eventData.put("comments", new ArrayList<>());
         eventData.put("waitlist", new ArrayList<>());
         eventData.put("enrolled", new ArrayList<>());
         eventData.put("invited", new ArrayList<>());
