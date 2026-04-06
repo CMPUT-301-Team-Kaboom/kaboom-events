@@ -90,6 +90,7 @@ public class OrganizerTestsViaIntent {
                 LocalDate.now().plusDays(1),
                 LocalDateTime.now().plusDays(7),
                 100,
+                false,
                 false
         );
         event.setDescription("Test Description");
@@ -115,6 +116,7 @@ public class OrganizerTestsViaIntent {
         eventData.put("waitlistSize", event.getWaitlistSize());
         eventData.put("description", event.getDescription());
         eventData.put("geoLocationEnabled", event.isGeolocationEnabled());
+        eventData.put("isPrivate", event.isPrivate());
         eventData.put("location", null);
         eventData.put("qrCodePath", null);
         eventData.put("tags", event.getTagsList());
@@ -140,6 +142,7 @@ public class OrganizerTestsViaIntent {
                 LocalDate.now().plusDays(1),
                 LocalDateTime.now().plusDays(7),
                 10,
+                false,
                 false
         );
 
@@ -165,10 +168,12 @@ public class OrganizerTestsViaIntent {
     }
 
     @Test
-    public void testNavigateToWaitlist() {
+    public void testNavigateToWaitlist() throws InterruptedException {
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventDetailsActivity.class)
                 .putExtra("eventId", testEventId);
         try (ActivityScenario<EventDetailsActivity> scenario = ActivityScenario.launch(intent)) {
+            Thread.sleep(3000);
+
             onView(withId(R.id.btn_eventDetails_organizer_waitlist)).perform(click());
             intended(allOf(
                     hasComponent(OrganizerWaitlistActivity.class.getName()),
@@ -178,10 +183,12 @@ public class OrganizerTestsViaIntent {
     }
 
     @Test
-    public void testNavigateToInvited() {
+    public void testNavigateToInvited() throws InterruptedException{
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventDetailsActivity.class)
                 .putExtra("eventId", testEventId);
         try (ActivityScenario<EventDetailsActivity> scenario = ActivityScenario.launch(intent)) {
+            Thread.sleep(3000);
+
             onView(withId(R.id.btn_eventDetails_organizer_invited)).perform(click());
             intended(allOf(
                     hasComponent(OrganizerInvitedActivity.class.getName()),
@@ -191,10 +198,12 @@ public class OrganizerTestsViaIntent {
     }
 
     @Test
-    public void testNavigateToEnrolled() {
+    public void testNavigateToEnrolled() throws InterruptedException{
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventDetailsActivity.class)
                 .putExtra("eventId", testEventId);
         try (ActivityScenario<EventDetailsActivity> scenario = ActivityScenario.launch(intent)) {
+            Thread.sleep(3000);
+
             onView(withId(R.id.btn_eventDetails_organizer_enrolled)).perform(click());
             intended(allOf(
                     hasComponent(OrganizerEnrolledActivity.class.getName()),
@@ -204,10 +213,12 @@ public class OrganizerTestsViaIntent {
     }
 
     @Test
-    public void testNavigateToDeclined() {
+    public void testNavigateToDeclined() throws  InterruptedException {
         Intent intent = new Intent(ApplicationProvider.getApplicationContext(), EventDetailsActivity.class)
                 .putExtra("eventId", testEventId);
         try (ActivityScenario<EventDetailsActivity> scenario = ActivityScenario.launch(intent)) {
+            Thread.sleep(3000);
+
             onView(withId(R.id.btn_eventDetails_organizer_declined)).perform(click());
             intended(allOf(
                     hasComponent(OrganizerDeclinedActivity.class.getName()),

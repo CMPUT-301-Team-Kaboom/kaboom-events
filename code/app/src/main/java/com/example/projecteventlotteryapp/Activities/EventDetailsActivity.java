@@ -380,13 +380,13 @@ public class EventDetailsActivity extends AppCompatActivity {
                 if (posterRef != null) {
                     posterRef.get().addOnSuccessListener(posterDoc -> {
                         if (posterDoc.exists()) {
-                            Glide.with(this).load(posterDoc.getString("url")).into(posterIV);
+                            Glide.with(getApplicationContext()).load(posterDoc.getString("url")).into(posterIV);
                         } else {
-                            Glide.with(this).load(R.drawable.default_poster).into(posterIV);
+                            Glide.with(getApplicationContext()).load(R.drawable.default_poster).into(posterIV);
                         }
                     });
                 } else {
-                    Glide.with(this).load(R.drawable.default_poster).into(posterIV);
+                    Glide.with(getApplicationContext()).load(R.drawable.default_poster).into(posterIV);
                 }
             }
         });

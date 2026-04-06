@@ -5,11 +5,18 @@ import static androidx.test.espresso.Espresso.onData;
 import static androidx.test.espresso.Espresso.onView;
 import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.intent.Intents.intended;
+import static androidx.test.espresso.intent.Intents.intending;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtraWithKey;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static org.hamcrest.Matchers.allOf;
 import static org.hamcrest.Matchers.anything;
+
+import android.app.Activity;
+import android.app.Instrumentation;
+import android.content.Intent;
 
 import androidx.test.core.app.ActivityScenario;
 import androidx.test.core.app.ApplicationProvider;
@@ -64,8 +71,9 @@ public class EntrantTestsViaIntent {
     }
 
     @Test
-    public void testNavigateToDetailedEvent() {
+    public void testNavigateToDetailedEvent() throws InterruptedException{
         try (ActivityScenario<EventsListActivity> scenario = ActivityScenario.launch(EventsListActivity.class)) {
+            Thread.sleep(3000);
 
             onData(anything())
                     .inAdapterView(withId(R.id.lv_events_list))
@@ -75,6 +83,28 @@ public class EntrantTestsViaIntent {
             intended(allOf(
                     hasComponent(EventDetailsActivity.class.getName()),
                     hasExtraWithKey("eventId")
+            ));
+        }
+    }
+
+    @Test
+    public void testQRScannerNavigation() {
+        //reference: https://stackoverflow.com/questions/5265913/how-to-use-putextra-and-getextra-for-string-data
+        String mockScannedEventId = "test_qr_event";
+
+        Intent resultData = new Intent();
+        resultData.putExtra("SCAN_RESULT", mockScannedEventId);
+        Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(Activity.RESULT_OK, resultData);
+
+        intending(hasAction("com.google.zxing.client.android.SCAN")).respondWith(result);
+
+        try (ActivityScenario<EventsListActivity> scenario = ActivityScenario.launch(EventsListActivity.class)) {
+            onView(withId(R.id.scan_qrcode)).perform(click());
+
+            // app navigates to event details activity
+            intended(allOf(
+                    hasComponent(EventDetailsActivity.class.getName()),
+                    hasExtra("eventId", mockScannedEventId)
             ));
         }
     }
